@@ -17,6 +17,17 @@
   <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
   <meta name="twitter:card" content="summary_large_image">
 
+  <!-- Immediate Theme Check to Prevent FOUC -->
+  <script>
+    try {
+      const storedTheme = localStorage.getItem('screenecho_theme');
+      if (storedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      }
+    } catch (e) {}
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -172,6 +183,124 @@
       transform: translateY(0);
     }
 
+    /* Animated Rotating Conic Gold Border for Brand Logo */
+    @keyframes spinLogoBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .logo-badge {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      padding: 1.5px;
+    }
+
+    .logo-badge::before {
+      content: '';
+      position: absolute;
+      inset: -150%;
+      background: conic-gradient(from 0deg, #BF953F, #FCF6BA, #AA771C, #FBF5B7, #BF953F);
+      animation: spinLogoBorder 7s linear infinite;
+      opacity: 0.8;
+      transition: opacity 0.3s ease, filter 0.3s ease;
+    }
+
+    .group:hover .logo-badge::before {
+      opacity: 1;
+      filter: drop-shadow(0 0 10px rgba(252, 246, 186, 0.9));
+      animation-duration: 2s; /* Sped up rotation on hover */
+    }
+
+    .logo-icon-inner {
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.4s ease;
+    }
+
+    .group:hover .logo-icon-inner {
+      transform: scale(1.18);
+      filter: drop-shadow(0 0 8px rgba(212, 175, 55, 1));
+    }
+
+    /* Normal / Light Luxury Theme Styles (When html has class .light or not .dark) */
+    html:not(.dark) body {
+      background-color: #FDFBF7 !important;
+      color: #1c1917 !important;
+    }
+
+    html:not(.dark) .bg-obsidian-grid {
+      background-image: 
+        linear-gradient(to right, rgba(180, 140, 50, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(180, 140, 50, 0.08) 1px, transparent 1px) !important;
+    }
+
+    html:not(.dark) .gold-radial-aura {
+      background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.14) 0%, rgba(253, 251, 247, 0) 70%) !important;
+    }
+
+    html:not(.dark) .luxury-card {
+      background: rgba(255, 255, 255, 0.88) !important;
+      backdrop-filter: blur(20px) !important;
+      -webkit-backdrop-filter: blur(20px) !important;
+      border-color: rgba(191, 149, 63, 0.32) !important;
+      box-shadow: 0 15px 35px -5px rgba(180, 140, 50, 0.1), 0 0 20px -2px rgba(191, 149, 63, 0.05) !important;
+      color: #1c1917 !important;
+    }
+
+    html:not(.dark) .luxury-card:hover {
+      border-color: rgba(191, 149, 63, 0.5) !important;
+      box-shadow: 0 20px 45px -5px rgba(180, 140, 50, 0.16), 0 0 30px -3px rgba(191, 149, 63, 0.1) !important;
+    }
+
+    html:not(.dark) h1, 
+    html:not(.dark) h2, 
+    html:not(.dark) h3,
+    html:not(.dark) .brand-title {
+      color: #1c1917 !important;
+    }
+
+    html:not(.dark) p,
+    html:not(.dark) .text-neutral-400,
+    html:not(.dark) .text-neutral-500 {
+      color: #57534e !important;
+    }
+
+    html:not(.dark) .text-neutral-300,
+    html:not(.dark) .text-neutral-200 {
+      color: #292524 !important;
+    }
+
+    html:not(.dark) input {
+      background-color: #fafaf9 !important;
+      color: #1c1917 !important;
+      border-color: rgba(191, 149, 63, 0.35) !important;
+    }
+
+    html:not(.dark) input::placeholder {
+      color: #a8a29e !important;
+    }
+
+    html:not(.dark) .bg-obsidian-900,
+    html:not(.dark) .bg-obsidian-950 {
+      background-color: #f5f5f4 !important;
+    }
+
+    html:not(.dark) .logo-inner-bg {
+      background-color: #ffffff !important;
+    }
+
+    html:not(.dark) #webrtc-status-pill,
+    html:not(.dark) #theme-toggle-btn {
+      background-color: rgba(255, 255, 255, 0.95) !important;
+      border-color: rgba(191, 149, 63, 0.35) !important;
+      color: #78350f !important;
+    }
+
+    html:not(.dark) .text-gold-metallic {
+      background: linear-gradient(135deg, #966f1b 0%, #d4af37 35%, #7a5410 70%, #b38728 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+    }
+
     /* Theater Mode Styles: Fills screen cleanly with floating controls */
     .theater-active {
       position: fixed !important;
@@ -235,25 +364,33 @@
   <header class="w-full border-b border-gold-500/20 luxury-card sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
       
-      <!-- Brand & Gold Emblem -->
+      <!-- Brand & Animated Gold Emblem -->
       <a href="./" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-gold-700 via-gold-400 to-gold-200 p-[1px] shadow-lg shadow-gold-500/20 group-hover:shadow-gold-400/40 transition-all duration-300">
-          <div class="w-full h-full bg-obsidian-950 rounded-[11px] flex items-center justify-center">
-            <i data-lucide="cast" class="w-5 h-5 text-gold-400 group-hover:scale-110 transition-transform"></i>
+        <div class="logo-badge relative w-9 h-9 shadow-lg shadow-gold-500/20 group-hover:shadow-gold-400/50 transition-all duration-300">
+          <div class="w-full h-full bg-obsidian-950 logo-inner-bg rounded-[10px] flex items-center justify-center relative z-10 transition-colors">
+            <i data-lucide="cast" class="logo-icon-inner w-5 h-5 text-gold-400 group-hover:text-gold-200"></i>
           </div>
         </div>
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg tracking-tight text-white group-hover:text-gold-200 transition-colors">ScreenEcho</span>
+            <span class="font-extrabold text-lg tracking-tight brand-title text-white group-hover:text-gold-200 transition-colors">ScreenEcho</span>
             <span class="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/30">GOLD EDITION</span>
           </div>
         </div>
       </a>
 
       <!-- Right Header Actions -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Theme Toggle Switcher Button (Dark vs Normal Luxury Theme) -->
+        <button id="theme-toggle-btn" onclick="toggleTheme()"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-gold-500/10 hover:bg-gold-500/20 text-gold-200 border border-gold-500/30 transition-all shadow-sm"
+          title="Toggle Dark / Normal Luxury Theme">
+          <i id="theme-toggle-icon" data-lucide="sun" class="w-3.5 h-3.5 text-gold-400"></i>
+          <span id="theme-toggle-label" class="hidden sm:inline font-mono text-[11px]">Dark</span>
+        </button>
+
         <!-- Live STUN/TURN Health Badge -->
-        <div id="webrtc-status-pill" class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-obsidian-900 border border-gold-500/30 text-gold-200/90 shadow-sm">
+        <div id="webrtc-status-pill" class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-obsidian-900 border border-gold-500/30 text-gold-200/90 shadow-sm">
           <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
           <span>STUN / Relay Online</span>
         </div>
@@ -848,6 +985,8 @@
           { urls: 'stun:stun4.l.google.com:19302' },
           // Cloudflare Public STUN
           { urls: 'stun:stun.cloudflare.com:3478' },
+          // Twilio Global Anycast STUN
+          { urls: 'stun:global.stun.twilio.com:3478' },
           // OpenRelay Public STUN & Free TURN Relays for Strict Mobile / iCloud Private Relay NAT
           { urls: 'stun:openrelay.metered.ca:80' },
           {
@@ -877,8 +1016,45 @@
     // Prefix for PeerJS ID namespace to prevent collisions with other apps
     const PEER_PREFIX = 'screenecho-v1-';
 
+    // --- Theme Switcher Logic (Dark vs Normal Luxury Theme) ---
+    function initTheme() {
+      const savedTheme = localStorage.getItem('screenecho_theme') || 'dark';
+      applyTheme(savedTheme, false);
+    }
+
+    function applyTheme(theme, notify = true) {
+      const html = document.documentElement;
+      const icon = document.getElementById('theme-toggle-icon');
+      const label = document.getElementById('theme-toggle-label');
+
+      if (theme === 'light') {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        if (icon) icon.setAttribute('data-lucide', 'moon');
+        if (label) label.textContent = 'Luxury Light';
+      } else {
+        html.classList.remove('light');
+        html.classList.add('dark');
+        if (icon) icon.setAttribute('data-lucide', 'sun');
+        if (label) label.textContent = 'Dark';
+      }
+      localStorage.setItem('screenecho_theme', theme);
+      if (window.lucide) lucide.createIcons();
+      if (notify) {
+        showToast(theme === 'light' ? 'Switched to Normal / Light Luxury Theme' : 'Switched to Obsidian Dark Luxury Theme', 'info');
+      }
+    }
+
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.contains('light');
+      applyTheme(isLight ? 'dark' : 'light', true);
+    }
+
     // --- Initialization on Window Load ---
     window.addEventListener('DOMContentLoaded', () => {
+      // Initialize theme from storage
+      initTheme();
+
       // Initialize Lucide icons
       lucide.createIcons();
 

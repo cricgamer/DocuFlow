@@ -111,6 +111,44 @@
       border-radius: 0 !important;
       border: none !important;
     }
+
+    /* Theater Mode Styles: Expands viewer to full viewport with auto-hiding chrome */
+    .theater-active {
+      position: fixed !important;
+      inset: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      z-index: 50 !important;
+      background: #000000 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+
+    .theater-active #receiver-header-bar {
+      position: absolute !important;
+      top: 1rem !important;
+      left: 1rem !important;
+      right: 1rem !important;
+      z-index: 60 !important;
+      max-width: 56rem !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .theater-active #video-wrapper {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      border: none !important;
+    }
   </style>
 </head>
 
@@ -439,10 +477,10 @@
       </div>
 
       <!-- State 2: Active Video Player Wrapper -->
-      <div id="watch-player-card" class="hidden space-y-4">
+      <div id="watch-player-card" class="hidden space-y-4 transition-all duration-300">
         
         <!-- Connection Header & Status Pill -->
-        <div class="glass-panel rounded-2xl px-4 py-3 border border-white/10 flex flex-wrap items-center justify-between gap-3">
+        <div id="receiver-header-bar" class="glass-panel rounded-2xl px-4 py-3 border border-white/10 flex flex-wrap items-center justify-between gap-3 transition-all duration-300 transform opacity-100">
           <div class="flex items-center gap-2.5">
             <span id="receiver-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
             <span id="receiver-status-text" class="text-xs font-semibold text-slate-200">Connecting to broadcaster...</span>
@@ -453,6 +491,13 @@
 
           <div class="flex items-center gap-2">
             <span class="text-xs text-slate-400 font-mono">Session: <strong id="receiver-session-code" class="text-white">----</strong></span>
+            
+            <!-- Quick Theater Mode Pill -->
+            <button onclick="toggleTheaterMode()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1.5" title="Toggle Theater Mode (T)">
+              <i data-lucide="clapperboard" class="w-3.5 h-3.5 text-indigo-400"></i>
+              <span class="hidden sm:inline">Theater</span>
+            </button>
+
             <button onclick="disconnectReceiver()" class="px-3 py-1.5 rounded-xl text-xs font-semibold text-rose-300 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-colors">
               Disconnect
             </button>
@@ -460,10 +505,10 @@
         </div>
 
         <!-- Main Screen Player Container -->
-        <div id="video-wrapper" class="relative group w-full bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video flex items-center justify-center">
+        <div id="video-wrapper" class="relative group w-full bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video flex items-center justify-center transition-all duration-300">
           
-          <!-- Remote Video Feed -->
-          <video id="remote-video" autoplay playsinline class="w-full h-full object-contain cursor-default"></video>
+          <!-- Remote Video Feed (Crucial: autoplay playsinline muted for iOS Safari & iPad) -->
+          <video id="remote-video" autoplay playsinline muted class="w-full h-full object-contain cursor-default"></video>
 
           <!-- Loading Spinner Overlay -->
           <div id="player-loading-spinner" class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 z-20">
@@ -481,7 +526,7 @@
           </div>
 
           <!-- Floating Modern Video Controls (Auto-hides on inactivity) -->
-          <div id="player-controls-bar" class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between p-3 rounded-2xl bg-dark-900/80 backdrop-blur-md border border-white/10 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
+          <div id="player-controls-bar" class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between p-3 rounded-2xl bg-dark-900/80 backdrop-blur-md border border-white/10 transition-all duration-300 opacity-0 group-hover:opacity-100">
             
             <!-- Left Controls: Play/Pause, Audio Mute, Volume -->
             <div class="flex items-center gap-3">
@@ -503,8 +548,13 @@
               </span>
             </div>
 
-            <!-- Right Controls: Fit/Fill, Snapshot, PiP, Fullscreen -->
+            <!-- Right Controls: Theater Mode, Fit/Fill, Snapshot, PiP, Fullscreen -->
             <div class="flex items-center gap-1.5">
+              <!-- Theater Mode Toggle Button -->
+              <button onclick="toggleTheaterMode()" id="theater-mode-btn" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Toggle Theater Mode (T)">
+                <i data-lucide="clapperboard" class="w-4 h-4"></i>
+              </button>
+
               <!-- Aspect Ratio Toggle -->
               <button onclick="toggleFitMode()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Toggle Fit/Fill">
                 <i data-lucide="expand" class="w-4 h-4"></i>
@@ -699,8 +749,11 @@
     let activeMediaCalls = new Map();       // peerId -> MediaConnection
     let qrcodeInstance = null;
     let pingIntervalId = null;
+    let autoHideTimer = null;
+    let isTheaterMode = false;
+    let isControlsVisible = true;
 
-    // Public STUN server configuration for global cross-border NAT traversal
+    // Public STUN/TURN server configuration for global cross-border NAT traversal & mobile carrier compatibility
     const PEER_CONFIG = {
       debug: 1,
       config: {
@@ -709,8 +762,18 @@
           { urls: 'stun:stun1.l.google.com:19302' },
           { urls: 'stun:stun2.l.google.com:19302' },
           { urls: 'stun:stun3.l.google.com:19302' },
-          { urls: 'stun:stun4.l.google.com:19302' }
+          { urls: 'stun:stun4.l.google.com:19302' },
+          { urls: 'stun:stun.services.mozilla.com' },
+          {
+            urls: [
+              'turn:eu-0.turn.peerjs.com:3478',
+              'turn:us-0.turn.peerjs.com:3478'
+            ],
+            username: 'peerjs',
+            credential: 'peerjsp'
+          }
         ],
+        iceCandidatePoolSize: 10,
         sdpSemantics: 'unified-plan'
       }
     };
@@ -726,7 +789,7 @@
       // Setup 4-digit PIN input listeners (auto-submit & paste cleaning)
       setupCodeInputListeners();
 
-      // Setup Player HUD auto-hide on inactivity
+      // Setup Player HUD auto-hide on inactivity & Theater Mode
       setupPlayerControlsAutoHide();
 
       // Check URL parameters for instant join (e.g. ?code=4829 or #4829)
@@ -772,31 +835,147 @@
     }
 
     /**
-     * Smoothly auto-hides player controls after 2.5s of mouse inactivity
+     * Resets the 3-second inactivity countdown and reveals viewer toolbars
+     */
+    function resetInactivityTimer() {
+      showViewerToolbars();
+      clearTimeout(autoHideTimer);
+
+      const video = document.getElementById('remote-video');
+      const isWatchCardActive = !document.getElementById('watch-player-card').classList.contains('hidden');
+      const isVideoActive = video && (video.srcObject || !video.paused);
+
+      // Auto-hide after 3 seconds of inactivity when stream is active
+      if (isWatchCardActive && isVideoActive) {
+        autoHideTimer = setTimeout(() => {
+          hideViewerToolbars();
+        }, 3000);
+      }
+    }
+
+    /**
+     * Smoothly hides top status header & bottom controls bar for immersive theater/fullscreen view
+     */
+    function hideViewerToolbars() {
+      const header = document.getElementById('receiver-header-bar');
+      const controls = document.getElementById('player-controls-bar');
+      const wrapper = document.getElementById('video-wrapper');
+
+      if (header) {
+        header.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+        header.classList.remove('opacity-100', 'translate-y-0');
+      }
+      if (controls) {
+        controls.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+        controls.classList.remove('opacity-100', 'translate-y-0');
+      }
+      if (wrapper) {
+        wrapper.classList.add('cursor-none');
+      }
+      isControlsVisible = false;
+    }
+
+    /**
+     * Smoothly restores top status header & bottom controls bar
+     */
+    function showViewerToolbars() {
+      const header = document.getElementById('receiver-header-bar');
+      const controls = document.getElementById('player-controls-bar');
+      const wrapper = document.getElementById('video-wrapper');
+
+      if (header) {
+        header.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+        header.classList.add('opacity-100', 'translate-y-0');
+      }
+      if (controls) {
+        controls.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+        controls.classList.add('opacity-100', 'translate-y-0');
+      }
+      if (wrapper) {
+        wrapper.classList.remove('cursor-none');
+      }
+      isControlsVisible = true;
+    }
+
+    /**
+     * Toggles manual Theater Mode (maximizes viewer area with auto-hiding chrome)
+     */
+    function toggleTheaterMode() {
+      isTheaterMode = !isTheaterMode;
+      const card = document.getElementById('watch-player-card');
+      const btn = document.getElementById('theater-mode-btn');
+
+      if (isTheaterMode) {
+        card.classList.add('theater-active');
+        document.body.classList.add('overflow-hidden');
+        if (btn) btn.classList.add('text-brand-400', 'bg-white/10');
+        showToast('Theater Mode enabled (Press T or tap to toggle UI)', 'info');
+        setTimeout(hideViewerToolbars, 1000);
+      } else {
+        card.classList.remove('theater-active');
+        document.body.classList.remove('overflow-hidden');
+        if (btn) btn.classList.remove('text-brand-400', 'bg-white/10');
+        showViewerToolbars();
+      }
+      lucide.createIcons();
+    }
+
+    /**
+     * Sets up mouse movement, touch events, and keyboard listeners for auto-hiding toolbars
      */
     function setupPlayerControlsAutoHide() {
       const wrapper = document.getElementById('video-wrapper');
-      const controls = document.getElementById('player-controls-bar');
-      if (!wrapper || !controls) return;
+      const card = document.getElementById('watch-player-card');
+      const video = document.getElementById('remote-video');
 
-      let hideTimer = null;
+      if (!wrapper) return;
 
-      const showControls = () => {
-        controls.classList.remove('opacity-0');
-        controls.classList.add('opacity-100');
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => {
-          controls.classList.remove('opacity-100');
-          controls.classList.add('opacity-0');
-        }, 2500);
-      };
+      // Mouse listeners
+      wrapper.addEventListener('mousemove', resetInactivityTimer);
+      wrapper.addEventListener('mousedown', resetInactivityTimer);
+      if (card) {
+        card.addEventListener('mousemove', resetInactivityTimer);
+      }
 
-      wrapper.addEventListener('mousemove', showControls);
-      wrapper.addEventListener('touchstart', showControls, { passive: true });
-      wrapper.addEventListener('mouseleave', () => {
-        clearTimeout(hideTimer);
-        controls.classList.remove('opacity-100');
-        controls.classList.add('opacity-0');
+      // Touch events for mobile / iPad Safari
+      wrapper.addEventListener('touchstart', (e) => {
+        if (!isControlsVisible) {
+          showViewerToolbars();
+          resetInactivityTimer();
+        } else {
+          resetInactivityTimer();
+        }
+      }, { passive: true });
+
+      wrapper.addEventListener('touchmove', resetInactivityTimer, { passive: true });
+
+      // Tap on video toggles visibility immediately
+      if (video) {
+        video.addEventListener('click', () => {
+          if (isControlsVisible) {
+            hideViewerToolbars();
+          } else {
+            showViewerToolbars();
+            resetInactivityTimer();
+          }
+        });
+      }
+
+      // Keyboard shortcuts: T for Theater Mode, F for Fullscreen
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.key === 't' || e.key === 'T') {
+          const playerCard = document.getElementById('watch-player-card');
+          if (playerCard && !playerCard.classList.contains('hidden')) {
+            toggleTheaterMode();
+          }
+        } else if (e.key === 'f' || e.key === 'F') {
+          const playerCard = document.getElementById('watch-player-card');
+          if (playerCard && !playerCard.classList.contains('hidden')) {
+            toggleFullscreen();
+          }
+        }
       });
     }
 
@@ -953,32 +1132,57 @@
           onBroadcastingReady(currentSessionCode);
         });
 
-        // Handle incoming data connections (receivers joining)
-        broadcasterPeer.on('connection', (conn) => {
-          console.log('Receiver connected via data channel:', conn.peer);
-          
-          conn.on('open', () => {
-            activeDataConnections.set(conn.peer, conn);
-            updateViewerCount();
-
-            // Broadcaster immediately calls receiver with the live screen MediaStream
-            if (localStream) {
-              const call = broadcasterPeer.call(conn.peer, localStream);
-              activeMediaCalls.set(conn.peer, call);
+        // Helper to dispatch media stream call to a connected receiver
+        const sendScreenCallTo = (receiverId) => {
+          if (!localStream) return;
+          console.log('Broadcaster initiating media call to:', receiverId);
+          try {
+            const call = broadcasterPeer.call(receiverId, localStream);
+            if (call) {
+              activeMediaCalls.set(receiverId, call);
+              updateViewerCount();
 
               call.on('close', () => {
-                activeMediaCalls.delete(conn.peer);
+                activeMediaCalls.delete(receiverId);
+                updateViewerCount();
+              });
+
+              call.on('error', (err) => {
+                console.warn('Call error to', receiverId, err);
+                activeMediaCalls.delete(receiverId);
                 updateViewerCount();
               });
             }
+          } catch (e) {
+            console.error('Call dispatch error:', e);
+          }
+        };
 
-            showToast('A new viewer connected to your beam!', 'success');
+        // Handle incoming data connections (receivers joining)
+        broadcasterPeer.on('connection', (conn) => {
+          console.log('Receiver connected via data channel:', conn.peer);
+          activeDataConnections.set(conn.peer, conn);
+          updateViewerCount();
+
+          // Immediately dispatch the screen call without waiting for DataChannel handshake
+          sendScreenCallTo(conn.peer);
+
+          conn.on('open', () => {
+            console.log('Data connection open with:', conn.peer);
+            // Re-verify call was dispatched
+            if (!activeMediaCalls.has(conn.peer)) {
+              sendScreenCallTo(conn.peer);
+            }
+            showToast('Viewer connected!', 'success');
           });
 
-          // Handle ping messages from receiver for latency estimation
+          // Handle incoming messages
           conn.on('data', (data) => {
             if (data && data.type === 'ping') {
               conn.send({ type: 'pong', timestamp: data.timestamp });
+            } else if (data && data.type === 'request-stream') {
+              console.log('Receiver requested stream resend');
+              sendScreenCallTo(conn.peer);
             }
           });
 
@@ -997,17 +1201,23 @@
           });
         });
 
-        // Also handle incoming calls if receiver initiates media call directly
+        // Also handle incoming calls if receiver initiates media call directly (Safari fallback)
         broadcasterPeer.on('call', (call) => {
-          console.log('Answering incoming call from:', call.peer);
-          call.answer(localStream);
-          activeMediaCalls.set(call.peer, call);
-          updateViewerCount();
-
-          call.on('close', () => {
-            activeMediaCalls.delete(call.peer);
+          console.log('Broadcaster received incoming call from:', call.peer);
+          if (localStream) {
+            call.answer(localStream);
+            activeMediaCalls.set(call.peer, call);
             updateViewerCount();
-          });
+
+            call.on('close', () => {
+              activeMediaCalls.delete(call.peer);
+              updateViewerCount();
+            });
+
+            call.on('error', (err) => {
+              console.warn('Broadcaster call error:', err);
+            });
+          }
         });
 
         // Handle PeerJS errors (e.g. ID taken collision)
@@ -1018,7 +1228,7 @@
             console.warn('Code collision, picking another 4-digit code...');
             initBroadcasterPeer();
           } else {
-            showToast('Signaling error: ' + err.message, 'error');
+            showToast('Signaling notice: ' + err.message, 'warning');
           }
         });
 
@@ -1146,6 +1356,9 @@
       setReceiverStatus('connecting', `Connecting to broadcaster (${code})...`);
       document.getElementById('player-loading-spinner').classList.remove('hidden');
 
+      let streamReceived = false;
+      let fallbackCallTimer = null;
+
       try {
         if (receiverPeer) {
           receiverPeer.destroy();
@@ -1156,18 +1369,17 @@
 
         receiverPeer.on('open', (id) => {
           console.log('Receiver peer online with temporary ID:', id);
-          setReceiverStatus('connecting', 'Establishing direct P2P data handshake...');
+          setReceiverStatus('connecting', 'Establishing direct P2P connection...');
 
           const targetHostId = PEER_PREFIX + code;
           
-          // Connect to Broadcaster via DataConnection
+          // 1. Establish DataConnection to Broadcaster
           const conn = receiverPeer.connect(targetHostId, { reliable: true });
 
           conn.on('open', () => {
             console.log('Connected to broadcaster data channel');
             setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
-            
-            // Start round-trip latency ping-pong every 2 seconds
+            conn.send({ type: 'request-stream' });
             startPingInterval(conn);
           });
 
@@ -1189,30 +1401,44 @@
           conn.on('error', (err) => {
             console.warn('Data connection error:', err);
           });
+
+          // 2. Mobile Safari / iPad Fallback: If broadcaster call doesn't reach receiver in 1.2s, call broadcaster!
+          fallbackCallTimer = setTimeout(() => {
+            if (!streamReceived && receiverPeer && !receiverPeer.destroyed) {
+              console.log('Fallback: Receiver calling broadcaster directly...');
+              try {
+                // 1x1 dummy canvas stream so PeerJS sets up transceivers without requiring camera/mic
+                let dummyStream = new MediaStream();
+                try {
+                  const canvas = document.createElement('canvas');
+                  canvas.width = 1;
+                  canvas.height = 1;
+                  const ctx = canvas.getContext('2d');
+                  ctx.fillRect(0, 0, 1, 1);
+                  if (canvas.captureStream) dummyStream = canvas.captureStream(0);
+                } catch (e) {}
+
+                const call = receiverPeer.call(targetHostId, dummyStream);
+                if (call) {
+                  setupReceiverCallHandlers(call, () => { streamReceived = true; });
+                }
+              } catch (e) {
+                console.warn('Fallback call attempt failed:', e);
+              }
+            }
+          }, 1200);
         });
 
         // Listen for incoming media call from broadcaster
         receiverPeer.on('call', (call) => {
           console.log('Receiving media call from broadcaster...');
-          setReceiverStatus('connecting', 'Receiving video track...');
+          clearTimeout(fallbackCallTimer);
+          streamReceived = true;
 
           // Answer call with no local stream (receive only)
           call.answer();
 
-          call.on('stream', (remoteStream) => {
-            console.log('Remote stream received! Binding to video element.');
-            bindRemoteStreamToVideo(remoteStream);
-          });
-
-          call.on('close', () => {
-            console.log('Media call closed');
-            setReceiverStatus('disconnected', 'Broadcast feed ended');
-          });
-
-          call.on('error', (err) => {
-            console.error('Call error:', err);
-            showToast('Stream error: ' + err.message, 'error');
-          });
+          setupReceiverCallHandlers(call, () => { streamReceived = true; });
         });
 
         receiverPeer.on('error', (err) => {
@@ -1221,7 +1447,7 @@
             showToast(`Broadcaster with code ${code} not found. Ensure presenter is actively sharing.`, 'error');
             disconnectReceiver();
           } else {
-            showToast('Connection error: ' + err.message, 'error');
+            showToast('Connection notice: ' + err.message, 'warning');
           }
         });
 
@@ -1232,30 +1458,143 @@
     }
 
     /**
-     * Binds incoming WebRTC stream to HTML5 <video> element
+     * Attaches robust track and stream handlers for cross-browser WebRTC compatibility (iOS Safari, iPad, Arc, Chrome)
+     */
+    function setupReceiverCallHandlers(call, onStreamSuccess) {
+      let bound = false;
+
+      // Primary: PeerJS call 'stream' event
+      call.on('stream', (remoteStream) => {
+        console.log('PeerJS call stream event received:', remoteStream);
+        if (remoteStream && !bound) {
+          bound = true;
+          if (onStreamSuccess) onStreamSuccess();
+          bindRemoteStreamToVideo(remoteStream);
+        }
+      });
+
+      // Secondary: Raw RTCPeerConnection handlers for Safari / iPad WebKit
+      const attachPc = (pc) => {
+        if (!pc || bound) return;
+
+        let compositeStream = new MediaStream();
+
+        // 1. W3C ontrack handler (Safari 12+, Chrome, Arc, Firefox)
+        const handleTrack = (event) => {
+          console.log('RTCPeerConnection ontrack event:', event.track ? event.track.kind : 'unknown', event);
+          let streamToUse = null;
+
+          if (event.streams && event.streams.length > 0 && event.streams[0]) {
+            streamToUse = event.streams[0];
+          } else if (event.track) {
+            // Safari WebKit fallback: event.streams is empty array
+            if (!compositeStream.getTracks().includes(event.track)) {
+              compositeStream.addTrack(event.track);
+            }
+            streamToUse = compositeStream;
+          }
+
+          if (streamToUse) {
+            bound = true;
+            if (onStreamSuccess) onStreamSuccess();
+            bindRemoteStreamToVideo(streamToUse);
+          }
+        };
+
+        if ('ontrack' in pc) {
+          pc.ontrack = handleTrack;
+        }
+        if (pc.addEventListener) {
+          pc.addEventListener('track', handleTrack);
+        }
+
+        // 2. Legacy onaddstream fallback for older WebKit / Safari
+        pc.onaddstream = (event) => {
+          console.log('RTCPeerConnection onaddstream (legacy):', event.stream);
+          if (event.stream) {
+            bound = true;
+            if (onStreamSuccess) onStreamSuccess();
+            bindRemoteStreamToVideo(event.stream);
+          }
+        };
+
+        // 3. ICE Connection State & Receiver Track Extraction
+        pc.oniceconnectionstatechange = () => {
+          console.log('ICE connection state:', pc.iceConnectionState);
+          if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+            setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
+            if (pc.getReceivers) {
+              const tracks = pc.getReceivers().map(r => r.track).filter(Boolean);
+              if (tracks.length > 0) {
+                tracks.forEach(t => {
+                  if (!compositeStream.getTracks().includes(t)) {
+                    compositeStream.addTrack(t);
+                  }
+                });
+                bound = true;
+                if (onStreamSuccess) onStreamSuccess();
+                bindRemoteStreamToVideo(compositeStream);
+              }
+            }
+          }
+        };
+      };
+
+      if (call.peerConnection) {
+        attachPc(call.peerConnection);
+      } else {
+        // Poll for peerConnection initialization
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          if (call.peerConnection || attempts > 20) {
+            clearInterval(interval);
+            if (call.peerConnection) attachPc(call.peerConnection);
+          }
+        }, 50);
+      }
+
+      call.on('close', () => {
+        console.log('Media call closed');
+        setReceiverStatus('disconnected', 'Broadcast feed ended');
+      });
+
+      call.on('error', (err) => {
+        console.warn('Call error:', err);
+      });
+    }
+
+    /**
+     * Binds incoming WebRTC stream to HTML5 <video> element with Safari/iPad autoplay unblocking
      */
     function bindRemoteStreamToVideo(stream) {
       const video = document.getElementById('remote-video');
       const spinner = document.getElementById('player-loading-spinner');
       const unmuteBanner = document.getElementById('unmute-banner');
 
-      video.srcObject = stream;
+      if (!video) return;
 
-      video.onloadedmetadata = () => {
+      // Essential attributes for iOS Safari / iPad:
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+
+      if (video.srcObject !== stream) {
+        video.srcObject = stream;
+      }
+
+      const markConnectedAndPlaying = () => {
         spinner.classList.add('hidden');
         setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
+        resetInactivityTimer();
 
-        // Attempt playback
-        video.play().then(() => {
-          // If stream has audio, check if browser allowed audible playback or muted it
-          if (stream.getAudioTracks().length > 0 && video.muted) {
-            unmuteBanner.classList.remove('hidden');
-          }
-        }).catch((err) => {
-          console.warn('Autoplay prevented:', err);
-          // Show unmute banner so user click satisfies autoplay policy
+        // Check if stream has audio to prompt unmute banner
+        const audioTracks = stream.getAudioTracks ? stream.getAudioTracks() : [];
+        if (audioTracks.length > 0 && audioTracks.some(t => t.enabled)) {
           unmuteBanner.classList.remove('hidden');
-        });
+        }
 
         // Update resolution badge
         const badge = document.getElementById('player-res-badge');
@@ -1263,6 +1602,41 @@
           badge.textContent = `${video.videoWidth}×${video.videoHeight}`;
         }
       };
+
+      video.onloadedmetadata = () => {
+        markConnectedAndPlaying();
+        video.play().catch(e => console.warn('Muted play on metadata:', e));
+      };
+
+      video.oncanplay = () => {
+        markConnectedAndPlaying();
+      };
+
+      video.ontimeupdate = () => {
+        if (video.currentTime > 0) {
+          markConnectedAndPlaying();
+        }
+      };
+
+      // WebKit specific: track.onunmute fires when first video frame arrives
+      if (stream.getVideoTracks) {
+        stream.getVideoTracks().forEach(track => {
+          track.onunmute = () => {
+            console.log('Video track onunmute in WebKit');
+            markConnectedAndPlaying();
+            video.play().catch(e => console.warn(e));
+          };
+        });
+      }
+
+      // Immediate play attempt (muted guarantees success on iOS Safari)
+      video.play().then(() => {
+        markConnectedAndPlaying();
+      }).catch(err => {
+        console.warn('Initial play promise rejected, ensuring muted:', err);
+        video.muted = true;
+        video.play().catch(e => console.error('Play retry error:', e));
+      });
 
       // Watch for resolution updates
       video.onresize = () => {
@@ -1326,6 +1700,12 @@
         pingIntervalId = null;
       }
 
+      clearTimeout(autoHideTimer);
+
+      if (isTheaterMode) {
+        toggleTheaterMode();
+      }
+
       if (receiverPeer) {
         receiverPeer.destroy();
         receiverPeer = null;
@@ -1340,6 +1720,7 @@
       document.getElementById('watch-input-card').classList.remove('hidden');
       document.getElementById('receiver-latency-pill').classList.add('hidden');
       document.getElementById('unmute-banner').classList.add('hidden');
+      showViewerToolbars();
 
       showToast('Disconnected from screen beam', 'info');
       lucide.createIcons();

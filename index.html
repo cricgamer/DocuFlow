@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DocuFlow Studio — Executive Client-Side Document & PDF Studio</title>
+  <title>PageZero — Client-Side Document & PDF Studio</title>
   <meta name="description" content="A private, client-side PDF and Word (.docx) document studio with luxury dark aesthetics, real-time watermarking, page organization, and zero server storage.">
 
   <!-- Google Fonts: Cormorant Garamond, Inter, & JetBrains Mono -->
@@ -39,84 +39,104 @@
     /* THEME COLOR VARIABLES                                     */
     /* ========================================================= */
     
-    /* 1. Default: Black & Rich Luxury Brown / Cognac Gold */
+    /* 1. Default: Extremely Dark Pitch Black & Rich Luxury Cognac Gold */
     :root, html.theme-luxury-gold {
-      --bg-base: #080604;
-      --bg-surface: #100b07;
-      --bg-panel: #18110b;
-      --bg-card: #20170f;
-      --bg-card-hover: #2a1f14;
-      --border-color: #453220;
-      --border-light: #6a4e32;
-      --border-gold: rgba(212, 175, 55, 0.35);
+      --bg-base: #000000;
+      --bg-surface: #050403;
+      --bg-panel: #0a0705;
+      --bg-card: #100c08;
+      --bg-card-hover: #18120c;
+      --border-color: #2b1f14;
+      --border-light: #453220;
+      --border-gold: rgba(212, 175, 55, 0.4);
       --accent-primary: #d4af37;
       --accent-hover: #e5c158;
       --accent-gradient: linear-gradient(135deg, #d4af37 0%, #b45309 100%);
-      --accent-glow: rgba(212, 175, 55, 0.28);
+      --accent-glow: rgba(212, 175, 55, 0.3);
       --accent-secondary: #b45309;
       --text-main: #fefbf6;
       --text-muted: #c9b7a1;
-      --text-dim: #8c7965;
+      --text-dim: #7d6b59;
     }
 
-    /* 2. Cyber Midnight Blue */
+    /* 2. Void Obsidian (Pure Pitch Black & Cyber Cyan) */
     html.theme-cyber-blue {
-      --bg-base: #060911;
-      --bg-surface: #0b1120;
-      --bg-panel: #111a2e;
-      --bg-card: #17233d;
-      --bg-card-hover: #1e2c4d;
-      --border-color: #27385c;
-      --border-light: #3d5385;
+      --bg-base: #000000;
+      --bg-surface: #02050b;
+      --bg-panel: #050a14;
+      --bg-card: #091122;
+      --bg-card-hover: #0f1c36;
+      --border-color: #162747;
+      --border-light: #254073;
       --border-gold: rgba(56, 189, 248, 0.4);
       --accent-primary: #38bdf8;
       --accent-hover: #7dd3fc;
       --accent-gradient: linear-gradient(135deg, #38bdf8 0%, #4f46e5 100%);
-      --accent-glow: rgba(56, 189, 248, 0.28);
+      --accent-glow: rgba(56, 189, 248, 0.3);
       --accent-secondary: #6366f1;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --text-dim: #64748b;
+      --text-dim: #546682;
     }
 
-    /* 3. Royal Emerald & Gold */
+    /* 3. Emerald Noir (Pure Pitch Black & Forest Emerald) */
     html.theme-royal-emerald {
-      --bg-base: #040906;
-      --bg-surface: #09130d;
-      --bg-panel: #0f1c14;
-      --bg-card: #15271c;
-      --bg-card-hover: #1c3426;
-      --border-color: #264531;
-      --border-light: #376346;
+      --bg-base: #000000;
+      --bg-surface: #020704;
+      --bg-panel: #040e08;
+      --bg-card: #08170e;
+      --bg-card-hover: #0d2417;
+      --border-color: #143621;
+      --border-light: #205434;
       --border-gold: rgba(16, 185, 129, 0.4);
       --accent-primary: #10b981;
       --accent-hover: #34d399;
       --accent-gradient: linear-gradient(135deg, #10b981 0%, #d4af37 100%);
-      --accent-glow: rgba(16, 185, 129, 0.28);
+      --accent-glow: rgba(16, 185, 129, 0.3);
       --accent-secondary: #d4af37;
       --text-main: #f0fdf4;
       --text-muted: #a7f3d0;
-      --text-dim: #6ee7b7;
+      --text-dim: #508c6b;
     }
 
-    /* 4. Velvet Imperial Ruby */
+    /* 4. Ruby Noir (Pure Pitch Black & Velvet Crimson) */
     html.theme-velvet-ruby {
-      --bg-base: #0b0405;
-      --bg-surface: #14070a;
-      --bg-panel: #1e0b0f;
-      --bg-card: #280f15;
-      --bg-card-hover: #36141c;
-      --border-color: #541d28;
-      --border-light: #7a2b3b;
+      --bg-base: #000000;
+      --bg-surface: #060203;
+      --bg-panel: #0d0407;
+      --bg-card: #16070b;
+      --bg-card-hover: #220b12;
+      --border-color: #3b111c;
+      --border-light: #5e1c2e;
       --border-gold: rgba(244, 63, 94, 0.4);
       --accent-primary: #f43f5e;
       --accent-hover: #fb7185;
       --accent-gradient: linear-gradient(135deg, #f43f5e 0%, #d4af37 100%);
-      --accent-glow: rgba(244, 63, 94, 0.28);
+      --accent-glow: rgba(244, 63, 94, 0.3);
       --accent-secondary: #e11d48;
       --text-main: #fff1f2;
       --text-muted: #fecdd3;
-      --text-dim: #fda4af;
+      --text-dim: #8c525f;
+    }
+
+    /* 5. Executive Alabaster Light (Premium Light Luxury) */
+    html.theme-light-executive {
+      --bg-base: #f7f5f0;
+      --bg-surface: #ffffff;
+      --bg-panel: #efeae0;
+      --bg-card: #ffffff;
+      --bg-card-hover: #fbf9f4;
+      --border-color: #dcd1be;
+      --border-light: #c8b9a1;
+      --border-gold: rgba(180, 130, 20, 0.35);
+      --accent-primary: #b45309;
+      --accent-hover: #92400e;
+      --accent-gradient: linear-gradient(135deg, #b45309 0%, #d4af37 100%);
+      --accent-glow: rgba(180, 83, 9, 0.2);
+      --accent-secondary: #d4af37;
+      --text-main: #18120b;
+      --text-muted: #57412c;
+      --text-dim: #7f674f;
     }
 
     /* Base Styling */
@@ -363,7 +383,7 @@
         </svg>
       </div>
       <div>
-        <span class="font-serif font-bold text-amber-200 text-base tracking-wide">DOCUFLOW</span>
+        <span class="font-serif font-bold text-amber-200 text-base tracking-wide">PAGEZERO</span>
         <span class="text-[9px] text-amber-400 font-mono ml-1 px-1.5 py-0.2 bg-amber-500/10 rounded border border-amber-500/30">STUDIO</span>
       </div>
     </div>
@@ -395,8 +415,8 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="font-serif font-bold text-amber-100 text-lg tracking-wider">DOCUFLOW</h1>
-              <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">PRO</span>
+              <h1 class="font-serif font-bold text-amber-100 text-lg tracking-wider">PAGEZERO</h1>
+              
             </div>
             <p class="text-[10px] text-[var(--text-dim)] font-mono tracking-tight">Executive Document Studio</p>
           </div>
@@ -474,7 +494,7 @@
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-amber-400"></i>
           Privacy Guarantee
         </button>
-        <span class="text-amber-500/70">v2.0 Luxury</span>
+        
       </div>
     </div>
   </aside>
@@ -492,7 +512,7 @@
           <span>Hub</span>
         </button>
         <div class="flex items-center gap-2 text-xs font-mono text-[var(--text-dim)]">
-          <span>docuflow</span>
+          <span>pagezero</span>
           <span>/</span>
           <span class="text-amber-300 font-semibold uppercase tracking-wider" id="header-workspace-label">hub</span>
         </div>
@@ -522,21 +542,26 @@
 
           <!-- Dropdown Options -->
           <div id="theme-dropdown" class="hidden absolute right-0 mt-2 w-52 rounded-xl luxury-panel border border-[var(--border-color)] shadow-2xl p-1.5 z-50 space-y-1">
-            <button type="button" onclick="DocuApp.setTheme('theme-luxury-gold', 'Black & Gold')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-amber-300 hover:bg-amber-500/10 transition-colors text-left">
+            <button type="button" onclick="DocuApp.setTheme('theme-luxury-gold', 'Pitch Black & Gold')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-amber-300 hover:bg-amber-500/10 transition-colors text-left">
               <span class="w-3 h-3 rounded-full bg-[#d4af37] border border-amber-300 shrink-0"></span>
-              <span>Black & Luxury Gold</span>
+              <span>Pitch Black & Gold</span>
             </button>
-            <button type="button" onclick="DocuApp.setTheme('theme-cyber-blue', 'Cyber Midnight')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-sky-300 hover:bg-sky-500/10 transition-colors text-left">
+            <button type="button" onclick="DocuApp.setTheme('theme-cyber-blue', 'Void Obsidian')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-sky-300 hover:bg-sky-500/10 transition-colors text-left">
               <span class="w-3 h-3 rounded-full bg-[#38bdf8] border border-sky-300 shrink-0"></span>
-              <span>Cyber Midnight</span>
+              <span>Void Obsidian (Blue)</span>
             </button>
-            <button type="button" onclick="DocuApp.setTheme('theme-royal-emerald', 'Royal Emerald')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-emerald-300 hover:bg-emerald-500/10 transition-colors text-left">
+            <button type="button" onclick="DocuApp.setTheme('theme-royal-emerald', 'Emerald Noir')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-emerald-300 hover:bg-emerald-500/10 transition-colors text-left">
               <span class="w-3 h-3 rounded-full bg-[#10b981] border border-emerald-300 shrink-0"></span>
-              <span>Royal Emerald</span>
+              <span>Emerald Noir (Green)</span>
             </button>
-            <button type="button" onclick="DocuApp.setTheme('theme-velvet-ruby', 'Imperial Ruby')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
+            <button type="button" onclick="DocuApp.setTheme('theme-velvet-ruby', 'Ruby Noir')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-300 hover:bg-rose-500/10 transition-colors text-left">
               <span class="w-3 h-3 rounded-full bg-[#f43f5e] border border-rose-300 shrink-0"></span>
-              <span>Imperial Ruby</span>
+              <span>Ruby Noir (Red)</span>
+            </button>
+            <div class="border-t border-[var(--border-color)] my-1"></div>
+            <button type="button" onclick="DocuApp.setTheme('theme-light-executive', 'Executive Light')" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-amber-700 hover:bg-amber-500/10 transition-colors text-left">
+              <span class="w-3 h-3 rounded-full bg-[#f7f5f0] border border-amber-600 shrink-0"></span>
+              <span>Executive Light (Luxury)</span>
             </button>
           </div>
         </div>
@@ -724,7 +749,7 @@
             <i data-lucide="upload-cloud" class="w-7 h-7"></i>
           </div>
           <h3 class="text-sm font-semibold text-amber-200">Drop any PDF or Word (.docx) file here</h3>
-          <p class="text-xs text-[var(--text-dim)] mt-1">DocuFlow will automatically detect the format and launch the right workspace</p>
+          <p class="text-xs text-[var(--text-dim)] mt-1">PageZero will automatically detect the format and launch the right workspace</p>
           <div class="mt-4">
             <button type="button" onclick="event.stopPropagation(); document.getElementById('hub-file-input').click()" class="btn-luxury px-5 py-2.5 rounded-xl text-xs font-semibold shadow-md flex items-center gap-2">
               <i data-lucide="folder-open" class="w-4 h-4"></i>
@@ -754,10 +779,17 @@
             <input type="text" id="editor-doc-title" value="Executive-Document" class="bg-transparent border-none text-sm font-semibold text-amber-100 focus:outline-none w-48 sm:w-60" placeholder="Document Title">
           </div>
 
-          <!-- Color Wheel for Editor Font Color -->
-          <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--bg-base)] border border-[var(--border-color)]" title="Document Text Color">
-            <i data-lucide="palette" class="w-3.5 h-3.5 text-amber-400"></i>
-            <input type="color" id="editor-color-picker" value="#1a140f" class="w-6 h-6 rounded cursor-pointer" onchange="DocuEditor.applyTextColor(this.value)">
+          <!-- Live Typing Font Color Wheel & Real-Time Sync -->
+          <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border-color)] hover:border-amber-500/60 transition-all shadow-inner" title="Live Typing Letter Color">
+            <span class="text-[11px] font-mono text-[var(--text-dim)] uppercase hidden sm:inline">Type Color:</span>
+            <input type="color" id="editor-live-color" value="#d4af37" class="w-6 h-6 rounded cursor-pointer border border-[var(--border-color)]" oninput="DocuEditor.setLiveTypingColor(this.value)">
+            <span id="editor-live-color-hex" class="text-xs font-mono text-amber-300 font-bold uppercase tracking-wider">#D4AF37</span>
+          </div>
+
+          <!-- Live Text Highlight Color Wheel -->
+          <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--bg-base)] border border-[var(--border-color)] hover:border-amber-500/60 transition-all shadow-inner" title="Live Text Highlight / Background">
+            <i data-lucide="highlighter" class="w-3.5 h-3.5 text-amber-400"></i>
+            <input type="color" id="editor-live-bg" value="#000000" class="w-6 h-6 rounded cursor-pointer border border-[var(--border-color)]" oninput="DocuEditor.setLiveHighlightColor(this.value)">
           </div>
 
           <!-- Open .docx File Input & Button -->
@@ -1259,7 +1291,7 @@
       </div>
 
       <div class="text-xs text-[var(--text-muted)] space-y-2.5 leading-relaxed font-sans">
-        <p><strong class="text-amber-300">100% Zero-Backend Architecture:</strong> DocuFlow contains no backend server, no database, and no telemetry.</p>
+        <p><strong class="text-amber-300">100% Zero-Backend Architecture:</strong> PageZero contains no backend server, no database, and no telemetry.</p>
         <p><strong>How it works:</strong> All file reading, PDF merging, DOCX parsing, vector watermarking, and page manipulations are executed entirely in the client-side JavaScript sandbox via WebAssembly and Web Workers.</p>
         <p><strong>Free GitHub Pages Hosting:</strong> Because there are no backend APIs required, this entire application runs on any static host at $0 cost forever.</p>
       </div>
@@ -1288,7 +1320,7 @@
 
 
 /* ========================================================================== */
-/* 1. DOCUFLOW UTILITIES & HELPERS                                            */
+/* 1. PAGEZERO UTILITIES & HELPERS                                            */
 /* ========================================================================== */
 window.DocuUtils = (function () {
   'use strict';
@@ -2858,6 +2890,20 @@ window.DocuEditor = (function () {
       triggerAutoSave();
     });
 
+    // Sync live typing color wheel when cursor moves or selection changes
+    quill.on('selection-change', (range) => {
+      if (range) {
+        const format = quill.getFormat(range);
+        if (format && format.color) {
+          const hex = format.color;
+          const hexLabel = document.getElementById('editor-live-color-hex');
+          if (hexLabel) hexLabel.textContent = hex.toUpperCase();
+          const colorPicker = document.getElementById('editor-live-color');
+          if (colorPicker && /^#[0-9A-F]{6}$/i.test(hex)) colorPicker.value = hex;
+        }
+      }
+    });
+
     restoreSavedDraft();
     updateEditorStats();
   }
@@ -2929,9 +2975,24 @@ window.DocuEditor = (function () {
     }
   }
 
-  function applyTextColor(hex) {
+  function setLiveTypingColor(hex) {
     if (!quill) return;
+    // Calling quill.format('color', hex) sets the format for the current selection,
+    // AND if no selection exists, sets the format for any new letters typed at the cursor!
     quill.format('color', hex);
+    const hexLabel = document.getElementById('editor-live-color-hex');
+    if (hexLabel) hexLabel.textContent = hex.toUpperCase();
+    const colorPicker = document.getElementById('editor-live-color');
+    if (colorPicker && colorPicker.value !== hex) colorPicker.value = hex;
+  }
+
+  function setLiveHighlightColor(hex) {
+    if (!quill) return;
+    quill.format('background', hex);
+  }
+
+  function applyTextColor(hex) {
+    setLiveTypingColor(hex);
   }
 
   function updateEditorStats() {
@@ -2958,8 +3019,8 @@ window.DocuEditor = (function () {
       try {
         const content = quill.root.innerHTML;
         const title = docTitleInputEl ? docTitleInputEl.value : currentDocName;
-        localStorage.setItem('docuflow_luxury_content', content);
-        localStorage.setItem('docuflow_luxury_title', title);
+        localStorage.setItem('pagezero_luxury_content', content);
+        localStorage.setItem('pagezero_luxury_title', title);
 
         if (autoSaveStatusEl) {
           autoSaveStatusEl.textContent = 'Saved locally';
@@ -2973,8 +3034,8 @@ window.DocuEditor = (function () {
 
   function restoreSavedDraft() {
     try {
-      const savedContent = localStorage.getItem('docuflow_luxury_content');
-      const savedTitle = localStorage.getItem('docuflow_luxury_title');
+      const savedContent = localStorage.getItem('pagezero_luxury_content');
+      const savedTitle = localStorage.getItem('pagezero_luxury_title');
 
       if (savedTitle && docTitleInputEl) {
         docTitleInputEl.value = savedTitle;
@@ -2986,7 +3047,7 @@ window.DocuEditor = (function () {
       } else {
         quill.clipboard.dangerouslyPasteHTML(`
           <h1>Executive Master Document</h1>
-          <p>Welcome to <strong>DocuFlow Executive Studio</strong>. Write, paste, or import existing <code>.docx</code> and <code>.pdf</code> files with full privacy.</p>
+          <p>Welcome to <strong>PageZero Executive Studio</strong>. Write, paste, or import existing <code>.docx</code> and <code>.pdf</code> files with full privacy.</p>
           <hr>
           <h2>Key Objectives</h2>
           <ul>
@@ -3104,6 +3165,8 @@ window.DocuEditor = (function () {
 
   return {
     init,
+    setLiveTypingColor,
+    setLiveHighlightColor,
     applyTextColor,
     clearDocument,
     togglePaperMode,
@@ -3172,8 +3235,8 @@ window.DocuApp = (function () {
 
   /* Theme Switcher System */
   function setupThemeSystem() {
-    const savedTheme = localStorage.getItem('docuflow_theme') || 'theme-luxury-gold';
-    const savedLabel = localStorage.getItem('docuflow_theme_label') || 'Black & Gold';
+    const savedTheme = localStorage.getItem('pagezero_theme') || 'theme-luxury-gold';
+    const savedLabel = localStorage.getItem('pagezero_theme_label') || 'Black & Gold';
     setTheme(savedTheme, savedLabel, false);
 
     document.addEventListener('click', (e) => {
@@ -3192,8 +3255,8 @@ window.DocuApp = (function () {
 
   function setTheme(themeClass, label, showToastMsg = true) {
     document.documentElement.className = themeClass;
-    localStorage.setItem('docuflow_theme', themeClass);
-    localStorage.setItem('docuflow_theme_label', label);
+    localStorage.setItem('pagezero_theme', themeClass);
+    localStorage.setItem('pagezero_theme_label', label);
 
     const labelEl = document.getElementById('current-theme-label');
     if (labelEl) labelEl.textContent = label;

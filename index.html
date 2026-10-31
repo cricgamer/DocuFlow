@@ -47,385 +47,327 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Quill.js Rich Text Editor -->
+  <!-- Quill.js Rich Text Editor CSS -->
   <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
 
-  <!-- Custom Styles -->
+  <!-- Inlined Stylesheet -->
   <style>
-/* DocuFlow Studio - Core Stylesheet */
+    :root {
+      --bg-primary: #090d16;
+      --bg-secondary: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #26354a;
+      --border-color: #334155;
+      --border-light: #475569;
+      --accent-cyan: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
 
-:root {
-  --bg-primary: #090d16;
-  --bg-secondary: #0f172a;
-  --bg-card: #1e293b;
-  --bg-card-hover: #26354a;
-  --border-color: #334155;
-  --border-light: #475569;
-  --accent-cyan: #38bdf8;
-  --accent-indigo: #6366f1;
-  --accent-emerald: #10b981;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-dim: #64748b;
-}
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090d16;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: #090d16;
-}
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+    /* Glassmorphism Accents */
+    .glass-panel {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
 
-/* Glassmorphism Accents */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
-}
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+    }
 
-.glass-card {
-  background: rgba(30, 41, 59, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(51, 65, 85, 0.5);
-}
+    /* Drop Zone Animation */
+    .drop-zone {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .drop-zone.drag-active {
+      border-color: #38bdf8 !important;
+      background-color: rgba(56, 189, 248, 0.1) !important;
+      transform: scale(1.008);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+    }
 
-/* Drop Zone Animation */
-.drop-zone {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.drop-zone.drag-active {
-  border-color: #38bdf8 !important;
-  background-color: rgba(56, 189, 248, 0.08) !important;
-  transform: scale(1.008);
-  box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
-}
+    /* Toast Animations */
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+    }
 
-/* Toast Animations */
-@keyframes toastSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
+    @keyframes toastSlideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+      }
+    }
 
-@keyframes toastSlideOut {
-  from {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(100%) scale(0.9);
-  }
-}
+    .toast-item {
+      animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-.toast-item {
-  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+    .toast-item.removing {
+      animation: toastSlideOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
 
-.toast-item.removing {
-  animation: toastSlideOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
-}
+    /* Quill Editor Dark Theme Overrides */
+    .ql-toolbar.ql-snow {
+      background-color: #162032 !important;
+      border: 1px solid #334155 !important;
+      border-top-left-radius: 0.75rem;
+      border-top-right-radius: 0.75rem;
+      padding: 0.75rem 1rem !important;
+    }
 
-/* Quill Editor Dark Theme Overrides */
-.ql-toolbar.ql-snow {
-  background-color: #162032 !important;
-  border: 1px solid #334155 !important;
-  border-top-left-radius: 0.75rem;
-  border-top-right-radius: 0.75rem;
-  padding: 0.75rem 1rem !important;
-}
+    .ql-toolbar.ql-snow .ql-stroke {
+      stroke: #94a3b8 !important;
+    }
 
-.ql-toolbar.ql-snow .ql-stroke {
-  stroke: #94a3b8 !important;
-}
+    .ql-toolbar.ql-snow .ql-fill {
+      fill: #94a3b8 !important;
+    }
 
-.ql-toolbar.ql-snow .ql-fill {
-  fill: #94a3b8 !important;
-}
+    .ql-toolbar.ql-snow .ql-picker {
+      color: #94a3b8 !important;
+    }
 
-.ql-toolbar.ql-snow .ql-picker {
-  color: #94a3b8 !important;
-}
+    .ql-toolbar.ql-snow button:hover .ql-stroke,
+    .ql-toolbar.ql-snow .ql-picker-label:hover .ql-stroke,
+    .ql-toolbar.ql-snow button.ql-active .ql-stroke {
+      stroke: #38bdf8 !important;
+    }
 
-.ql-toolbar.ql-snow button:hover .ql-stroke,
-.ql-toolbar.ql-snow .ql-picker-label:hover .ql-stroke,
-.ql-toolbar.ql-snow button.ql-active .ql-stroke {
-  stroke: #38bdf8 !important;
-}
+    .ql-toolbar.ql-snow button:hover .ql-fill,
+    .ql-toolbar.ql-snow button.ql-active .ql-fill {
+      fill: #38bdf8 !important;
+    }
 
-.ql-toolbar.ql-snow button:hover .ql-fill,
-.ql-toolbar.ql-snow button.ql-active .ql-fill {
-  fill: #38bdf8 !important;
-}
+    .ql-toolbar.ql-snow .ql-picker-options {
+      background-color: #1e293b !important;
+      border: 1px solid #334155 !important;
+      border-radius: 0.5rem;
+      padding: 0.5rem !important;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+    }
 
-.ql-toolbar.ql-snow .ql-picker-options {
-  background-color: #1e293b !important;
-  border: 1px solid #334155 !important;
-  border-radius: 0.5rem;
-  padding: 0.5rem !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-}
+    .ql-toolbar.ql-snow .ql-picker-item {
+      color: #cbd5e1 !important;
+      padding: 0.35rem 0.5rem !important;
+      border-radius: 0.25rem;
+    }
 
-.ql-toolbar.ql-snow .ql-picker-item {
-  color: #cbd5e1 !important;
-  padding: 0.35rem 0.5rem !important;
-  border-radius: 0.25rem;
-}
+    .ql-toolbar.ql-snow .ql-picker-item:hover {
+      background-color: #334155 !important;
+      color: #38bdf8 !important;
+    }
 
-.ql-toolbar.ql-snow .ql-picker-item:hover {
-  background-color: #334155 !important;
-  color: #38bdf8 !important;
-}
+    .ql-container.ql-snow {
+      border: 1px solid #334155 !important;
+      border-top: none !important;
+      border-bottom-left-radius: 0.75rem;
+      border-bottom-right-radius: 0.75rem;
+      font-family: inherit;
+      font-size: 1rem;
+    }
 
-.ql-container.ql-snow {
-  border: 1px solid #334155 !important;
-  border-top: none !important;
-  border-bottom-left-radius: 0.75rem;
-  border-bottom-right-radius: 0.75rem;
-  font-family: inherit;
-  font-size: 1rem;
-}
+    /* Paper View Mode */
+    .editor-paper-container {
+      background-color: #0c1220;
+      background-image: radial-gradient(rgba(51, 65, 85, 0.3) 1px, transparent 1px);
+      background-size: 24px 24px;
+      min-height: calc(100vh - 280px);
+      display: flex;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+    }
 
-/* Editor Workspace View Modes */
+    .editor-paper {
+      width: 100%;
+      max-width: 820px;
+      min-height: 1056px;
+      background-color: #ffffff;
+      color: #1e293b;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      padding: 3.5rem 4rem;
+      transition: all 0.2s ease;
+    }
 
-/* 1. Paper View Mode (Print-Ready Document Look) */
-.editor-paper-container {
-  background-color: #0c1220;
-  background-image: radial-gradient(rgba(51, 65, 85, 0.25) 1px, transparent 1px);
-  background-size: 24px 24px;
-  min-height: calc(100vh - 280px);
-  display: flex;
-  justify-content: center;
-  padding: 2.5rem 1rem;
-}
+    .editor-paper.paper-dark {
+      background-color: #1e293b;
+      color: #f1f5f9;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px #334155;
+    }
 
-.editor-paper {
-  width: 100%;
-  max-width: 820px;
-  min-height: 1056px; /* A4 aspect ratio */
-  background-color: #ffffff;
-  color: #1e293b;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
-  padding: 3.5rem 4rem;
-  transition: all 0.2s ease;
-}
+    .editor-paper.paper-dark .ql-editor {
+      color: #f1f5f9;
+    }
+    .editor-paper.paper-dark .ql-editor pre {
+      background-color: #0f172a;
+      color: #38bdf8;
+      border: 1px solid #334155;
+    }
+    .editor-paper.paper-dark .ql-editor blockquote {
+      border-left: 4px solid #38bdf8;
+      color: #94a3b8;
+    }
 
-/* Paper Dark-Mode option */
-.editor-paper.paper-dark {
-  background-color: #1e293b;
-  color: #f1f5f9;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px #334155;
-}
+    .editor-paper .ql-editor {
+      padding: 0;
+      min-height: 900px;
+      font-size: 1.05rem;
+      line-height: 1.75;
+    }
 
-.editor-paper.paper-dark .ql-editor {
-  color: #f1f5f9;
-}
-.editor-paper.paper-dark .ql-editor pre {
-  background-color: #0f172a;
-  color: #38bdf8;
-  border: 1px solid #334155;
-}
-.editor-paper.paper-dark .ql-editor blockquote {
-  border-left: 4px solid #38bdf8;
-  color: #94a3b8;
-}
+    .ql-editor h1 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+      line-height: 1.25;
+    }
+    .ql-editor h2 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-top: 1.2rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+    .ql-editor h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
+    }
+    .ql-editor p {
+      margin-bottom: 0.85rem;
+    }
+    .ql-editor code {
+      background-color: rgba(56, 189, 248, 0.12);
+      color: #0284c7;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      font-size: 0.9em;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    .ql-editor pre {
+      background-color: #f8fafc;
+      color: #0f172a;
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      margin: 1rem 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+    .ql-editor blockquote {
+      border-left: 4px solid #6366f1;
+      padding-left: 1rem;
+      margin: 1rem 0;
+      color: #475569;
+      font-style: italic;
+    }
+    .ql-editor table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+    }
+    .ql-editor th, .ql-editor td {
+      border: 1px solid #cbd5e1;
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+    }
+    .ql-editor th {
+      background-color: #f1f5f9;
+      font-weight: 600;
+    }
 
-.editor-paper .ql-editor {
-  padding: 0;
-  min-height: 900px;
-  font-size: 1.05rem;
-  line-height: 1.75;
-}
+    /* Page Thumbnail Card for PDF Organizer */
+    .page-thumbnail-card {
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+    .page-thumbnail-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.6);
+      border-color: #38bdf8;
+    }
+    .page-thumbnail-card.selected {
+      border-color: #38bdf8;
+      background-color: rgba(56, 189, 248, 0.08);
+    }
+    .page-thumbnail-card.deleted {
+      opacity: 0.45;
+      filter: grayscale(80%);
+    }
+    .page-thumbnail-card.deleted::after {
+      content: 'MARKED DELETED';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-18deg);
+      background: rgba(239, 68, 68, 0.9);
+      color: white;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
 
-/* Typography styles inside editor */
-.ql-editor h1 {
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin-top: 1.4rem;
-  margin-bottom: 0.6rem;
-  line-height: 1.25;
-}
-.ql-editor h2 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-top: 1.2rem;
-  margin-bottom: 0.5rem;
-  line-height: 1.3;
-}
-.ql-editor h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-top: 1rem;
-  margin-bottom: 0.4rem;
-}
-.ql-editor p {
-  margin-bottom: 0.85rem;
-}
-.ql-editor code {
-  background-color: rgba(56, 189, 248, 0.12);
-  color: #0284c7;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  font-size: 0.9em;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-}
-.ql-editor pre {
-  background-color: #f8fafc;
-  color: #0f172a;
-  padding: 1rem 1.25rem;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.9rem;
-  overflow-x: auto;
-}
-.ql-editor blockquote {
-  border-left: 4px solid #6366f1;
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: #475569;
-  font-style: italic;
-}
-.ql-editor table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 1.25rem 0;
-}
-.ql-editor th, .ql-editor td {
-  border: 1px solid #cbd5e1;
-  padding: 0.6rem 0.8rem;
-  text-align: left;
-}
-.ql-editor th {
-  background-color: #f1f5f9;
-  font-weight: 600;
-}
+    @keyframes shieldGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.45); }
+    }
+    .shield-badge {
+      animation: shieldGlow 3s infinite ease-in-out;
+    }
 
-/* 2. Full-Width Dark Developer View */
-.editor-full-dark .ql-container {
-  background-color: #0f172a;
-  min-height: calc(100vh - 340px);
-}
-.editor-full-dark .ql-editor {
-  color: #f8fafc;
-  padding: 2rem;
-  max-width: 960px;
-  margin: 0 auto;
-}
-.editor-full-dark .ql-editor pre {
-  background-color: #090d16;
-  color: #38bdf8;
-  border: 1px solid #334155;
-}
-.editor-full-dark .ql-editor th, .editor-full-dark .ql-editor td {
-  border-color: #334155;
-}
-.editor-full-dark .ql-editor th {
-  background-color: #1e293b;
-}
-
-/* Page Thumbnail Card for PDF Organizer */
-.page-thumbnail-card {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-.page-thumbnail-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.6);
-  border-color: #38bdf8;
-}
-.page-thumbnail-card.selected {
-  border-color: #38bdf8;
-  background-color: rgba(56, 189, 248, 0.08);
-}
-.page-thumbnail-card.deleted {
-  opacity: 0.45;
-  filter: grayscale(80%);
-}
-.page-thumbnail-card.deleted::after {
-  content: 'MARKED DELETED';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  background: rgba(239, 68, 68, 0.9);
-  color: white;
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border-radius: 4px;
-  pointer-events: none;
-}
-
-/* Pulse animation for local-processing shield */
-@keyframes shieldGlow {
-  0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.45); }
-}
-.shield-badge {
-  animation: shieldGlow 3s infinite ease-in-out;
-}
-
-/* Dragging state for file reorder */
-.sortable-ghost {
-  opacity: 0.4;
-  border: 2px dashed #38bdf8 !important;
-  background-color: rgba(56, 189, 248, 0.05) !important;
-}
-
-/* Watermark Canvas Preview Container */
-.watermark-preview-canvas {
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
-  max-width: 100%;
-  height: auto;
-  border-radius: 6px;
-  background-color: #ffffff;
-}
-
-/* Print Optimization */
-@media print {
-  body * {
-    visibility: hidden;
-  }
-  .editor-paper, .editor-paper * {
-    visibility: visible;
-  }
-  .editor-paper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100% !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-  }
-}
-
-
-</style>
+    .watermark-preview-canvas {
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      background-color: #ffffff;
+    }
+  </style>
 </head>
 <body class="bg-[#070a12] text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-sky-500/30 selection:text-sky-200">
 
   <!-- Mobile Top Bar -->
   <div class="md:hidden flex items-center justify-between px-4 py-3 bg-[#0c1220] border-b border-slate-800 shrink-0 z-30">
-    <div class="flex items-center gap-2.5">
+    <div class="flex items-center gap-2.5 cursor-pointer" onclick="DocuApp.switchTab('hub')">
       <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
         <i data-lucide="file-text" class="w-4 h-4"></i>
       </div>
@@ -445,9 +387,8 @@
   <!-- Main Left Sidebar -->
   <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#0c1220]/95 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 -translate-x-full shrink-0 shadow-2xl md:shadow-none">
     
-    <!-- Top Branding -->
     <div>
-      <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+      <div class="p-5 border-b border-slate-800/80 flex items-center justify-between cursor-pointer" onclick="DocuApp.switchTab('hub')">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
             <i data-lucide="file-text" class="w-5 h-5"></i>
@@ -464,10 +405,21 @@
 
       <!-- Navigation Tabs -->
       <nav class="p-3 space-y-1.5">
-        <div class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Core Workspaces</div>
+        <div class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Studio Hub</div>
+
+        <!-- 0. Studio Dashboard / Hub (Home) -->
+        <button type="button" data-nav-target="hub" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-sky-500/40 bg-sky-500/10 text-sky-400 group text-left">
+          <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
+          <div class="flex-1 min-w-0">
+            <div class="leading-tight font-semibold">Studio Hub</div>
+            <div class="text-[11px] text-slate-400 opacity-80 truncate">Overview & Tool Selector</div>
+          </div>
+        </button>
+
+        <div class="px-3 pt-4 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Tools</div>
 
         <!-- 1. Word / Rich Text Editor -->
-        <button type="button" data-nav-target="editor" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-sky-500/40 bg-sky-500/10 text-sky-400 group text-left">
+        <button type="button" data-nav-target="editor" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-transparent text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 group text-left">
           <i data-lucide="edit-3" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
           <div class="flex-1 min-w-0">
             <div class="leading-tight">Word & Rich-Text</div>
@@ -524,7 +476,7 @@
           <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
           Privacy Guarantee
         </button>
-        <span class="text-slate-600">v1.0.0</span>
+        <span class="text-slate-600">v1.1.0</span>
       </div>
     </div>
   </aside>
@@ -535,18 +487,22 @@
     <!-- Top Workspace Header Bar -->
     <header class="h-16 border-b border-slate-800 bg-[#0c1220]/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
       <div class="flex items-center gap-3 min-w-0">
+        <button type="button" id="header-back-hub-btn" onclick="DocuApp.switchTab('hub')" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/60 text-xs font-medium text-slate-300 transition-colors">
+          <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>
+          <span>Hub</span>
+        </button>
         <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
           <span>docuflow</span>
           <span>/</span>
-          <span class="text-slate-200 font-semibold" id="header-workspace-label">editor</span>
+          <span class="text-slate-200 font-semibold" id="header-workspace-label">hub</span>
         </div>
       </div>
 
       <div class="flex items-center gap-3">
-        <!-- Quick Sample Document Loader (Tool dependent) -->
-        <button type="button" id="header-sample-btn" onclick="DocuEditor.loadTemplate(DocuEditor.TEMPLATES ? DocuEditor.TEMPLATES.techSpec : '', 'Tech-Spec')" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/40 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-all">
+        <!-- Dynamic Quick Sample Loader -->
+        <button type="button" id="header-sample-btn" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/40 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-all">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span>Sample Tech Spec</span>
+          <span id="header-sample-text">Sample</span>
         </button>
 
         <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/80 hover:border-slate-600 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">
@@ -556,17 +512,214 @@
       </div>
     </header>
 
-    <!-- WORKSPACE 1: Word & Rich-Text Editor -->
-    <section id="tab-content-editor" class="tab-panel flex-1 flex flex-col min-w-0">
+    <!-- ============================================== -->
+    <!-- TAB 0: STUDIO HUB / DASHBOARD (DEFAULT VIEW)   -->
+    <!-- ============================================== -->
+    <section id="tab-content-hub" class="tab-panel flex-1 p-6 md:p-10 flex flex-col min-w-0 max-w-6xl mx-auto w-full">
+      
+      <!-- Hero Banner -->
+      <div class="glass-panel p-8 md:p-10 rounded-3xl border border-slate-800/80 relative overflow-hidden mb-10 shadow-2xl bg-gradient-to-br from-slate-900/90 via-[#0c1220]/90 to-sky-950/20">
+        <div class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"></div>
+        <div class="absolute -left-16 -bottom-16 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-mono font-medium mb-4">
+            <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span>
+            100% Free • Client-Side Engine • Zero Backend Servers
+          </div>
+
+          <h1 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            Document Studio for <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Power Users & Developers</span>
+          </h1>
+
+          <p class="text-slate-300 text-sm md:text-base mt-4 leading-relaxed">
+            Edit Word (.docx) files, merge multiple PDFs, rearrange & delete pages, and apply vector watermarks directly in your browser. All computations run in local browser RAM with zero server costs and 100% data privacy.
+          </p>
+
+          <div class="flex items-center gap-4 mt-8 flex-wrap">
+            <button type="button" onclick="DocuApp.switchTab('editor')" class="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-xl shadow-sky-500/25 transition-all">
+              <i data-lucide="edit-3" class="w-4 h-4"></i>
+              <span>Launch Word / DOCX Editor</span>
+            </button>
+            <button type="button" onclick="DocuApp.switchTab('merge')" class="flex items-center gap-2 px-5 py-3 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 font-semibold text-sm transition-colors">
+              <i data-lucide="files" class="w-4 h-4 text-sky-400"></i>
+              <span>Open PDF Merge Studio</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Core Tool Launch Cards Grid -->
+      <div class="mb-10">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="grid" class="w-5 h-5 text-sky-400"></i>
+            Select a Tool to Launch
+          </h2>
+          <span class="text-xs text-slate-400 font-mono">4 Client-Side Workspaces</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- Card 1: Word & Rich-Text Editor -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group hover:shadow-xl hover:shadow-indigo-500/5">
+            <div>
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-500/20 to-sky-500/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <i data-lucide="edit-3" class="w-6 h-6"></i>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">WYSIWYG</span>
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">DOCX</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-100 group-hover:text-sky-300 transition-colors">Word & Rich-Text Studio</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Write, format, or import existing Word <code>.docx</code> documents locally. Includes tech spec templates and instant export to <code>.docx</code>, <code>.pdf</code>, or <code>.md</code>.
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+              <button type="button" onclick="DocuApp.switchTab('editor')" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-all shadow-md shadow-indigo-600/20">
+                <span>Launch Document Editor</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="DocuApp.switchTab('editor'); setTimeout(() => document.getElementById('editor-file-input').click(), 100)" class="px-3.5 py-2.5 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors" title="Directly pick a .docx file">
+                Open .docx
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: PDF Merge Studio -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group hover:shadow-xl hover:shadow-sky-500/5">
+            <div>
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500/20 to-cyan-500/20 border border-sky-500/30 text-sky-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <i data-lucide="files" class="w-6 h-6"></i>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Multi-File</span>
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20">Combine</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-100 group-hover:text-sky-300 transition-colors">PDF Merge Studio</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Combine two or more PDF files into a single consolidated document. Re-order pages, inspect page counts, and merge in-memory without uploading anything.
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+              <button type="button" onclick="DocuApp.switchTab('merge')" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs transition-all shadow-md shadow-sky-600/20">
+                <span>Launch PDF Merge</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="DocuApp.switchTab('merge'); DocuMerge.loadSamplePdf()" class="px-3.5 py-2.5 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+                Demo Files
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: PDF Page Organizer -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group hover:shadow-xl hover:shadow-emerald-500/5">
+            <div>
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-emerald-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <i data-lucide="layout-grid" class="w-6 h-6"></i>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Thumbnails</span>
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Split</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-100 group-hover:text-emerald-300 transition-colors">PDF Page Organizer</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                View visual page thumbnails to reorder chapters, rotate orientations (90°/180°), delete unwanted pages, or split selected pages into a new PDF.
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+              <button type="button" onclick="DocuApp.switchTab('organize')" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all shadow-md shadow-emerald-600/20">
+                <span>Launch Organizer</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="DocuApp.switchTab('organize'); DocuOrganize.loadSamplePdf()" class="px-3.5 py-2.5 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+                Demo PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 4: PDF Watermark & Stamp -->
+          <div class="glass-card p-6 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between group hover:shadow-xl hover:shadow-amber-500/5">
+            <div>
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 flex items-center justify-center group-hover:scale-105 transition-transform">
+                  <i data-lucide="stamp" class="w-6 h-6"></i>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Live Preview</span>
+                  <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">Vector Stamp</span>
+                </div>
+              </div>
+
+              <h3 class="text-lg font-bold text-slate-100 group-hover:text-amber-300 transition-colors">PDF Watermark & Stamp</h3>
+              <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Overlay diagonal or header text watermarks (CONFIDENTIAL, DRAFT), custom colors, adjustable opacity, and dynamic <code>Page X of Y</code> footers.
+              </p>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3">
+              <button type="button" onclick="DocuApp.switchTab('watermark')" class="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs transition-all shadow-md shadow-amber-600/20">
+                <span>Launch Watermark Tool</span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="DocuApp.switchTab('watermark'); DocuWatermark.loadSamplePdf()" class="px-3.5 py-2.5 rounded-xl border border-slate-700 hover:border-slate-600 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+                Demo NDA
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Universal Quick Drop Zone on Hub -->
+      <div id="hub-universal-dropzone" class="drop-zone border-2 border-dashed border-slate-700 hover:border-sky-500/80 bg-slate-900/50 rounded-2xl p-8 text-center cursor-pointer transition-all mb-8 shadow-inner" onclick="DocuApp.triggerUniversalUpload()">
+        <input type="file" id="hub-file-input" accept=".pdf,.docx,.txt,.html" class="hidden">
+        <div class="flex flex-col items-center justify-center">
+          <div class="w-12 h-12 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center mb-3">
+            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-sm font-semibold text-slate-200">Drop any PDF or Word (.docx) file here</h3>
+          <p class="text-xs text-slate-400 mt-1">DocuFlow will automatically detect the file format and launch the right workspace</p>
+          <div class="mt-3 flex items-center gap-2">
+            <button type="button" onclick="event.stopPropagation(); document.getElementById('hub-file-input').click()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-1.5">
+              <i data-lucide="folder-open" class="w-4 h-4"></i>
+              <span>Select File from Computer</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ============================================== -->
+    <!-- TAB 1: WORD & RICH-TEXT EDITOR WORKSPACE       -->
+    <!-- ============================================== -->
+    <section id="tab-content-editor" class="tab-panel hidden flex-1 flex flex-col min-w-0">
       
       <!-- Editor Action Ribbon -->
       <div class="border-b border-slate-800 bg-[#0f172a] px-6 py-3 flex flex-wrap items-center justify-between gap-4">
         
-        <!-- Document Title & Template Picker -->
         <div class="flex items-center gap-3 flex-wrap">
+          <button type="button" onclick="DocuApp.switchTab('hub')" class="p-1.5 rounded-lg border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-colors" title="Back to Studio Hub">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+
           <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 focus-within:border-sky-500 transition-colors">
             <i data-lucide="file" class="w-4 h-4 text-sky-400 shrink-0"></i>
-            <input type="text" id="editor-doc-title" value="Engineering-Tech-Spec" class="bg-transparent border-none text-sm font-semibold text-slate-100 focus:outline-none w-48 sm:w-64" placeholder="Document Title">
+            <input type="text" id="editor-doc-title" value="Engineering-Tech-Spec" class="bg-transparent border-none text-sm font-semibold text-slate-100 focus:outline-none w-48 sm:w-60" placeholder="Document Title">
           </div>
 
           <!-- Template Presets Dropdown -->
@@ -578,7 +731,7 @@
             <option value="changelog">Release Notes & Changelog</option>
           </select>
 
-          <!-- Hidden DOCX File Input -->
+          <!-- Hidden DOCX File Input & Open Button -->
           <input type="file" id="editor-file-input" accept=".docx,.txt,.html,.htm" class="hidden">
           <button type="button" onclick="document.getElementById('editor-file-input').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors" title="Import Word .docx, .html, or .txt file">
             <i data-lucide="upload" class="w-3.5 h-3.5 text-sky-400"></i>
@@ -588,7 +741,6 @@
 
         <!-- Export Buttons Group -->
         <div class="flex items-center gap-2 flex-wrap">
-          <!-- Toggle Paper Mode (White vs Dark Sheet) -->
           <button type="button" onclick="DocuEditor.togglePaperMode()" class="p-2 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/60 text-slate-300 hover:text-white transition-colors" title="Toggle Sheet Theme (Light Paper / Dark Sheet)">
             <i data-lucide="sun-moon" class="w-4 h-4"></i>
           </button>
@@ -620,11 +772,8 @@
 
       <!-- Drag & Drop Overlay Zone / Quill Editor Body -->
       <div id="editor-workspace" class="drop-zone flex-1 flex flex-col relative overflow-y-auto">
-        
-        <!-- Paper Document View Container -->
         <div id="editor-paper-container" class="editor-paper-container">
           <div id="editor-paper-sheet" class="editor-paper">
-            <!-- Quill editor mount -->
             <div id="quill-editor"></div>
           </div>
         </div>
@@ -642,22 +791,29 @@
         <div class="flex items-center gap-3">
           <span id="editor-autosave-status" class="text-emerald-400">Saved locally</span>
           <span>•</span>
-          <span class="text-slate-500 hidden sm:inline">Tip: Drag & drop any .docx file here</span>
+          <span class="text-slate-500 hidden sm:inline">Drag & drop any .docx file directly into editor</span>
         </div>
       </footer>
     </section>
 
-    <!-- WORKSPACE 2: PDF Merge Studio -->
+    <!-- ============================================== -->
+    <!-- TAB 2: PDF MERGE STUDIO                        -->
+    <!-- ============================================== -->
     <section id="tab-content-merge" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-5xl mx-auto w-full">
       
       <!-- Section Header -->
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <i data-lucide="files" class="w-5 h-5 text-sky-400"></i>
-            PDF Merge Studio
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Combine multiple PDF documents into a single consolidated file in your browser.</p>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="DocuApp.switchTab('hub')" class="p-2 rounded-xl border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-colors" title="Back to Studio Hub">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="files" class="w-5 h-5 text-sky-400"></i>
+              PDF Merge Studio
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Combine multiple PDF documents into a single consolidated file in your browser.</p>
+          </div>
         </div>
 
         <button type="button" onclick="DocuMerge.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
@@ -666,16 +822,20 @@
         </button>
       </div>
 
-      <!-- Drag & Drop Zone -->
-      <div id="merge-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+      <!-- Drag & Drop Zone (Clickable + Prominent Button) -->
+      <div id="merge-dropzone" class="drop-zone border-2 border-dashed border-slate-700 hover:border-sky-500/80 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6" onclick="if(event.target.tagName !== 'BUTTON') document.getElementById('merge-file-input').click()">
         <input type="file" id="merge-file-input" accept=".pdf" multiple class="hidden">
-        <div class="flex flex-col items-center justify-center pointer-events-none">
+        <div class="flex flex-col items-center justify-center">
           <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
             <i data-lucide="upload-cloud" class="w-7 h-7"></i>
           </div>
-          <h3 class="text-base font-semibold text-slate-200">Drag & drop PDF files here</h3>
-          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">browse files</span> from your computer</p>
-          <span class="text-[11px] font-mono text-slate-500 mt-2 px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">Multiple .pdf files supported</span>
+          <h3 class="text-base font-semibold text-slate-200">Click to browse or drop PDF files here</h3>
+          <p class="text-xs text-slate-400 mt-1">Select multiple files at once or add more anytime</p>
+          
+          <button type="button" onclick="event.stopPropagation(); document.getElementById('merge-file-input').click()" class="mt-4 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-lg shadow-sky-600/30 transition-all">
+            <i data-lucide="folder-open" class="w-4 h-4"></i>
+            <span>Browse PDF Files</span>
+          </button>
         </div>
       </div>
 
@@ -683,13 +843,11 @@
       <div id="merge-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
         <i data-lucide="layers" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
         <p class="text-sm">No PDFs queued for merge yet.</p>
-        <p class="text-xs text-slate-500 mt-1">Upload at least two PDF files to merge them together.</p>
+        <p class="text-xs text-slate-500 mt-1">Click the box above or "Browse PDF Files" to select documents.</p>
       </div>
 
       <!-- File Queue & Control Panel -->
       <div id="merge-stats-summary" class="hidden flex flex-col gap-4">
-        
-        <!-- Summary Stats Ribbon -->
         <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-6 text-xs font-mono">
             <div>
@@ -708,7 +866,7 @@
 
           <div class="flex items-center gap-2">
             <button type="button" onclick="document.getElementById('merge-file-input').click()" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
-              Add More Files
+              + Add More Files
             </button>
             <button type="button" id="merge-clear-btn" class="px-3 py-1.5 rounded-lg border border-slate-700/60 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition-colors">
               Clear All
@@ -716,10 +874,8 @@
           </div>
         </div>
 
-        <!-- Files List -->
         <div class="space-y-2" id="merge-files-list"></div>
 
-        <!-- Bottom Action Bar -->
         <div class="glass-panel p-5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
           <div class="flex items-center gap-2">
             <label class="text-xs text-slate-400 font-mono">Output Name:</label>
@@ -731,22 +887,28 @@
             <span>Merge & Export PDF</span>
           </button>
         </div>
-
       </div>
 
     </section>
 
-    <!-- WORKSPACE 3: PDF Page Organizer -->
+    <!-- ============================================== -->
+    <!-- TAB 3: PDF PAGE ORGANIZER                      -->
+    <!-- ============================================== -->
     <section id="tab-content-organize" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-6xl mx-auto w-full">
       
       <!-- Section Header -->
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <i data-lucide="layout-grid" class="w-5 h-5 text-sky-400"></i>
-            PDF Page Organizer
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Visually reorder pages, rotate orientation, delete pages, or split selected pages.</p>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="DocuApp.switchTab('hub')" class="p-2 rounded-xl border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-colors" title="Back to Studio Hub">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="layout-grid" class="w-5 h-5 text-sky-400"></i>
+              PDF Page Organizer
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Visually reorder pages, rotate orientation, delete pages, or split selected pages.</p>
+          </div>
         </div>
 
         <button type="button" onclick="DocuOrganize.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
@@ -756,14 +918,19 @@
       </div>
 
       <!-- Drop Zone for Organizer -->
-      <div id="organize-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+      <div id="organize-dropzone" class="drop-zone border-2 border-dashed border-slate-700 hover:border-sky-500/80 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6" onclick="if(event.target.tagName !== 'BUTTON') document.getElementById('organize-file-input').click()">
         <input type="file" id="organize-file-input" accept=".pdf" class="hidden">
-        <div class="flex flex-col items-center justify-center pointer-events-none">
+        <div class="flex flex-col items-center justify-center">
           <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
             <i data-lucide="file-symlink" class="w-7 h-7"></i>
           </div>
-          <h3 class="text-base font-semibold text-slate-200">Drop a PDF here to organize pages</h3>
-          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">choose a PDF file</span></p>
+          <h3 class="text-base font-semibold text-slate-200">Click to select or drop a PDF file here</h3>
+          <p class="text-xs text-slate-400 mt-1">Render all pages into interactive visual thumbnail cards</p>
+          
+          <button type="button" onclick="event.stopPropagation(); document.getElementById('organize-file-input').click()" class="mt-4 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-lg shadow-sky-600/30 transition-all">
+            <i data-lucide="folder-open" class="w-4 h-4"></i>
+            <span>Browse PDF File</span>
+          </button>
         </div>
       </div>
 
@@ -771,20 +938,17 @@
       <div id="organize-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
         <i data-lucide="file-text" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
         <p class="text-sm">No PDF loaded for page organization.</p>
-        <p class="text-xs text-slate-500 mt-1">Upload a PDF or click "Load 4-Page Demo PDF" above.</p>
+        <p class="text-xs text-slate-500 mt-1">Click \"Browse PDF File\" or \"Load 4-Page Demo PDF\" above to begin.</p>
       </div>
 
       <!-- Organizer Workspace -->
       <div id="organize-workspace" class="hidden flex flex-col gap-4">
-        
-        <!-- Controls Toolbar -->
         <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
             <h3 id="organize-doc-title" class="text-sm font-semibold text-slate-100 truncate max-w-xs">Document.pdf</h3>
             <span id="organize-page-count" class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-mono text-xs border border-sky-500/30">0 pages</span>
           </div>
 
-          <!-- Batch Action Buttons -->
           <div class="flex items-center gap-2 flex-wrap">
             <button type="button" onclick="DocuOrganize.selectAll(true)" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
               Select All
@@ -806,10 +970,8 @@
           </div>
         </div>
 
-        <!-- Thumbnail Cards Grid -->
         <div id="organize-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-2"></div>
 
-        <!-- Bottom Action Bar -->
         <div class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
           <div id="organize-active-summary" class="text-xs font-mono text-slate-400">
             0 pages to keep
@@ -825,22 +987,28 @@
             </button>
           </div>
         </div>
-
       </div>
 
     </section>
 
-    <!-- WORKSPACE 4: PDF Watermark & Stamp -->
+    <!-- ============================================== -->
+    <!-- TAB 4: PDF WATERMARK & STAMP                   -->
+    <!-- ============================================== -->
     <section id="tab-content-watermark" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-6xl mx-auto w-full">
       
       <!-- Section Header -->
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
-            <i data-lucide="stamp" class="w-5 h-5 text-sky-400"></i>
-            PDF Watermark & Stamp
-          </h2>
-          <p class="text-xs text-slate-400 mt-1">Add customizable vector text watermarks, security stamps, and page numbers locally.</p>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="DocuApp.switchTab('hub')" class="p-2 rounded-xl border border-slate-700 hover:border-slate-600 text-slate-400 hover:text-white transition-colors" title="Back to Studio Hub">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+          <div>
+            <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+              <i data-lucide="stamp" class="w-5 h-5 text-sky-400"></i>
+              PDF Watermark & Stamp
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Add customizable vector text watermarks, security stamps, and page numbers locally.</p>
+          </div>
         </div>
 
         <button type="button" onclick="DocuWatermark.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
@@ -850,14 +1018,19 @@
       </div>
 
       <!-- Dropzone for Watermark -->
-      <div id="watermark-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+      <div id="watermark-dropzone" class="drop-zone border-2 border-dashed border-slate-700 hover:border-sky-500/80 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6" onclick="if(event.target.tagName !== 'BUTTON') document.getElementById('watermark-file-input').click()">
         <input type="file" id="watermark-file-input" accept=".pdf" class="hidden">
-        <div class="flex flex-col items-center justify-center pointer-events-none">
+        <div class="flex flex-col items-center justify-center">
           <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
             <i data-lucide="stamp" class="w-7 h-7"></i>
           </div>
-          <h3 class="text-base font-semibold text-slate-200">Drop a PDF here to add watermarks</h3>
-          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">browse file</span></p>
+          <h3 class="text-base font-semibold text-slate-200">Click to select or drop a PDF here</h3>
+          <p class="text-xs text-slate-400 mt-1">Configure custom text, angles, opacity, and page numbering</p>
+          
+          <button type="button" onclick="event.stopPropagation(); document.getElementById('watermark-file-input').click()" class="mt-4 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs shadow-lg shadow-sky-600/30 transition-all">
+            <i data-lucide="folder-open" class="w-4 h-4"></i>
+            <span>Browse PDF File</span>
+          </button>
         </div>
       </div>
 
@@ -865,7 +1038,7 @@
       <div id="watermark-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
         <i data-lucide="shield" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
         <p class="text-sm">No PDF uploaded for watermarking.</p>
-        <p class="text-xs text-slate-500 mt-1">Upload a PDF or click "Load Sample NDA" above.</p>
+        <p class="text-xs text-slate-500 mt-1">Click \"Browse PDF File\" or \"Load Sample NDA\" above to begin.</p>
       </div>
 
       <!-- 2-Column Split Workspace -->
@@ -873,7 +1046,6 @@
         
         <!-- Left: Configuration Form (5 cols) -->
         <div class="lg:col-span-5 glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
-          
           <div class="flex items-center justify-between pb-3 border-b border-slate-800">
             <div>
               <h3 id="watermark-doc-title" class="text-sm font-semibold text-slate-100 truncate max-w-[200px]">Document.pdf</h3>
@@ -886,7 +1058,6 @@
             <label class="block text-xs font-semibold text-slate-300 mb-1.5">Watermark Text</label>
             <input type="text" id="wm-text" value="CONFIDENTIAL" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-sans" placeholder="e.g. CONFIDENTIAL">
             
-            <!-- Quick Tag Buttons -->
             <div class="flex items-center gap-1.5 flex-wrap mt-2">
               <button type="button" onclick="DocuWatermark.setPresetText('CONFIDENTIAL')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">CONFIDENTIAL</button>
               <button type="button" onclick="DocuWatermark.setPresetText('DRAFT')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">DRAFT</button>
@@ -960,7 +1131,6 @@
             <i data-lucide="download" class="w-4 h-4"></i>
             <span>Apply Watermark & Export</span>
           </button>
-
         </div>
 
         <!-- Right: Live Canvas Preview (7 cols) -->
@@ -983,7 +1153,6 @@
   <!-- Interactive Document Preview Modal -->
   <div id="preview-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
     <div class="glass-panel w-full max-w-5xl h-[88vh] rounded-2xl border border-slate-700 flex flex-col shadow-2xl overflow-hidden">
-      <!-- Modal Header -->
       <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/80">
         <div class="flex items-center gap-3">
           <div class="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
@@ -1006,7 +1175,6 @@
         </div>
       </div>
 
-      <!-- Modal Body / PDF iframe viewer -->
       <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
         <iframe id="preview-iframe" class="w-full h-full rounded-xl border border-slate-800/80 bg-white" src="about:blank"></iframe>
       </div>
@@ -1029,15 +1197,9 @@
       </div>
 
       <div class="text-xs text-slate-300 space-y-2.5 leading-relaxed">
-        <p>
-          <strong class="text-emerald-400">100% Zero-Backend Architecture:</strong> DocuFlow contains no backend server, no database, no telemetry, and no third-party tracking scripts.
-        </p>
-        <p>
-          <strong>How it works:</strong> All file reading and document manipulation is performed directly in the browser's JavaScript environment using WebAssembly and Web Worker threads (`pdf-lib`, `pdfjs-dist`, `mammoth.js`, and `html2pdf.js`).
-        </p>
-        <p>
-          <strong>Free GitHub Pages Hosting:</strong> Because there are no server-side APIs required, this entire application can be hosted on GitHub Pages, Cloudflare Pages, or AWS S3 at <strong>$0 cost forever</strong>.
-        </p>
+        <p><strong class="text-emerald-400">100% Zero-Backend Architecture:</strong> DocuFlow contains no backend server, no database, no telemetry, and no third-party tracking scripts.</p>
+        <p><strong>How it works:</strong> All file reading and document manipulation is performed directly in the browser's JavaScript environment using WebAssembly and Web Worker threads (pdf-lib, pdfjs-dist, mammoth.js, and html2pdf.js).</p>
+        <p><strong>Free GitHub Pages Hosting:</strong> Because there are no server-side APIs required, this entire application can be hosted on GitHub Pages or static S3 at <strong>$0 cost forever</strong>.</p>
       </div>
 
       <div class="pt-3 border-t border-slate-800 flex justify-end">
@@ -1052,28 +1214,18 @@
   <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
 
   <!-- External CDN Libraries -->
-  <!-- 1. PDF-Lib for local PDF manipulation -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-
-  <!-- 2. PDF.js for client-side thumbnail rendering -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- 3. Mammoth.js for converting .docx to HTML in browser -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-
-  <!-- 4. Quill.js Rich Text Editor -->
   <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
-
-  <!-- 5. html2pdf for print-ready PDF export -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <!-- 6. html-docx-js for client-side Word .docx creation -->
   <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
 
-  <!-- All Internal Logic Inlined for Single-File Portability -->
-  <script>
+  <!-- Complete Inlined Application Logic -->
+  <script id="inlined-app-bundle">
 
-/* ========== utils.js ========== */
+
+/* ==================== utils.js ==================== */
 /**
  * DocuFlow Studio - Shared Utility & Helper Functions
  */
@@ -1161,7 +1313,6 @@ window.DocuUtils = (function () {
     link.click();
     document.body.removeChild(link);
 
-    // Keep memory clean
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 20000);
@@ -1188,7 +1339,16 @@ window.DocuUtils = (function () {
     });
   }
 
-  // 5. Drag-and-Drop Binder
+  // 5. Trigger File Input Safely
+  function triggerFileInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+      input.value = '';
+      input.click();
+    }
+  }
+
+  // 6. Drag-and-Drop Binder
   function setupDropZone(dropZoneEl, allowedExtensions, onFilesReceived) {
     if (!dropZoneEl) return;
 
@@ -1209,6 +1369,8 @@ window.DocuUtils = (function () {
     });
 
     dropZoneEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const dt = e.dataTransfer;
       if (!dt || !dt.files || dt.files.length === 0) return;
 
@@ -1238,7 +1400,7 @@ window.DocuUtils = (function () {
     });
   }
 
-  // 6. PDF Preview Modal
+  // 7. PDF Preview Modal
   let activePreviewUrl = null;
   let activeDownloadBlob = null;
   let activeDownloadFilename = '';
@@ -1247,7 +1409,6 @@ window.DocuUtils = (function () {
     const modal = document.getElementById('preview-modal');
     const iframe = document.getElementById('preview-iframe');
     const titleEl = document.getElementById('preview-modal-title');
-    const downloadBtn = document.getElementById('modal-download-btn');
 
     if (!modal || !iframe) return;
 
@@ -1290,7 +1451,7 @@ window.DocuUtils = (function () {
     }
   }
 
-  // 7. HTML to Markdown Converter
+  // 8. HTML to Markdown Converter
   function htmlToMarkdown(htmlString) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
@@ -1342,7 +1503,6 @@ window.DocuUtils = (function () {
     return parseNode(doc.body).replace(/\n{3,}/g, '\n\n').trim();
   }
 
-  // 8. Helper to escape HTML string
   function escapeHtml(str) {
     if (!str) return '';
     return str
@@ -1358,6 +1518,7 @@ window.DocuUtils = (function () {
     dismissToast,
     formatBytes,
     triggerDownload,
+    triggerFileInput,
     readFileAsArrayBuffer,
     readFileAsText,
     setupDropZone,
@@ -1370,8 +1531,7 @@ window.DocuUtils = (function () {
 })();
 
 
-
-/* ========== pdf-merge.js ========== */
+/* ==================== pdf-merge.js ==================== */
 /**
  * DocuFlow Studio - PDF Merge & Combine Module
  * Uses pdf-lib entirely in the browser
@@ -1413,7 +1573,7 @@ window.DocuMerge = (function () {
     fileInputEl.addEventListener('change', (e) => {
       if (e.target.files && e.target.files.length > 0) {
         handleFilesAdded(Array.from(e.target.files));
-        fileInputEl.value = ''; // Reset for re-selection
+        fileInputEl.value = '';
       }
     });
 
@@ -1449,7 +1609,6 @@ window.DocuMerge = (function () {
       try {
         const arrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
         
-        // Inspect page count with pdf-lib
         let pageCount = 1;
         try {
           const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
@@ -1500,7 +1659,6 @@ window.DocuMerge = (function () {
     const totalPages = mergeFiles.reduce((acc, f) => acc + (f.pageCount || 0), 0);
     const totalSize = mergeFiles.reduce((acc, f) => acc + (f.size || 0), 0);
 
-    // Update stats bar
     const filesCountStat = document.getElementById('merge-stat-files');
     const pagesCountStat = document.getElementById('merge-stat-pages');
     const sizeStat = document.getElementById('merge-stat-size');
@@ -1598,7 +1756,6 @@ window.DocuMerge = (function () {
 
       DocuUtils.showToast('Merging PDFs', `Combining ${mergeFiles.length} documents...`, 'info', 2500);
 
-      // Create new PDF
       const mergedPdf = await PDFLib.PDFDocument.create();
 
       for (let i = 0; i < mergeFiles.length; i++) {
@@ -1647,7 +1804,6 @@ window.DocuMerge = (function () {
     try {
       DocuUtils.showToast('Loading Demo', 'Generating sample PDFs for testing...', 'info', 2000);
       
-      // Generate sample 1
       const doc1 = await PDFLib.PDFDocument.create();
       const page1 = doc1.addPage([595, 842]);
       page1.drawText('DocuFlow Studio - Sample Document #1', { x: 50, y: 780, size: 20 });
@@ -1656,7 +1812,6 @@ window.DocuMerge = (function () {
       const bytes1 = await doc1.save();
       const file1 = new File([bytes1], 'Sample-Report-Part1.pdf', { type: 'application/pdf' });
 
-      // Generate sample 2
       const doc2 = await PDFLib.PDFDocument.create();
       const page2 = doc2.addPage([595, 842]);
       page2.drawText('DocuFlow Studio - Sample Document #2', { x: 50, y: 780, size: 20 });
@@ -1674,6 +1829,7 @@ window.DocuMerge = (function () {
 
   return {
     init,
+    handleFilesAdded,
     moveFile,
     removeFile,
     executeMerge,
@@ -1682,8 +1838,7 @@ window.DocuMerge = (function () {
 })();
 
 
-
-/* ========== pdf-organize.js ========== */
+/* ==================== pdf-organize.js ==================== */
 /**
  * DocuFlow Studio - PDF Page Organizer (Reorder, Rotate, Delete, Split)
  * Uses pdfjs-dist for client-side thumbnail rendering and pdf-lib for document manipulation
@@ -1745,7 +1900,7 @@ window.DocuOrganize = (function () {
 
   // Load PDF file into memory
   async function loadPdfFile(file) {
-    if (!window.PDFLib || !window.pdfjsLib) {
+    if (!window.PDFLib) {
       DocuUtils.showToast('Error', 'PDF processing engine is not ready.', 'error');
       return;
     }
@@ -1756,16 +1911,9 @@ window.DocuOrganize = (function () {
       currentFile = file;
       currentArrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
 
-      // Setup pdfjs worker
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-      // Load pdfjs document for thumbnail rendering
-      const loadingTask = window.pdfjsLib.getDocument({
-        data: currentArrayBuffer.slice(0),
-        stopAtErrors: false
-      });
-      pdfjsDoc = await loadingTask.promise;
-      const numPages = pdfjsDoc.numPages;
+      // 1. Primary Page Count via PDFLib (guaranteed zero-failure on any protocol)
+      const pdfLibDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
+      const numPages = pdfLibDoc.getPageCount();
 
       pagesState = [];
       for (let i = 0; i < numPages; i++) {
@@ -1784,8 +1932,22 @@ window.DocuOrganize = (function () {
       if (docTitleEl) docTitleEl.textContent = file.name;
       if (pageCountBadgeEl) pageCountBadgeEl.textContent = `${numPages} page${numPages === 1 ? '' : 's'}`;
 
-      DocuUtils.showToast('PDF Loaded', `Ready to organize ${numPages} pages.`, 'success');
+      // 2. Try initializing PDF.js with graceful fallback
+      pdfjsDoc = null;
+      if (window.pdfjsLib) {
+        try {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          const loadingTask = window.pdfjsLib.getDocument({
+            data: currentArrayBuffer.slice(0),
+            stopAtErrors: false
+          });
+          pdfjsDoc = await loadingTask.promise;
+        } catch (workerErr) {
+          console.warn('PDF.js worker notice (using clean thumbnail fallback):', workerErr);
+        }
+      }
 
+      DocuUtils.showToast('PDF Loaded', `Ready to organize ${numPages} pages.`, 'success');
       await renderThumbnails();
     } catch (err) {
       console.error('Error loading PDF in organizer:', err);
@@ -1795,7 +1957,7 @@ window.DocuOrganize = (function () {
 
   // Render Page Thumbnail Grid
   async function renderThumbnails() {
-    if (!gridEl || !pdfjsDoc) return;
+    if (!gridEl) return;
     gridEl.innerHTML = '';
 
     for (let i = 0; i < pagesState.length; i++) {
@@ -1832,7 +1994,7 @@ window.DocuOrganize = (function () {
         previewWrapper.appendChild(canvas);
         item.canvas = canvas;
 
-        // Render page via pdfjs
+        // Render page via pdfjs or fallback
         renderPageToCanvas(pageIndex + 1, canvas);
       } else {
         item.canvas.style.transform = `rotate(${item.rotation}deg)`;
@@ -1877,17 +2039,43 @@ window.DocuOrganize = (function () {
     updateActivePagesSummary();
   }
 
-  // Render a specific page from pdfjs onto a thumbnail canvas
+  // Render a specific page from pdfjs onto a thumbnail canvas (with fallback)
   async function renderPageToCanvas(pageNumber, canvas) {
-    try {
-      const page = await pdfjsDoc.getPage(pageNumber);
-      const viewport = page.getViewport({ scale: 0.3 });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      const ctx = canvas.getContext('2d');
-      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-    } catch (e) {
-      console.warn(`Could not render thumbnail for page ${pageNumber}:`, e);
+    if (pdfjsDoc) {
+      try {
+        const page = await pdfjsDoc.getPage(pageNumber);
+        const viewport = page.getViewport({ scale: 0.35 });
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+        return;
+      } catch (e) {
+        console.warn(`PDF.js thumbnail fallback for page ${pageNumber}:`, e);
+      }
+    }
+
+    // Clean vector document sheet fallback
+    canvas.width = 130;
+    canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 130, 180);
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.strokeRect(0, 0, 130, 180);
+
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 13px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Page ' + pageNumber, 65, 95);
+
+    // Placeholder lines
+    ctx.fillStyle = '#e2e8f0';
+    for (let y = 25; y < 75; y += 12) {
+      ctx.fillRect(15, y, 100, 4);
+    }
+    for (let y = 115; y < 165; y += 12) {
+      ctx.fillRect(15, y, 100, 4);
     }
   }
 
@@ -1987,7 +2175,6 @@ window.DocuOrganize = (function () {
       p.deleted = false;
       p.selected = false;
     });
-    // Sort back to original order
     pagesState.sort((a, b) => a.originalIndex - b.originalIndex);
     DocuUtils.showToast('Reset Complete', 'Pages restored to original order and orientation.', 'info');
     renderThumbnails();
@@ -2017,12 +2204,9 @@ window.DocuOrganize = (function () {
 
       for (const item of remainingPages) {
         const [copiedPage] = await newDoc.copyPages(donorDoc, [item.originalIndex]);
-        
-        // Combine existing page rotation with user rotation
         const currentAngle = copiedPage.getRotation().angle || 0;
         const finalAngle = (currentAngle + item.rotation) % 360;
         copiedPage.setRotation(PDFLib.degrees(finalAngle));
-
         newDoc.addPage(copiedPage);
       }
 
@@ -2100,7 +2284,7 @@ window.DocuOrganize = (function () {
         page.drawText('DocuFlow Studio Demo Document', { x: 50, y: 780, size: 16 });
         page.drawText(titles[i], { x: 50, y: 740, size: 14 });
         page.drawText(`This is page ${i + 1} of 4. Test reordering, rotating 90°, or deleting this page.`, { x: 50, y: 700, size: 11 });
-        page.drawText(`Page Number: [ ${i + 1} / 4 ]`, { x: 250, y: 400, size: 24 });
+        page.drawText(`Page Number: [ ${i + 1} / 4 ]`, { x: 230, y: 400, size: 24 });
       }
 
       const bytes = await demoDoc.save();
@@ -2129,8 +2313,7 @@ window.DocuOrganize = (function () {
 })();
 
 
-
-/* ========== pdf-watermark.js ========== */
+/* ==================== pdf-watermark.js ==================== */
 /**
  * DocuFlow Studio - PDF Watermark & Stamp Module
  * Real-time canvas preview and 100% client-side vector text stamp application
@@ -2142,6 +2325,7 @@ window.DocuWatermark = (function () {
   let currentFile = null;
   let currentArrayBuffer = null;
   let pdfjsDoc = null;
+  let currentTotalPages = 1;
   let isApplying = false;
 
   // DOM Elements
@@ -2222,7 +2406,7 @@ window.DocuWatermark = (function () {
 
   // Load PDF for watermarking
   async function loadPdfFile(file) {
-    if (!window.PDFLib || !window.pdfjsLib) {
+    if (!window.PDFLib) {
       DocuUtils.showToast('Error', 'PDF library not ready.', 'error');
       return;
     }
@@ -2232,13 +2416,24 @@ window.DocuWatermark = (function () {
       currentFile = file;
       currentArrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
 
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      // Primary verification via PDFLib
+      const pdfLibDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
+      currentTotalPages = pdfLibDoc.getPageCount();
 
-      const loadingTask = window.pdfjsLib.getDocument({
-        data: currentArrayBuffer.slice(0),
-        stopAtErrors: false
-      });
-      pdfjsDoc = await loadingTask.promise;
+      // Try PDF.js for preview page 1 background
+      pdfjsDoc = null;
+      if (window.pdfjsLib) {
+        try {
+          window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          const loadingTask = window.pdfjsLib.getDocument({
+            data: currentArrayBuffer.slice(0),
+            stopAtErrors: false
+          });
+          pdfjsDoc = await loadingTask.promise;
+        } catch (workerErr) {
+          console.warn('PDF.js worker notice for watermark preview:', workerErr);
+        }
+      }
 
       if (emptyStateEl) emptyStateEl.classList.add('hidden');
       if (workspaceEl) workspaceEl.classList.remove('hidden');
@@ -2246,7 +2441,7 @@ window.DocuWatermark = (function () {
       const titleEl = document.getElementById('watermark-doc-title');
       const countEl = document.getElementById('watermark-page-count');
       if (titleEl) titleEl.textContent = file.name;
-      if (countEl) countEl.textContent = `${pdfjsDoc.numPages} page${pdfjsDoc.numPages === 1 ? '' : 's'}`;
+      if (countEl) countEl.textContent = `${currentTotalPages} page${currentTotalPages === 1 ? '' : 's'}`;
 
       DocuUtils.showToast('Ready', `Document loaded. Adjust your watermark settings below.`, 'success');
 
@@ -2270,7 +2465,6 @@ window.DocuWatermark = (function () {
     if (palette[colorName]) {
       selectedColor = palette[colorName];
       
-      // Update UI active buttons
       document.querySelectorAll('.wm-color-btn').forEach(btn => {
         btn.classList.remove('ring-2', 'ring-white', 'scale-110');
       });
@@ -2281,7 +2475,7 @@ window.DocuWatermark = (function () {
     }
   }
 
-  // Quick preset text tag setter (e.g. "CONFIDENTIAL", "DRAFT")
+  // Quick preset text tag setter
   function setPresetText(text) {
     if (textInputEl) {
       textInputEl.value = text;
@@ -2291,26 +2485,54 @@ window.DocuWatermark = (function () {
 
   // Draw live preview onto the right-side canvas
   async function updateLivePreview() {
-    if (!pdfjsDoc || !previewCanvasEl) return;
+    if (!previewCanvasEl) return;
 
     try {
-      const page = await pdfjsDoc.getPage(1);
-      const scale = 0.85;
-      const viewport = page.getViewport({ scale });
-
-      previewCanvasEl.width = viewport.width;
-      previewCanvasEl.height = viewport.height;
+      const width = 360;
+      const height = 500;
+      previewCanvasEl.width = width;
+      previewCanvasEl.height = height;
       const ctx = previewCanvasEl.getContext('2d');
 
-      // 1. Render PDF page 1 background
-      await page.render({ canvasContext: ctx, viewport }).promise;
+      let renderedBackground = false;
+      if (pdfjsDoc) {
+        try {
+          const page = await pdfjsDoc.getPage(1);
+          const scale = width / page.getViewport({ scale: 1 }).width;
+          const viewport = page.getViewport({ scale });
+          previewCanvasEl.width = viewport.width;
+          previewCanvasEl.height = viewport.height;
+          await page.render({ canvasContext: ctx, viewport }).promise;
+          renderedBackground = true;
+        } catch (e) {
+          console.warn('PDF.js live preview background notice:', e);
+        }
+      }
 
-      // 2. Overlay Watermark Text
+      if (!renderedBackground) {
+        // Fallback document background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, previewCanvasEl.width, previewCanvasEl.height);
+        ctx.strokeStyle = '#cbd5e1';
+        ctx.strokeRect(0, 0, previewCanvasEl.width, previewCanvasEl.height);
+
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 14px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Sample Document Preview (Page 1)', 24, 35);
+        
+        ctx.fillStyle = '#e2e8f0';
+        for (let y = 60; y < previewCanvasEl.height - 50; y += 16) {
+          ctx.fillRect(24, y, previewCanvasEl.width - 48, 7);
+        }
+      }
+
+      // Overlay Watermark Text
       const text = textInputEl ? textInputEl.value.trim() : 'CONFIDENTIAL';
       if (!text) return;
 
       const layout = layoutSelectEl ? layoutSelectEl.value : 'diagonal';
-      const fontSize = parseInt(fontSizeInputEl ? fontSizeInputEl.value : '48', 10) * scale;
+      const fontSize = parseInt(fontSizeInputEl ? fontSizeInputEl.value : '48', 10) * 0.7;
       const opacity = parseFloat(opacityInputEl ? opacityInputEl.value : '0.4');
 
       ctx.save();
@@ -2320,8 +2542,8 @@ window.DocuWatermark = (function () {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      const cx = viewport.width / 2;
-      const cy = viewport.height / 2;
+      const cx = previewCanvasEl.width / 2;
+      const cy = previewCanvasEl.height / 2;
 
       if (layout === 'diagonal') {
         ctx.translate(cx, cy);
@@ -2330,21 +2552,20 @@ window.DocuWatermark = (function () {
       } else if (layout === 'horizontal') {
         ctx.fillText(text, cx, cy);
       } else if (layout === 'header') {
-        ctx.fillText(text, cx, 40 * scale);
+        ctx.fillText(text, cx, 40);
       } else if (layout === 'footer') {
-        ctx.fillText(text, cx, viewport.height - (30 * scale));
+        ctx.fillText(text, cx, previewCanvasEl.height - 35);
       }
-
       ctx.restore();
 
-      // 3. Overlay sample page number if enabled
+      // Page numbers preview
       if (pageNumbersCheckboxEl && pageNumbersCheckboxEl.checked) {
         ctx.save();
-        ctx.globalAlpha = 0.7;
+        ctx.globalAlpha = 0.75;
         ctx.fillStyle = '#475569';
-        ctx.font = `12px sans-serif`;
+        ctx.font = '11px sans-serif';
         ctx.textAlign = 'right';
-        ctx.fillText(`Page 1 of ${pdfjsDoc.numPages}`, viewport.width - 20, viewport.height - 15);
+        ctx.fillText(`Page 1 of ${currentTotalPages || 1}`, previewCanvasEl.width - 24, previewCanvasEl.height - 15);
         ctx.restore();
       }
 
@@ -2389,7 +2610,6 @@ window.DocuWatermark = (function () {
       for (let i = 0; i < totalPages; i++) {
         const pageNum = i + 1;
 
-        // Check if page fits selected target range
         let shouldStamp = true;
         if (pageRange === 'first' && pageNum !== 1) shouldStamp = false;
         if (pageRange === 'odd' && pageNum % 2 === 0) shouldStamp = false;
@@ -2403,10 +2623,8 @@ window.DocuWatermark = (function () {
           const textHeight = font.heightAtSize(fontSize);
 
           if (layout === 'diagonal') {
-            // Draw diagonally across the center
             const angle = 45;
             const radians = (angle * Math.PI) / 180;
-            // Center calculation factoring in rotation
             const x = (width - (textWidth * Math.cos(radians) - textHeight * Math.sin(radians))) / 2;
             const y = (height - (textWidth * Math.sin(radians) + textHeight * Math.cos(radians))) / 2;
 
@@ -2449,7 +2667,6 @@ window.DocuWatermark = (function () {
           }
         }
 
-        // Add page numbers if enabled
         if (addPageNumbers) {
           const pageStr = `Page ${pageNum} of ${totalPages}`;
           const pageStrWidth = regularFont.widthOfTextAtSize(pageStr, 10);
@@ -2507,6 +2724,7 @@ window.DocuWatermark = (function () {
 
   return {
     init,
+    loadPdfFile,
     setColor,
     setPresetText,
     updateLivePreview,
@@ -2516,8 +2734,7 @@ window.DocuWatermark = (function () {
 })();
 
 
-
-/* ========== word-editor.js ========== */
+/* ==================== word-editor.js ==================== */
 /**
  * DocuFlow Studio - Word & Rich-Text Editor Module
  * Features:
@@ -3120,7 +3337,7 @@ Authorization: Bearer &lt;token&gt;
 })();
 
 
-/* ========== app.js ========== */
+/* ==================== app.js ==================== */
 /**
  * DocuFlow Studio - Main Application Controller
  * Handles routing, sidebar navigation, keyboard shortcuts, and initialization
@@ -3129,7 +3346,7 @@ Authorization: Bearer &lt;token&gt;
 window.DocuApp = (function () {
   'use strict';
 
-  let currentTab = 'editor'; // 'editor' | 'merge' | 'organize' | 'watermark'
+  let currentTab = 'hub'; // 'hub' (default!) | 'editor' | 'merge' | 'organize' | 'watermark'
 
   function init() {
     // 1. Initialize Submodules
@@ -3138,25 +3355,31 @@ window.DocuApp = (function () {
     if (window.DocuOrganize) DocuOrganize.init();
     if (window.DocuWatermark) DocuWatermark.init();
 
-    // 2. Setup Navigation
+    // 2. Setup Hub Universal Dropzone
+    setupUniversalHubDropzone();
+
+    // 3. Setup Navigation
     setupNavigation();
 
-    // 3. Setup Mobile Drawer
+    // 4. Setup Mobile Drawer
     setupMobileSidebar();
 
-    // 4. Setup Keyboard Shortcuts
+    // 5. Setup Keyboard Shortcuts
     setupKeyboardShortcuts();
 
-    // 5. Initialize Lucide Icons
+    // 6. Initialize Lucide Icons
     refreshIcons();
+
+    // Set initial view to Hub
+    switchTab('hub');
 
     // Welcome toast
     setTimeout(() => {
       DocuUtils.showToast(
         'DocuFlow Studio Ready',
-        '100% Client-Side Private Document Workspace. Zero data leaves your machine.',
+        '100% Client-Side Private Document Workspace. Select any tool to begin.',
         'info',
-        4000
+        3500
       );
     }, 400);
   }
@@ -3173,8 +3396,6 @@ window.DocuApp = (function () {
   }
 
   function switchTab(tabId) {
-    if (tabId === currentTab) return;
-
     // Hide all tab panels
     document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.add('hidden');
@@ -3200,41 +3421,66 @@ window.DocuApp = (function () {
 
     currentTab = tabId;
 
-    // Update Header Label & Sample Button
+    // Update Header Label, Back Button, & Sample Button
     const headerLabel = document.getElementById('header-workspace-label');
+    const headerBackBtn = document.getElementById('header-back-hub-btn');
     const headerSampleBtn = document.getElementById('header-sample-btn');
+    const headerSampleText = document.getElementById('header-sample-text');
+
+    if (headerBackBtn) {
+      if (tabId === 'hub') {
+        headerBackBtn.classList.add('hidden');
+        headerBackBtn.classList.remove('flex');
+      } else {
+        headerBackBtn.classList.remove('hidden');
+        headerBackBtn.classList.add('flex');
+      }
+    }
 
     const meta = {
+      hub: {
+        label: 'hub',
+        hasSample: false
+      },
       editor: {
         label: 'editor',
+        hasSample: true,
         sampleText: 'Sample Tech Spec',
-        sampleAction: () => DocuEditor.loadTemplate(DocuEditor.TEMPLATES ? DocuEditor.TEMPLATES.techSpec : '', 'Tech-Spec')
+        sampleAction: () => DocuEditor.loadTemplate(DocuEditor.TEMPLATES ? DocuEditor.TEMPLATES.techSpec : '', 'Engineering-Tech-Spec')
       },
       merge: {
         label: 'pdf-merge',
-        sampleText: 'Load 2 Demo PDFs',
+        hasSample: true,
+        sampleText: 'Demo PDFs',
         sampleAction: () => DocuMerge.loadSamplePdf()
       },
       organize: {
         label: 'pdf-organize',
-        sampleText: 'Load 4-Page Demo PDF',
+        hasSample: true,
+        sampleText: 'Demo PDF',
         sampleAction: () => DocuOrganize.loadSamplePdf()
       },
       watermark: {
         label: 'pdf-watermark',
-        sampleText: 'Load Sample NDA',
+        hasSample: true,
+        sampleText: 'Demo NDA',
         sampleAction: () => DocuWatermark.loadSamplePdf()
       }
     };
 
     if (meta[tabId]) {
       if (headerLabel) headerLabel.textContent = meta[tabId].label;
+
       if (headerSampleBtn) {
-        headerSampleBtn.innerHTML = `
-          <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-          <span>${meta[tabId].sampleText}</span>
-        `;
-        headerSampleBtn.onclick = meta[tabId].sampleAction;
+        if (meta[tabId].hasSample) {
+          headerSampleBtn.classList.remove('hidden');
+          headerSampleBtn.classList.add('flex');
+          if (headerSampleText) headerSampleText.textContent = meta[tabId].sampleText;
+          headerSampleBtn.onclick = meta[tabId].sampleAction;
+        } else {
+          headerSampleBtn.classList.add('hidden');
+          headerSampleBtn.classList.remove('flex');
+        }
       }
     }
 
@@ -3243,6 +3489,68 @@ window.DocuApp = (function () {
 
     // Re-render icons if needed
     refreshIcons();
+  }
+
+  function setupUniversalHubDropzone() {
+    const hubDropzone = document.getElementById('hub-universal-dropzone');
+    const hubFileInput = document.getElementById('hub-file-input');
+
+    if (hubDropzone) {
+      DocuUtils.setupDropZone(hubDropzone, ['.pdf', '.docx', '.txt', '.html'], handleUniversalFiles);
+    }
+
+    if (hubFileInput) {
+      hubFileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleUniversalFiles(Array.from(e.target.files));
+          hubFileInput.value = '';
+        }
+      });
+    }
+  }
+
+  function triggerUniversalUpload() {
+    const input = document.getElementById('hub-file-input');
+    if (input) {
+      input.value = '';
+      input.click();
+    }
+  }
+
+  function handleUniversalFiles(files) {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    if (ext === 'docx' || ext === 'txt' || ext === 'html') {
+      switchTab('editor');
+      setTimeout(() => {
+        const editorFileInput = document.getElementById('editor-file-input');
+        if (window.DocuEditor) {
+          // Direct dispatch to editor
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          if (editorFileInput) {
+            editorFileInput.files = dt.files;
+            editorFileInput.dispatchEvent(new Event('change'));
+          }
+        }
+      }, 100);
+    } else if (ext === 'pdf') {
+      if (files.length > 1) {
+        // Multiple PDFs -> Route to Merge tool
+        switchTab('merge');
+        setTimeout(() => {
+          if (window.DocuMerge) DocuMerge.handleFilesAdded(files);
+        }, 100);
+      } else {
+        // Single PDF -> Route to Organize tool
+        switchTab('organize');
+        setTimeout(() => {
+          if (window.DocuOrganize) DocuOrganize.loadPdfFile(file);
+        }, 100);
+      }
+    }
   }
 
   function setupMobileSidebar() {
@@ -3273,7 +3581,6 @@ window.DocuApp = (function () {
 
   function setupKeyboardShortcuts() {
     window.addEventListener('keydown', (e) => {
-      // Ctrl+S or Cmd+S to export current document
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
         if (currentTab === 'editor') {
@@ -3314,6 +3621,7 @@ window.DocuApp = (function () {
   return {
     init,
     switchTab,
+    triggerUniversalUpload,
     openPrivacyModal,
     closePrivacyModal,
     refreshIcons
@@ -3328,8 +3636,6 @@ if (typeof document !== 'undefined' && document.addEventListener) {
 }
 
 
-
   </script>
 </body>
 </html>
-

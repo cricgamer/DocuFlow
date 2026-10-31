@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ScreenEcho — Instant Zero-Login P2P Screen Sharing via WebRTC</title>
+  <title>ScreenEcho — Instant P2P Screen Beam via WebRTC</title>
   
   <!-- SEO Meta Tags -->
-  <meta name="description" content="ScreenEcho is a free, instant, zero-login global peer-to-peer screen-beam utility. Share your live desktop screen or browser tab with anyone using a simple 4-digit code or QR code via WebRTC.">
+  <meta name="description" content="ScreenEcho is a free, instant, zero-login peer-to-peer screen sharing utility. Beam your live screen or browser tab anywhere in the world with a 4-digit code via WebRTC.">
   <meta name="keywords" content="free screen share online no login, instant browser screen beam, share screen peer to peer webrtc, zero latency screen share, p2p screen mirror, no account screen share">
   <meta name="author" content="ScreenEcho">
   
   <!-- Open Graph / Social Meta -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="ScreenEcho — Instant Zero-Login P2P Screen Sharing">
-  <meta property="og:description" content="Beam your screen instantly to any device worldwide with a 4-digit code. Zero accounts, zero installs, zero server lag.">
+  <meta property="og:title" content="ScreenEcho — Ultra-Fast P2P Screen Sharing">
+  <meta property="og:description" content="Beam your live screen instantly to any device with a 4-digit code. Zero accounts, zero installs, zero middleman lag.">
   <meta property="og:image" content="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80">
   <meta name="twitter:card" content="summary_large_image">
 
@@ -29,31 +29,35 @@
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            brand: {
-              50: '#eef2ff',
-              100: '#e0e7ff',
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              700: '#4338ca',
+            obsidian: {
+              950: '#050505',
+              900: '#090a0d',
+              850: '#0e1015',
+              800: '#141720',
+              700: '#1e2230',
             },
-            dark: {
-              950: '#090a0f',
-              900: '#0f111a',
-              850: '#151824',
-              800: '#1c2030',
-              700: '#282e44',
+            gold: {
+              50: '#fffdf5',
+              100: '#FCF6BA',
+              200: '#FBF5B7',
+              300: '#e8ce78',
+              400: '#d4af37',
+              500: '#BF953F',
+              600: '#B38728',
+              700: '#AA771C',
+              800: '#7a5410',
+              900: '#483005',
             }
           },
           animation: {
-            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
-            'glow': 'glow 2.5s ease-in-out infinite alternate',
+            'pulse-slow': 'pulse 3.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'gold-shimmer': 'goldShimmer 3s ease-in-out infinite alternate',
+            'spin-slow': 'spin 12s linear infinite',
           },
           keyframes: {
-            glow: {
-              '0%': { boxShadow: '0 0 15px -3px rgba(99, 102, 241, 0.3)' },
-              '100%': { boxShadow: '0 0 35px 2px rgba(99, 102, 241, 0.7)' },
+            goldShimmer: {
+              '0%': { opacity: '0.4', filter: 'drop-shadow(0 0 15px rgba(212, 175, 55, 0.3))' },
+              '100%': { opacity: '0.9', filter: 'drop-shadow(0 0 30px rgba(252, 246, 186, 0.6))' }
             }
           }
         }
@@ -64,7 +68,7 @@
   <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -76,43 +80,99 @@
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
   <style>
-    /* Custom Scrollbar */
+    /* Custom Gold/Obsidian Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090a0f; }
-    ::-webkit-scrollbar-thumb { background: #282e44; border-radius: 9999px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4f46e5; }
+    ::-webkit-scrollbar-track { background: #050505; }
+    ::-webkit-scrollbar-thumb { background: #332612; border-radius: 9999px; border: 1px solid rgba(191, 149, 63, 0.3); }
+    ::-webkit-scrollbar-thumb:hover { background: #B38728; }
     
     /* Background subtle grid pattern */
-    .bg-grid {
-      background-size: 36px 36px;
+    .bg-obsidian-grid {
+      background-size: 40px 40px;
       background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        linear-gradient(to right, rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
     }
     
-    /* Radial glow backdrop */
-    .radial-glow {
-      background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, rgba(15, 17, 26, 0) 70%);
+    /* Metallic Gold Text Gradient */
+    .text-gold-metallic {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 30%, #B38728 60%, #FBF5B7 85%, #AA771C 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* Glass card utility */
-    .glass-panel {
-      background: rgba(15, 17, 26, 0.75);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Champagne Soft Glow */
+    .text-gold-glow {
+      text-shadow: 0 0 25px rgba(212, 175, 55, 0.45);
     }
 
-    /* Fullscreen video container */
-    :fullscreen #video-wrapper, :-webkit-full-screen #video-wrapper {
-      width: 100vw !important;
-      height: 100vh !important;
-      max-width: 100vw !important;
-      border-radius: 0 !important;
-      border: none !important;
+    /* Ambient Radial Aura */
+    .gold-radial-aura {
+      background: radial-gradient(circle at 50% 0%, rgba(191, 149, 63, 0.16) 0%, rgba(170, 119, 28, 0.04) 45%, rgba(5, 5, 5, 0) 75%);
     }
 
-    /* Theater Mode Styles: Expands viewer to full viewport with auto-hiding chrome */
+    /* Luxury Obsidian Glass Panel */
+    .luxury-card {
+      background: rgba(9, 10, 13, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(191, 149, 63, 0.22);
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(191, 149, 63, 0.08);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .luxury-card:hover {
+      border-color: rgba(252, 246, 186, 0.4);
+      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.9), 0 0 35px -5px rgba(191, 149, 63, 0.18);
+    }
+
+    /* Metallic Gold Shimmer Action Button */
+    .btn-gold-luxury {
+      background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+      background-size: 200% 200%;
+      color: #050505;
+      font-weight: 800;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(191, 149, 63, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn-gold-luxury:hover {
+      background-position: right center;
+      box-shadow: 0 15px 35px -5px rgba(252, 246, 186, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-gold-luxury::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(60deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+      transform: rotate(45deg) translateX(-150%);
+      transition: all 0.75s ease;
+    }
+
+    .btn-gold-luxury:hover::after {
+      transform: rotate(45deg) translateX(150%);
+    }
+
+    /* Scroll Reveal Transition */
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .scroll-reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Theater Mode Styles: Fills screen cleanly with floating controls */
     .theater-active {
       position: fixed !important;
       inset: 0 !important;
@@ -120,7 +180,7 @@
       height: 100vh !important;
       max-width: 100vw !important;
       max-height: 100vh !important;
-      z-index: 50 !important;
+      z-index: 9999 !important;
       background: #000000 !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -149,54 +209,65 @@
       border-radius: 0 !important;
       border: none !important;
     }
+
+    /* Native Fullscreen Video Fit */
+    :fullscreen #video-wrapper, :-webkit-full-screen #video-wrapper {
+      width: 100vw !important;
+      height: 100vh !important;
+      max-width: 100vw !important;
+      border-radius: 0 !important;
+      border: none !important;
+    }
   </style>
 </head>
 
-<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brand-500 selection:text-white bg-grid relative overflow-x-hidden">
-  <!-- Ambient Gradient Aura -->
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] radial-glow pointer-events-none -z-10"></div>
-  <div class="fixed -top-40 right-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
-  <div class="fixed top-60 -left-20 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+<body class="bg-obsidian-950 text-neutral-100 min-h-screen flex flex-col font-sans selection:bg-gold-500 selection:text-black bg-obsidian-grid relative overflow-x-hidden">
+  
+  <!-- Ambient Obsidian Gold Lighting Elements -->
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[550px] gold-radial-aura pointer-events-none -z-10"></div>
+  <div class="fixed -top-32 right-12 w-96 h-96 bg-gold-600/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse-slow"></div>
+  <div class="fixed top-96 -left-20 w-80 h-80 bg-gold-700/5 rounded-full blur-3xl pointer-events-none -z-10"></div>
 
   <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none max-w-sm w-full"></div>
 
   <!-- Top Navigation Header -->
-  <header class="w-full border-b border-white/5 glass-panel sticky top-0 z-40">
+  <header class="w-full border-b border-gold-500/20 luxury-card sticky top-0 z-40">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-      <!-- Logo & Brand -->
+      
+      <!-- Brand & Gold Emblem -->
       <a href="./" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-brand-500/20 group-hover:shadow-brand-500/40 transition-all duration-300">
-          <div class="w-full h-full bg-dark-950 rounded-[11px] flex items-center justify-center">
-            <i data-lucide="cast" class="w-5 h-5 text-indigo-400 group-hover:scale-110 transition-transform"></i>
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-gold-700 via-gold-400 to-gold-200 p-[1px] shadow-lg shadow-gold-500/20 group-hover:shadow-gold-400/40 transition-all duration-300">
+          <div class="w-full h-full bg-obsidian-950 rounded-[11px] flex items-center justify-center">
+            <i data-lucide="cast" class="w-5 h-5 text-gold-400 group-hover:scale-110 transition-transform"></i>
           </div>
         </div>
         <div class="flex flex-col">
           <div class="flex items-center gap-2">
-            <span class="font-bold text-lg tracking-tight text-white group-hover:text-brand-400 transition-colors">ScreenEcho</span>
-            <span class="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">P2P Core</span>
+            <span class="font-extrabold text-lg tracking-tight text-white group-hover:text-gold-200 transition-colors">ScreenEcho</span>
+            <span class="text-[9px] font-bold tracking-widest uppercase px-2 py-0.5 rounded-full bg-gold-500/10 text-gold-300 border border-gold-500/30">GOLD EDITION</span>
           </div>
         </div>
       </a>
 
       <!-- Right Header Actions -->
       <div class="flex items-center gap-3">
-        <!-- Live WebRTC Status Pill -->
-        <div id="webrtc-status-pill" class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-dark-900 border border-white/10 text-slate-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>STUN Ready</span>
+        <!-- Live STUN/TURN Health Badge -->
+        <div id="webrtc-status-pill" class="hidden sm:flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-obsidian-900 border border-gold-500/30 text-gold-200/90 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-gold-400 animate-pulse"></span>
+          <span>STUN / Relay Online</span>
         </div>
 
         <!-- Creator Support Button (Buy Me a Coffee) -->
         <a href="https://buymeacoffee.com" target="_blank" rel="noopener noreferrer" 
-           class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30 hover:bg-amber-500/20 hover:border-amber-500/50 transition-all shadow-sm">
-          <i data-lucide="coffee" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span class="hidden xs:inline">Buy Coffee</span>
+           class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gold-500/10 text-gold-200 border border-gold-500/30 hover:bg-gold-500/20 hover:border-gold-400 transition-all shadow-sm">
+          <i data-lucide="coffee" class="w-3.5 h-3.5 text-gold-400"></i>
+          <span class="hidden xs:inline">Support</span>
         </a>
 
         <!-- GitHub / Open Source Link -->
         <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
-           class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all flex items-center justify-center" title="View Source on GitHub">
+           class="p-2 rounded-xl text-neutral-400 hover:text-gold-300 hover:bg-white/5 border border-transparent hover:border-gold-500/30 transition-all flex items-center justify-center" title="View Source on GitHub">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
           </svg>
@@ -206,33 +277,33 @@
   </header>
 
   <!-- Main Hero Section & Core Interactive Utility -->
-  <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-16 w-full">
+  <main class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-20 w-full">
     
     <!-- Hero Title & Value Proposition -->
-    <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-      <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-indigo-300 mb-4 shadow-inner">
-        <i data-lucide="zap" class="w-3.5 h-3.5 text-indigo-400"></i>
-        <span>Zero-login • Direct Browser-to-Browser • End-to-End Encrypted</span>
+    <div class="text-center max-w-2xl mx-auto mb-10 scroll-reveal">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-obsidian-900 border border-gold-500/30 text-gold-200 mb-5 shadow-lg">
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-gold-400"></i>
+        <span>Zero Login • Global STUN/TURN Traversal • Direct P2P Encryption</span>
       </div>
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-3 leading-tight">
-        Beam Your Screen. <br class="hidden sm:inline">
-        <span class="bg-gradient-to-r from-indigo-400 via-brand-400 to-cyan-400 bg-clip-text text-transparent">Instant P2P. Zero Lag.</span>
+      <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+        Beam Your Screen. <br>
+        <span class="text-gold-metallic text-gold-glow">Direct. Private. Instant.</span>
       </h1>
-      <p class="text-sm sm:text-base text-slate-400 leading-relaxed">
-        Share your live display, app window, or browser tab with anyone across the globe using just a 4-digit code. No software to install, no sign-up required.
+      <p class="text-sm sm:text-base text-neutral-400 leading-relaxed font-light">
+        Share your live browser tab, window, or desktop across Mac, Windows, iOS, and Android using an ephemeral 4-digit code. Zero accounts, zero server storage, zero latency.
       </p>
     </div>
 
     <!-- Mode Selector Tabs (Broadcaster vs. Receiver) -->
-    <div class="flex justify-center mb-8">
-      <div class="p-1.5 glass-panel rounded-2xl flex items-center gap-1 border border-white/10 max-w-md w-full shadow-xl">
+    <div class="flex justify-center mb-8 scroll-reveal">
+      <div class="p-1.5 luxury-card rounded-2xl flex items-center gap-1 border border-gold-500/30 max-w-md w-full shadow-2xl">
         <button id="tab-broadcast-btn" onclick="switchTab('broadcast')"
-          class="flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-lg shadow-brand-500/25">
+          class="flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-extrabold transition-all duration-300 btn-gold-luxury">
           <i data-lucide="screen-share" class="w-4 h-4"></i>
           <span>Share Screen</span>
         </button>
         <button id="tab-watch-btn" onclick="switchTab('watch')"
-          class="flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5">
+          class="flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 text-neutral-400 hover:text-gold-200 hover:bg-white/5">
           <i data-lucide="monitor-play" class="w-4 h-4"></i>
           <span>Watch Screen</span>
         </button>
@@ -245,49 +316,49 @@
     <div id="view-broadcast" class="transition-opacity duration-300">
       
       <!-- State 1: Ready to Start Sharing -->
-      <div id="broadcast-init-card" class="glass-panel rounded-3xl p-6 sm:p-10 border border-white/10 text-center relative overflow-hidden shadow-2xl">
-        <!-- Background decorative badge -->
-        <div class="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
+      <div id="broadcast-init-card" class="luxury-card rounded-3xl p-6 sm:p-12 border border-gold-500/25 text-center relative overflow-hidden shadow-2xl scroll-reveal">
+        <!-- Background decorative ambient blur -->
+        <div class="absolute -top-16 -right-16 w-56 h-56 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="max-w-md mx-auto flex flex-col items-center">
-          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-600/30 to-indigo-500/20 border border-brand-500/30 flex items-center justify-center mb-6 shadow-inner animate-pulse-slow">
-            <i data-lucide="monitor-up" class="w-10 h-10 text-brand-400"></i>
+          <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-gold-700/30 via-gold-500/20 to-gold-300/10 border border-gold-500/40 flex items-center justify-center mb-6 shadow-inner animate-pulse-slow">
+            <i data-lucide="monitor-up" class="w-10 h-10 text-gold-300"></i>
           </div>
 
-          <h2 class="text-2xl font-bold text-white mb-2">Ready to broadcast your screen?</h2>
-          <p class="text-sm text-slate-400 mb-8 leading-relaxed">
-            Choose any monitor, application, or browser tab. A unique 4-digit session code & QR code will be generated instantly.
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mb-2">Ready to broadcast your screen?</h2>
+          <p class="text-xs sm:text-sm text-neutral-400 mb-8 leading-relaxed">
+            Select any display, app window, or browser tab. A unique 4-digit session code & high-contrast QR code will be generated instantly.
           </p>
 
-          <!-- Stream Options Accordion / Controls -->
-          <div class="w-full bg-dark-900/60 rounded-2xl p-4 border border-white/5 mb-8 text-left space-y-3">
-            <div class="flex items-center justify-between text-xs text-slate-300">
-              <span class="font-medium flex items-center gap-2">
-                <i data-lucide="volume-2" class="w-3.5 h-3.5 text-indigo-400"></i>
-                Include System/Tab Audio
+          <!-- Stream Options -->
+          <div class="w-full bg-obsidian-900/90 rounded-2xl p-4 border border-gold-500/20 mb-8 text-left space-y-3 shadow-inner">
+            <div class="flex items-center justify-between text-xs text-neutral-300">
+              <span class="font-semibold flex items-center gap-2 text-gold-200">
+                <i data-lucide="volume-2" class="w-4 h-4 text-gold-400"></i>
+                Include System / Tab Audio
               </span>
               <label class="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" id="broadcast-audio-toggle" checked class="sr-only peer">
-                <div class="w-9 h-5 bg-dark-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+                <div class="w-9 h-5 bg-obsidian-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500"></div>
               </label>
             </div>
-            <div class="text-[11px] text-slate-400 flex items-center gap-1.5 pt-1 border-t border-white/5">
-              <i data-lucide="info" class="w-3 h-3 text-slate-400 flex-shrink-0"></i>
-              <span>Select "Share tab audio" or "Entire screen audio" in browser prompt.</span>
+            <div class="text-[11px] text-neutral-400 flex items-center gap-1.5 pt-2 border-t border-gold-500/10">
+              <i data-lucide="info" class="w-3.5 h-3.5 text-gold-400 flex-shrink-0"></i>
+              <span>Select "Share tab audio" or "Entire screen audio" in browser dialog.</span>
             </div>
           </div>
 
           <!-- Big Start Sharing CTA -->
           <button id="start-sharing-btn" onclick="startBroadcasting()"
-            class="w-full sm:w-auto min-w-[260px] flex items-center justify-center gap-3 py-4 px-8 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-brand-600 via-indigo-600 to-indigo-500 hover:from-brand-500 hover:to-indigo-400 shadow-xl shadow-brand-600/30 hover:shadow-brand-500/50 hover:scale-[1.02] active:scale-[0.99] transition-all duration-200">
-            <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
+            class="w-full sm:w-auto min-w-[280px] flex items-center justify-center gap-3 py-4 px-8 rounded-2xl text-base font-extrabold btn-gold-luxury shimmer-btn shadow-2xl">
+            <i data-lucide="sparkles" class="w-5 h-5 text-black"></i>
             <span>Start Sharing Screen</span>
           </button>
 
           <!-- Security note -->
-          <div class="flex items-center justify-center gap-2 mt-6 text-xs text-slate-400">
-            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
-            <span>Encrypted via WebRTC DTLS/SRTP • 100% Peer-to-Peer</span>
+          <div class="flex items-center justify-center gap-2 mt-6 text-xs text-neutral-400">
+            <i data-lucide="shield-check" class="w-4 h-4 text-gold-400"></i>
+            <span>End-to-End Encrypted via WebRTC DTLS/SRTP • 100% Zero-Knowledge</span>
           </div>
         </div>
       </div>
@@ -296,27 +367,27 @@
       <div id="broadcast-active-card" class="hidden space-y-6">
         
         <!-- Live Status Bar -->
-        <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-emerald-500/30 bg-emerald-950/10 flex flex-wrap items-center justify-between gap-4">
+        <div class="luxury-card rounded-2xl p-4 sm:p-5 border border-gold-500/30 flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
             <div class="relative flex items-center justify-center">
-              <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping absolute"></span>
-              <span class="w-3 h-3 rounded-full bg-emerald-500 relative"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-gold-400 animate-ping absolute"></span>
+              <span class="w-3.5 h-3.5 rounded-full bg-gold-400 relative"></span>
             </div>
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-bold text-emerald-400 text-sm tracking-wide uppercase">Live Broadcasting</span>
-                <span id="broadcast-stream-stats" class="text-xs px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">1080p • 60fps</span>
+                <span class="font-extrabold text-gold-200 text-sm tracking-wide uppercase">Broadcasting Live</span>
+                <span id="broadcast-stream-stats" class="text-xs px-2 py-0.5 rounded bg-gold-500/20 text-gold-300 font-mono border border-gold-500/30">1080p • 60fps</span>
               </div>
-              <p class="text-xs text-slate-400">Your screen is actively streaming over direct peer-to-peer</p>
+              <p class="text-xs text-neutral-400">Stream is actively beaming to connected viewers</p>
             </div>
           </div>
 
           <div class="flex items-center gap-3">
             <!-- Active Viewers Badge -->
-            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-dark-900 border border-white/10 text-xs font-semibold text-slate-300">
-              <i data-lucide="users" class="w-3.5 h-3.5 text-indigo-400"></i>
-              <span id="broadcaster-viewer-count">0</span>
-              <span class="text-slate-400 font-normal">watching</span>
+            <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-obsidian-900 border border-gold-500/30 text-xs font-semibold text-gold-200">
+              <i data-lucide="users" class="w-3.5 h-3.5 text-gold-400"></i>
+              <span id="broadcaster-viewer-count" class="font-bold">0</span>
+              <span class="text-neutral-400 font-normal">watching</span>
             </div>
 
             <!-- Stop Sharing Button -->
@@ -332,23 +403,23 @@
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
           
           <!-- Column A: 4-Digit Code & Quick Share Link (7 Cols) -->
-          <div class="md:col-span-7 glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col justify-between">
+          <div class="md:col-span-7 luxury-card rounded-3xl p-6 sm:p-8 border border-gold-500/25 flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Receiver Join Code</span>
-                <span class="text-xs text-indigo-400 flex items-center gap-1 font-medium">
-                  <i data-lucide="globe" class="w-3.5 h-3.5"></i> Global STUN Traversal
+                <span class="text-xs font-bold uppercase tracking-wider text-gold-400">Viewer Session Code</span>
+                <span class="text-xs text-gold-300 flex items-center gap-1 font-medium">
+                  <i data-lucide="globe" class="w-3.5 h-3.5"></i> Global STUN/TURN Tunnel
                 </span>
               </div>
 
               <!-- Huge 4-Digit Monospace PIN Display -->
-              <div class="bg-dark-900/90 border border-brand-500/30 rounded-2xl p-6 text-center mb-6 relative group overflow-hidden">
-                <div class="text-xs text-slate-400 mb-1">Tell your viewer to enter this code:</div>
-                <div id="broadcast-code-display" class="font-mono text-5xl sm:text-6xl font-extrabold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-brand-400 select-all py-1">
+              <div class="bg-obsidian-900/90 border border-gold-500/40 rounded-2xl p-6 text-center mb-6 relative group overflow-hidden shadow-2xl">
+                <div class="text-xs text-neutral-400 mb-1">Tell your viewer to enter this code:</div>
+                <div id="broadcast-code-display" class="font-mono text-5xl sm:text-6xl font-extrabold tracking-widest text-gold-metallic select-all py-1">
                   ----
                 </div>
                 <div class="mt-3 flex justify-center gap-2">
-                  <button onclick="copyCode()" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 transition-colors">
+                  <button onclick="copyCode()" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-gold-500/10 hover:bg-gold-500/20 text-gold-200 border border-gold-500/30 transition-all">
                     <i data-lucide="copy" class="w-3.5 h-3.5"></i>
                     <span id="copy-code-text">Copy 4-Digit Code</span>
                   </button>
@@ -357,25 +428,25 @@
 
               <!-- Shareable Direct Link -->
               <div class="space-y-2 mb-6">
-                <label class="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                <label class="text-xs font-bold text-gold-200 flex items-center justify-between">
                   <span>Shareable Direct Link</span>
-                  <span class="text-[11px] text-slate-400 font-normal">Auto-joins receiver immediately</span>
+                  <span class="text-[11px] text-neutral-400 font-normal">Auto-joins viewer immediately</span>
                 </label>
                 <div class="flex items-center gap-2">
                   <div class="relative flex-grow">
                     <input id="broadcast-share-link" type="text" readonly
-                      class="w-full bg-dark-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-slate-300 font-mono truncate select-all focus:outline-none focus:border-brand-500">
+                      class="w-full bg-obsidian-900 border border-gold-500/30 rounded-xl px-3.5 py-2.5 text-xs text-gold-100 font-mono truncate select-all focus:outline-none focus:border-gold-400">
                   </div>
-                  <button onclick="copyShareLink()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white transition-all shadow-md shadow-brand-600/20">
-                    <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                  <button onclick="copyShareLink()" class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-extrabold btn-gold-luxury">
+                    <i data-lucide="link" class="w-3.5 h-3.5 text-black"></i>
                     <span id="copy-link-text">Copy Link</span>
                   </button>
                 </div>
               </div>
 
               <!-- Instant Social Share Shortcuts -->
-              <div class="pt-4 border-t border-white/5 flex items-center justify-between flex-wrap gap-2">
-                <span class="text-xs text-slate-400">Send invite via:</span>
+              <div class="pt-4 border-t border-gold-500/10 flex items-center justify-between flex-wrap gap-2">
+                <span class="text-xs text-neutral-400">Send beam link via:</span>
                 <div class="flex items-center gap-2">
                   <button onclick="shareVia('whatsapp')" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-xs font-medium flex items-center gap-1 transition-colors">
                     <i data-lucide="message-circle" class="w-3 h-3"></i> WhatsApp
@@ -383,7 +454,7 @@
                   <button onclick="shareVia('telegram')" class="px-2.5 py-1.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20 hover:bg-sky-500/20 text-xs font-medium flex items-center gap-1 transition-colors">
                     <i data-lucide="send" class="w-3 h-3"></i> Telegram
                   </button>
-                  <button onclick="shareVia('twitter')" class="px-2.5 py-1.5 rounded-lg bg-zinc-800 text-slate-200 border border-white/10 hover:bg-zinc-700 text-xs font-medium flex items-center gap-1 transition-colors">
+                  <button onclick="shareVia('twitter')" class="px-2.5 py-1.5 rounded-lg bg-neutral-800 text-neutral-200 border border-white/10 hover:bg-neutral-700 text-xs font-medium flex items-center gap-1 transition-colors">
                     <i data-lucide="share-2" class="w-3 h-3"></i> X / Twitter
                   </button>
                 </div>
@@ -392,22 +463,22 @@
           </div>
 
           <!-- Column B: High-Contrast QR Code (5 Cols) -->
-          <div class="md:col-span-5 glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 flex flex-col items-center justify-center text-center">
-            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-              <i data-lucide="qr-code" class="w-4 h-4 text-brand-400"></i>
-              Scan with Mobile Camera
+          <div class="md:col-span-5 luxury-card rounded-3xl p-6 sm:p-8 border border-gold-500/25 flex flex-col items-center justify-center text-center">
+            <span class="text-xs font-bold uppercase tracking-wider text-gold-400 mb-3 flex items-center gap-1.5">
+              <i data-lucide="qr-code" class="w-4 h-4 text-gold-300"></i>
+              Scan with Mobile / iPad Camera
             </span>
-            <p class="text-xs text-slate-400 mb-4 max-w-xs">
-              No app needed. Point iPhone or Android camera to beam this screen instantly to mobile.
+            <p class="text-xs text-neutral-400 mb-4 max-w-xs">
+              No app required. Point your iPhone, iPad, or Android camera to watch the screen beam instantly.
             </p>
 
-            <!-- QR Code Card -->
-            <div class="p-3 bg-white rounded-2xl shadow-2xl border border-white/20 inline-block">
+            <!-- QR Code Card Container with subtle metallic border -->
+            <div class="p-3.5 bg-gold-100 rounded-2xl shadow-2xl border-2 border-gold-400 inline-block">
               <div id="qrcode-container" class="w-[180px] h-[180px] flex items-center justify-center"></div>
             </div>
 
-            <div class="mt-4 flex items-center gap-1.5 text-slate-400 text-[11px]">
-              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <div class="mt-4 flex items-center gap-1.5 text-neutral-400 text-[11px]">
+              <i data-lucide="smartphone" class="w-3.5 h-3.5 text-gold-400"></i>
               <span>Instant auto-connect on mobile browser</span>
             </div>
           </div>
@@ -415,19 +486,19 @@
         </div>
 
         <!-- Local Preview Monitor (Broadcaster check) -->
-        <div class="glass-panel rounded-2xl p-4 border border-white/10">
-          <div class="flex items-center justify-between mb-3 text-xs text-slate-400">
-            <span class="font-medium flex items-center gap-2 text-slate-300">
-              <i data-lucide="tv-2" class="w-3.5 h-3.5 text-indigo-400"></i>
+        <div class="luxury-card rounded-2xl p-4 border border-gold-500/20">
+          <div class="flex items-center justify-between mb-3 text-xs text-neutral-400">
+            <span class="font-bold flex items-center gap-2 text-gold-200">
+              <i data-lucide="tv-2" class="w-3.5 h-3.5 text-gold-400"></i>
               Local Broadcast Feed Monitor
             </span>
-            <span class="text-[11px]">Rendering local stream source</span>
+            <span class="text-[11px] text-neutral-500">Live preview of captured surface</span>
           </div>
-          <div class="w-full h-48 sm:h-64 bg-dark-950 rounded-xl overflow-hidden relative border border-white/5 flex items-center justify-center">
+          <div class="w-full h-48 sm:h-64 bg-black rounded-xl overflow-hidden relative border border-gold-500/20 flex items-center justify-center">
             <video id="broadcast-preview-video" autoplay muted playsinline class="w-full h-full object-contain"></video>
-            <div class="absolute bottom-3 left-3 px-2 py-1 rounded bg-black/70 backdrop-blur text-[10px] text-white/80 font-mono flex items-center gap-1.5">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Live Feed
+            <div class="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur border border-gold-500/30 text-[10px] text-gold-200 font-mono flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-gold-400"></span>
+              On-Air Feed
             </div>
           </div>
         </div>
@@ -442,36 +513,36 @@
     <div id="view-watch" class="hidden transition-opacity duration-300">
       
       <!-- State 1: Input Code Card -->
-      <div id="watch-input-card" class="glass-panel rounded-3xl p-6 sm:p-10 border border-white/10 text-center relative overflow-hidden shadow-2xl max-w-xl mx-auto">
-        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-5 text-indigo-400">
+      <div id="watch-input-card" class="luxury-card rounded-3xl p-6 sm:p-12 border border-gold-500/25 text-center relative overflow-hidden shadow-2xl max-w-xl mx-auto scroll-reveal">
+        <div class="w-16 h-16 rounded-2xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center mx-auto mb-5 text-gold-400 shadow-inner">
           <i data-lucide="radio" class="w-8 h-8"></i>
         </div>
 
-        <h2 class="text-2xl font-bold text-white mb-2">Watch Live Screen Share</h2>
-        <p class="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Watch Live Screen Share</h2>
+        <p class="text-xs sm:text-sm text-neutral-400 mb-6 max-w-sm mx-auto">
           Enter the 4-digit code provided by the presenter to beam their screen directly into your browser.
         </p>
 
         <!-- 4-Digit PIN Input Form -->
         <form onsubmit="handleWatchSubmit(event)" class="space-y-6">
           <div class="flex flex-col items-center justify-center">
-            <label for="watch-code-input" class="text-xs uppercase tracking-wider font-semibold text-slate-400 mb-2">4-Digit Session Code</label>
+            <label for="watch-code-input" class="text-xs uppercase tracking-widest font-bold text-gold-300 mb-2">4-Digit Session Code</label>
             <div class="relative max-w-xs w-full">
               <input id="watch-code-input" type="text" maxlength="4" placeholder="••••" autocomplete="off" inputmode="numeric"
-                class="w-full text-center font-mono text-4xl sm:text-5xl font-extrabold tracking-[0.5em] py-4 bg-dark-900 border-2 border-white/10 focus:border-brand-500 rounded-2xl text-white placeholder-slate-600 focus:outline-none focus:ring-4 focus:ring-brand-500/20 transition-all uppercase">
+                class="w-full text-center font-mono text-4xl sm:text-5xl font-extrabold tracking-[0.5em] py-4 bg-obsidian-900 border-2 border-gold-500/30 focus:border-gold-400 rounded-2xl text-gold-100 placeholder-neutral-700 focus:outline-none focus:ring-4 focus:ring-gold-500/20 transition-all uppercase shadow-inner">
             </div>
           </div>
 
           <button type="submit" id="watch-connect-btn"
-            class="w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-xl shadow-brand-600/30 hover:scale-[1.02] active:scale-[0.99] transition-all">
+            class="w-full sm:w-auto min-w-[240px] flex items-center justify-center gap-2.5 py-4 px-8 rounded-2xl text-base font-extrabold btn-gold-luxury shimmer-btn">
             <i data-lucide="play" class="w-5 h-5 fill-current"></i>
             <span>Connect & Watch</span>
           </button>
         </form>
 
-        <!-- Mobile tip -->
-        <div class="mt-8 pt-6 border-t border-white/5 flex items-center justify-center gap-2 text-xs text-slate-400">
-          <i data-lucide="camera" class="w-4 h-4 text-indigo-400"></i>
+        <!-- Mobile camera hint -->
+        <div class="mt-8 pt-6 border-t border-gold-500/10 flex items-center justify-center gap-2 text-xs text-neutral-400">
+          <i data-lucide="camera" class="w-4 h-4 text-gold-400"></i>
           <span>Alternatively, scan the presenter's QR code with your camera app.</span>
         </div>
       </div>
@@ -480,21 +551,21 @@
       <div id="watch-player-card" class="hidden space-y-4 transition-all duration-300">
         
         <!-- Connection Header & Status Pill -->
-        <div id="receiver-header-bar" class="glass-panel rounded-2xl px-4 py-3 border border-white/10 flex flex-wrap items-center justify-between gap-3 transition-all duration-300 transform opacity-100">
+        <div id="receiver-header-bar" class="luxury-card rounded-2xl px-4 py-3 border border-gold-500/30 flex flex-wrap items-center justify-between gap-3 transition-all duration-300 transform opacity-100">
           <div class="flex items-center gap-2.5">
             <span id="receiver-status-dot" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            <span id="receiver-status-text" class="text-xs font-semibold text-slate-200">Connecting to broadcaster...</span>
-            <span id="receiver-latency-pill" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">
+            <span id="receiver-status-text" class="text-xs font-semibold text-neutral-200">Connecting to broadcaster...</span>
+            <span id="receiver-latency-pill" class="hidden text-[10px] font-mono px-2 py-0.5 rounded bg-gold-500/20 text-gold-200 border border-gold-500/30">
               ⚡ 0ms latency
             </span>
           </div>
 
           <div class="flex items-center gap-2">
-            <span class="text-xs text-slate-400 font-mono">Session: <strong id="receiver-session-code" class="text-white">----</strong></span>
+            <span class="text-xs text-neutral-400 font-mono">Session: <strong id="receiver-session-code" class="text-gold-200">----</strong></span>
             
             <!-- Quick Theater Mode Pill -->
-            <button onclick="toggleTheaterMode()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-300 bg-white/5 hover:bg-white/10 border border-white/10 transition-colors flex items-center gap-1.5" title="Toggle Theater Mode (T)">
-              <i data-lucide="clapperboard" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <button onclick="toggleTheaterMode()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold text-gold-200 bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/30 transition-colors flex items-center gap-1.5" title="Toggle Theater Mode (T)">
+              <i data-lucide="clapperboard" class="w-3.5 h-3.5 text-gold-400"></i>
               <span class="hidden sm:inline">Theater</span>
             </button>
 
@@ -505,45 +576,66 @@
         </div>
 
         <!-- Main Screen Player Container -->
-        <div id="video-wrapper" class="relative group w-full bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video flex items-center justify-center transition-all duration-300">
+        <div id="video-wrapper" class="relative group w-full bg-black rounded-3xl overflow-hidden border border-gold-500/30 shadow-2xl aspect-video flex items-center justify-center transition-all duration-300">
           
           <!-- Remote Video Feed (Crucial: autoplay playsinline muted for iOS Safari & iPad) -->
           <video id="remote-video" autoplay playsinline muted class="w-full h-full object-contain cursor-default"></video>
 
           <!-- Loading Spinner Overlay -->
-          <div id="player-loading-spinner" class="absolute inset-0 bg-dark-950/80 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 z-20">
-            <div class="w-12 h-12 rounded-full border-4 border-brand-500/30 border-t-brand-500 animate-spin mb-4"></div>
-            <h3 class="text-lg font-bold text-white mb-1">Negotiating P2P WebRTC Beam</h3>
-            <p class="text-xs text-slate-400 max-w-xs">Establishing direct encrypted connection using public STUN servers...</p>
+          <div id="player-loading-spinner" class="absolute inset-0 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center text-center p-6 z-20 transition-all duration-300">
+            <div class="w-14 h-14 rounded-full border-4 border-gold-500/20 border-t-gold-400 animate-spin mb-4"></div>
+            <h3 class="text-lg font-extrabold text-white mb-1">Negotiating P2P WebRTC Beam</h3>
+            <p class="text-xs text-neutral-400 max-w-xs">Establishing direct encrypted connection with STUN & TURN fallback...</p>
+            <div class="mt-4 text-[11px] text-gold-300/80 font-mono">Max negotiation window: 8s</div>
+          </div>
+
+          <!-- Handshake Timeout Banner Overlay (Appears if P2P does not connect in 8 seconds) -->
+          <div id="player-timeout-banner" class="hidden absolute inset-0 z-30 flex flex-col items-center justify-center p-6 text-center backdrop-blur-md bg-black/90 border-2 border-gold-500/40 rounded-3xl transition-all duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-gold-500/10 border border-gold-500/40 flex items-center justify-center mb-4 text-gold-400">
+              <i data-lucide="refresh-cw" class="w-7 h-7"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-white mb-2">Connection Handshake Timed Out</h3>
+            <p class="text-xs text-gold-100/80 max-w-md mb-6 leading-relaxed">
+              The direct P2P UDP tunnel could not traverse NAT/firewalls within 8s. Click below to reconnect with a fresh TURN relay tunnel.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button onclick="retryConnectionWithFreshTunnel()" class="btn-gold-luxury shimmer-btn px-6 py-3 rounded-xl text-xs font-extrabold flex items-center gap-2">
+                <i data-lucide="zap" class="w-4 h-4 text-black"></i>
+                <span>Retry With Fresh Tunnel</span>
+              </button>
+              <button onclick="disconnectReceiver()" class="px-4 py-3 rounded-xl text-xs font-semibold text-neutral-300 hover:text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                Back to Code Input
+              </button>
+            </div>
           </div>
 
           <!-- Unmute Required Banner (Browser Autoplay Policy Handler) -->
           <div id="unmute-banner" class="hidden absolute top-4 left-1/2 -translate-x-1/2 z-30">
-            <button onclick="unmuteRemoteVideo()" class="flex items-center gap-2 px-4 py-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-lg shadow-brand-600/40 animate-bounce">
-              <i data-lucide="volume-x" class="w-4 h-4"></i>
+            <button onclick="unmuteRemoteVideo()" class="flex items-center gap-2 px-5 py-2.5 rounded-full btn-gold-luxury text-xs font-bold shadow-2xl animate-bounce">
+              <i data-lucide="volume-x" class="w-4 h-4 text-black"></i>
               <span>Click to Unmute Audio</span>
             </button>
           </div>
 
           <!-- Floating Modern Video Controls (Auto-hides on inactivity) -->
-          <div id="player-controls-bar" class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between p-3 rounded-2xl bg-dark-900/80 backdrop-blur-md border border-white/10 transition-all duration-300 opacity-0 group-hover:opacity-100">
+          <div id="player-controls-bar" class="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between p-3 rounded-2xl bg-obsidian-900/90 backdrop-blur-md border border-gold-500/30 transition-all duration-300 opacity-0 group-hover:opacity-100 shadow-2xl">
             
             <!-- Left Controls: Play/Pause, Audio Mute, Volume -->
             <div class="flex items-center gap-3">
-              <button onclick="toggleVideoPlay()" id="player-play-btn" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Play/Pause">
+              <button onclick="toggleVideoPlay()" id="player-play-btn" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Play/Pause">
                 <i data-lucide="pause" class="w-4 h-4"></i>
               </button>
 
               <div class="flex items-center gap-1.5">
-                <button onclick="toggleMute()" id="player-mute-btn" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Mute/Unmute">
+                <button onclick="toggleMute()" id="player-mute-btn" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Mute/Unmute">
                   <i data-lucide="volume-2" class="w-4 h-4"></i>
                 </button>
                 <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)"
-                  class="w-16 sm:w-20 accent-brand-500 h-1.5 bg-dark-800 rounded-lg cursor-pointer">
+                  class="w-16 sm:w-20 accent-gold-400 h-1.5 bg-obsidian-800 rounded-lg cursor-pointer">
               </div>
 
               <!-- Stream Resolution Badge -->
-              <span id="player-res-badge" class="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-white/5 text-slate-300">
+              <span id="player-res-badge" class="hidden sm:inline-block text-[11px] font-mono px-2 py-0.5 rounded bg-gold-500/10 text-gold-300 border border-gold-500/20">
                 1080p
               </span>
             </div>
@@ -551,27 +643,27 @@
             <!-- Right Controls: Theater Mode, Fit/Fill, Snapshot, PiP, Fullscreen -->
             <div class="flex items-center gap-1.5">
               <!-- Theater Mode Toggle Button -->
-              <button onclick="toggleTheaterMode()" id="theater-mode-btn" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Toggle Theater Mode (T)">
+              <button onclick="toggleTheaterMode()" id="theater-mode-btn" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Toggle Theater Mode (T)">
                 <i data-lucide="clapperboard" class="w-4 h-4"></i>
               </button>
 
               <!-- Aspect Ratio Toggle -->
-              <button onclick="toggleFitMode()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Toggle Fit/Fill">
+              <button onclick="toggleFitMode()" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Toggle Fit/Fill">
                 <i data-lucide="expand" class="w-4 h-4"></i>
               </button>
 
               <!-- Snapshot Capture -->
-              <button onclick="takeSnapshot()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Save Screenshot Snapshot">
+              <button onclick="takeSnapshot()" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Save Screenshot Snapshot">
                 <i data-lucide="camera" class="w-4 h-4"></i>
               </button>
 
               <!-- Picture in Picture -->
-              <button onclick="togglePiP()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Picture in Picture">
+              <button onclick="togglePiP()" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Picture in Picture">
                 <i data-lucide="picture-in-picture-2" class="w-4 h-4"></i>
               </button>
 
               <!-- Fullscreen -->
-              <button onclick="toggleFullscreen()" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors" title="Toggle Fullscreen (F)">
+              <button onclick="toggleFullscreen()" class="p-2 rounded-xl text-neutral-300 hover:text-gold-200 hover:bg-white/10 transition-colors" title="Toggle Fullscreen (F)">
                 <i data-lucide="maximize" class="w-4 h-4"></i>
               </button>
             </div>
@@ -587,56 +679,45 @@
     <!-- ========================================== -->
     <!-- VIRAL & GROWTH: ADSENSE BANNER PLACEHOLDER  -->
     <!-- ========================================== -->
-    <div class="mt-14 max-w-4xl mx-auto">
-      <div class="glass-panel rounded-2xl p-4 sm:p-5 border border-white/5 text-center relative overflow-hidden">
-        <div class="text-[10px] uppercase tracking-widest font-semibold text-slate-500 mb-2">Sponsored Space • Google AdSense Placement</div>
+    <div class="mt-14 max-w-4xl mx-auto scroll-reveal">
+      <div class="luxury-card rounded-2xl p-4 sm:p-5 border border-gold-500/20 text-center relative overflow-hidden">
+        <div class="text-[10px] uppercase tracking-widest font-bold text-gold-500/70 mb-2">Sponsored Space • Google AdSense Placement</div>
         
         <!-- Google AdSense Container Placeholder -->
-        <div class="w-full min-h-[90px] bg-dark-900/80 rounded-xl border border-dashed border-white/10 flex flex-col sm:flex-row items-center justify-between px-6 py-4 gap-4">
+        <div class="w-full min-h-[90px] bg-obsidian-900/90 rounded-xl border border-dashed border-gold-500/25 flex flex-col sm:flex-row items-center justify-between px-6 py-4 gap-4">
           <div class="flex items-center gap-4 text-left">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center flex-shrink-0 text-white font-bold">
-              <i data-lucide="cloud-lightning" class="w-5 h-5"></i>
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold-600 to-gold-300 flex items-center justify-center flex-shrink-0 text-black font-extrabold shadow-md">
+              <i data-lucide="cloud-lightning" class="w-5 h-5 text-black"></i>
             </div>
             <div>
-              <div class="text-sm font-semibold text-white">Deploy Fast Global Web Apps with Edge Networks</div>
-              <p class="text-xs text-slate-400">Zero cold starts, instant CDN deployment, and worldwide routing for modern dev teams.</p>
+              <div class="text-sm font-bold text-white">Deploy Ultra-Fast Global Web Apps with Edge Networks</div>
+              <p class="text-xs text-neutral-400">Zero cold starts, instant CDN deployment, and worldwide routing for modern dev teams.</p>
             </div>
           </div>
-          <button class="flex-shrink-0 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition-all">
+          <button class="flex-shrink-0 px-4 py-2 rounded-xl bg-gold-500/10 hover:bg-gold-500/25 border border-gold-500/30 text-gold-200 text-xs font-bold transition-all">
             Learn More
           </button>
         </div>
-
-        <!-- Real AdSense Tag Template for Production Users -->
-        <!--
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
-             data-ad-slot="XXXXXXXXXX"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-        -->
       </div>
     </div>
 
     <!-- ========================================== -->
     <!-- CREATOR SUPPORT / BUY ME A COFFEE BANNER    -->
     <!-- ========================================== -->
-    <div class="mt-8 max-w-4xl mx-auto">
-      <div class="glass-panel rounded-2xl p-6 border border-amber-500/20 bg-amber-500/[0.03] flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="mt-8 max-w-4xl mx-auto scroll-reveal">
+      <div class="luxury-card rounded-2xl p-6 border border-gold-500/30 bg-gold-500/[0.02] flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-4 text-center sm:text-left">
-          <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0 text-amber-400">
-            <i data-lucide="heart" class="w-6 h-6 fill-amber-400"></i>
+          <div class="w-12 h-12 rounded-2xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center flex-shrink-0 text-gold-400 shadow-inner">
+            <i data-lucide="heart" class="w-6 h-6 fill-gold-400"></i>
           </div>
           <div>
-            <h3 class="text-sm font-bold text-white">100% Free & Open-Source P2P Utility</h3>
-            <p class="text-xs text-slate-400">ScreenEcho runs with zero logins and zero user tracking. If this tool saved your presentation or meeting, consider supporting development!</p>
+            <h3 class="text-sm font-extrabold text-white">100% Free & Open-Source P2P Utility</h3>
+            <p class="text-xs text-neutral-400">ScreenEcho runs with zero logins and zero user tracking. If this tool saved your presentation or meeting, consider supporting development!</p>
           </div>
         </div>
         <a href="https://buymeacoffee.com" target="_blank" rel="noopener noreferrer"
-           class="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 transition-all shadow-lg shadow-amber-500/20">
-          <i data-lucide="coffee" class="w-4 h-4 fill-dark-950"></i>
+           class="flex-shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold btn-gold-luxury shimmer-btn">
+          <i data-lucide="coffee" class="w-4 h-4 text-black"></i>
           <span>Buy Me a Coffee</span>
         </a>
       </div>
@@ -645,66 +726,66 @@
     <!-- ========================================== -->
     <!-- FAQ ACCORDION SECTION (SEO OPTIMIZED)       -->
     <!-- ========================================== -->
-    <section class="mt-16 max-w-3xl mx-auto">
+    <section class="mt-16 max-w-3xl mx-auto scroll-reveal">
       <div class="text-center mb-8">
-        <h2 class="text-2xl font-bold text-white mb-2">Frequently Asked Questions</h2>
-        <p class="text-sm text-slate-400">Everything you need to know about instant peer-to-peer screen sharing.</p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">Frequently Asked Questions</h2>
+        <p class="text-xs sm:text-sm text-neutral-400">Everything you need to know about instant peer-to-peer screen sharing.</p>
       </div>
 
       <div class="space-y-3" id="faq-accordion-group">
         
         <!-- FAQ Item 1 -->
-        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all">
+        <div class="luxury-card rounded-2xl border border-gold-500/20 overflow-hidden transition-all">
           <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="text-sm font-semibold text-slate-200">How does ScreenEcho offer free screen share online with no login?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0"></i>
+            <span class="text-sm font-bold text-neutral-200">How does ScreenEcho offer free screen share online with no login?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 transition-transform duration-300 flex-shrink-0"></i>
           </button>
-          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-slate-400 leading-relaxed border-t border-white/5">
+          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-neutral-400 leading-relaxed border-t border-gold-500/10">
             ScreenEcho leverages native browser <strong>WebRTC</strong> (Web Real-Time Communication). Unlike traditional tools like Zoom or Teams that route your video through heavy corporate cloud servers, ScreenEcho connects the broadcaster directly to the receiver's browser. Because there are no middleman video servers buffering or processing your feed, there are zero server bandwidth bills — allowing ScreenEcho to be 100% free, fast, and accessible without signing up or creating an account.
           </div>
         </div>
 
         <!-- FAQ Item 2 -->
-        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all">
+        <div class="luxury-card rounded-2xl border border-gold-500/20 overflow-hidden transition-all">
           <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="text-sm font-semibold text-slate-200">Is my screen beam private and end-to-end encrypted?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0"></i>
+            <span class="text-sm font-bold text-neutral-200">Is my screen beam private and end-to-end encrypted?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 transition-transform duration-300 flex-shrink-0"></i>
           </button>
-          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-slate-400 leading-relaxed border-t border-white/5">
+          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-neutral-400 leading-relaxed border-t border-gold-500/10">
             Yes. Every WebRTC peer-to-peer media stream is natively encrypted end-to-end using <strong>DTLS</strong> (Datagram Transport Layer Security) and <strong>SRTP</strong> (Secure Real-time Transport Protocol). No third party, server, or ISP can eavesdrop or decrypt the video frames in transit. Furthermore, ScreenEcho does not record, store, or cache any screen data.
           </div>
         </div>
 
         <!-- FAQ Item 3 -->
-        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all">
+        <div class="luxury-card rounded-2xl border border-gold-500/20 overflow-hidden transition-all">
           <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="text-sm font-semibold text-slate-200">How does the 4-digit code connect across different Wi-Fi networks?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0"></i>
+            <span class="text-sm font-bold text-neutral-200">How does the 4-digit code connect cross-browser between Mac, iPad, and PC?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 transition-transform duration-300 flex-shrink-0"></i>
           </button>
-          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-slate-400 leading-relaxed border-t border-white/5">
-            To connect devices across routers, firewalls, and cellular networks, ScreenEcho uses free public <strong>Google STUN servers</strong> (<code class="bg-dark-900 px-1 py-0.5 rounded text-indigo-300">stun.l.google.com:19302</code>). STUN discovers each device's public IP address and NAT port mappings so the two browsers can handshake and establish a direct P2P tunnel using the 4-digit session code as the rendezvous key.
+          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-neutral-400 leading-relaxed border-t border-gold-500/10">
+            To connect devices across routers, cellular carriers, and Apple iCloud Private Relay, ScreenEcho uses redundant <strong>Google STUN servers</strong> alongside public <strong>TURN relay fallback endpoints</strong>. STUN maps the device's public address for direct zero-latency UDP transport; if strict mobile firewalls block UDP, the connection automatically routes through relay servers without failing.
           </div>
         </div>
 
         <!-- FAQ Item 4 -->
-        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all">
+        <div class="luxury-card rounded-2xl border border-gold-500/20 overflow-hidden transition-all">
           <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="text-sm font-semibold text-slate-200">Can I share system audio or tab sound with my screen?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0"></i>
+            <span class="text-sm font-bold text-neutral-200">Can I share system audio or tab sound with my screen?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 transition-transform duration-300 flex-shrink-0"></i>
           </button>
-          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-slate-400 leading-relaxed border-t border-white/5">
-            Yes! When you click "Start Sharing", your browser will display its native screen capture dialog. Simply toggle the "Share tab audio" or "Share system audio" checkbox in Chrome, Edge, or Firefox. The live high-fidelity audio stream will be beamed alongside the video directly to the receiver.
+          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-neutral-400 leading-relaxed border-t border-gold-500/10">
+            Yes! When you click "Start Sharing", your browser will display its native screen capture dialog. Simply toggle the "Share tab audio" or "Share system audio" checkbox in Chrome, Arc, Edge, or Firefox. The live high-fidelity audio stream will be beamed alongside the video directly to the receiver.
           </div>
         </div>
 
         <!-- FAQ Item 5 -->
-        <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden transition-all">
+        <div class="luxury-card rounded-2xl border border-gold-500/20 overflow-hidden transition-all">
           <button onclick="toggleFaq(this)" class="w-full px-5 py-4 text-left flex items-center justify-between gap-4 hover:bg-white/5 transition-colors">
-            <span class="text-sm font-semibold text-slate-200">Can someone watch the screen share on an iPhone or Android phone?</span>
-            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200 flex-shrink-0"></i>
+            <span class="text-sm font-bold text-neutral-200">Can someone watch the screen share on an iPhone or iPad Safari?</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-gold-400 transition-transform duration-300 flex-shrink-0"></i>
           </button>
-          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-slate-400 leading-relaxed border-t border-white/5">
-            Absolutely. While mobile operating systems restrict broad screen broadcasting from mobile browsers, mobile devices are fantastic <strong>receivers</strong>. Simply scan the presenter's QR code with your mobile camera or open the share link in Safari or Chrome to watch in full-screen real-time HD with audio.
+          <div class="faq-content hidden px-5 pb-5 pt-1 text-xs text-neutral-400 leading-relaxed border-t border-gold-500/10">
+            Absolutely. While mobile operating systems restrict broad desktop screen broadcasting from mobile browsers, mobile devices are fantastic <strong>receivers</strong>. Simply scan the presenter's QR code with your mobile camera or open the share link in Safari or Chrome to watch in full-screen real-time HD with audio.
           </div>
         </div>
 
@@ -714,18 +795,18 @@
   </main>
 
   <!-- Global Footer -->
-  <footer class="w-full border-t border-white/5 glass-panel py-8 mt-auto">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+  <footer class="w-full border-t border-gold-500/20 luxury-card py-8 mt-auto">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-400">
       <div class="flex items-center gap-2">
-        <i data-lucide="cast" class="w-4 h-4 text-brand-400"></i>
+        <i data-lucide="cast" class="w-4 h-4 text-gold-400"></i>
         <span><strong>ScreenEcho</strong> — Instant browser screen beam utility.</span>
       </div>
 
       <div class="flex items-center gap-6">
-        <a href="#view-broadcast" onclick="switchTab('broadcast')" class="hover:text-white transition-colors">Share Screen</a>
-        <a href="#view-watch" onclick="switchTab('watch')" class="hover:text-white transition-colors">Watch Screen</a>
-        <a href="#faq-accordion-group" class="hover:text-white transition-colors">FAQ</a>
-        <span class="text-slate-400">Peer-to-Peer WebRTC</span>
+        <a href="#view-broadcast" onclick="switchTab('broadcast')" class="hover:text-gold-200 transition-colors">Share Screen</a>
+        <a href="#view-watch" onclick="switchTab('watch')" class="hover:text-gold-200 transition-colors">Watch Screen</a>
+        <a href="#faq-accordion-group" class="hover:text-gold-200 transition-colors">FAQ</a>
+        <span class="text-gold-400/80 font-mono">WebRTC P2P</span>
       </div>
     </div>
   </footer>
@@ -736,7 +817,7 @@
   <script>
     /**
      * ScreenEcho — Complete Production-Grade P2P Screen Beam Engine
-     * Zero-login, zero-install, STUN-assisted WebRTC via PeerJS
+     * Zero-login, zero-install, Multi-STUN/TURN WebRTC via PeerJS
      */
 
     // --- State Variables ---
@@ -752,27 +833,42 @@
     let autoHideTimer = null;
     let isTheaterMode = false;
     let isControlsVisible = true;
+    let handshakeTimeoutTimer = null;
 
-    // Public STUN/TURN server configuration for global cross-border NAT traversal & mobile carrier compatibility
+    // Resilient Multi-tier STUN & Public TURN Relay Configuration
     const PEER_CONFIG = {
       debug: 1,
       config: {
         iceServers: [
+          // Google Public STUN
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
           { urls: 'stun:stun2.l.google.com:19302' },
           { urls: 'stun:stun3.l.google.com:19302' },
           { urls: 'stun:stun4.l.google.com:19302' },
-          { urls: 'stun:stun.services.mozilla.com' },
+          // Cloudflare Public STUN
+          { urls: 'stun:stun.cloudflare.com:3478' },
+          // OpenRelay Public STUN & Free TURN Relays for Strict Mobile / iCloud Private Relay NAT
+          { urls: 'stun:openrelay.metered.ca:80' },
           {
-            urls: [
-              'turn:eu-0.turn.peerjs.com:3478',
-              'turn:us-0.turn.peerjs.com:3478'
-            ],
-            username: 'peerjs',
-            credential: 'peerjsp'
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+          },
+          {
+            urls: 'turn:openrelay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+          },
+          {
+            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
           }
         ],
+        iceTransportPolicy: 'all',
+        bundlePolicy: 'max-bundle',
+        rtcpMuxPolicy: 'require',
         iceCandidatePoolSize: 10,
         sdpSemantics: 'unified-plan'
       }
@@ -792,12 +888,30 @@
       // Setup Player HUD auto-hide on inactivity & Theater Mode
       setupPlayerControlsAutoHide();
 
+      // Setup Intersection Observer for smooth luxury scroll reveals
+      setupScrollRevealAnimations();
+
       // Check URL parameters for instant join (e.g. ?code=4829 or #4829)
       handleUrlAutoJoin();
 
       // Listen for hash changes
       window.addEventListener('hashchange', handleUrlAutoJoin);
     });
+
+    /**
+     * Initializes smooth fade & slide scroll reveals for luxury aesthetic
+     */
+    function setupScrollRevealAnimations() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+    }
 
     /**
      * Sets up input formatting, auto-submitting on 4th digit, and smart paste parsing
@@ -812,7 +926,6 @@
         e.target.value = val;
 
         if (val.length === 4) {
-          // Subtle vibration feedback on supported mobile devices
           if (navigator.vibrate) navigator.vibrate(20);
           startWatching(val);
         }
@@ -822,7 +935,6 @@
       input.addEventListener('paste', (e) => {
         e.preventDefault();
         const text = (e.clipboardData || window.clipboardData).getData('text') || '';
-        // Extract 4 consecutive digits
         const match = text.match(/\b\d{4}\b/);
         if (match) {
           input.value = match[0];
@@ -908,13 +1020,13 @@
       if (isTheaterMode) {
         card.classList.add('theater-active');
         document.body.classList.add('overflow-hidden');
-        if (btn) btn.classList.add('text-brand-400', 'bg-white/10');
+        if (btn) btn.classList.add('text-gold-300', 'bg-gold-500/20');
         showToast('Theater Mode enabled (Press T or tap to toggle UI)', 'info');
         setTimeout(hideViewerToolbars, 1000);
       } else {
         card.classList.remove('theater-active');
         document.body.classList.remove('overflow-hidden');
-        if (btn) btn.classList.remove('text-brand-400', 'bg-white/10');
+        if (btn) btn.classList.remove('text-gold-300', 'bg-gold-500/20');
         showViewerToolbars();
       }
       lucide.createIcons();
@@ -995,13 +1107,11 @@
       }
 
       if (code && /^\d{4}$/.test(code)) {
-        // Switch to Watch Screen role
         switchTab('watch');
         const input = document.getElementById('watch-code-input');
         if (input) {
           input.value = code;
           showToast(`Loaded session code ${code} from link`, 'info');
-          // Automatically start connection
           setTimeout(() => startWatching(code), 400);
         }
       }
@@ -1018,14 +1128,14 @@
       const watchView = document.getElementById('view-watch');
 
       if (role === 'broadcast') {
-        broadcastTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-lg shadow-brand-500/25';
-        watchTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5';
+        broadcastTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-extrabold transition-all duration-300 btn-gold-luxury';
+        watchTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 text-neutral-400 hover:text-gold-200 hover:bg-white/5';
         
         broadcastView.classList.remove('hidden');
         watchView.classList.add('hidden');
       } else {
-        watchTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 bg-brand-600 text-white shadow-lg shadow-brand-500/25';
-        broadcastTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-200 text-slate-400 hover:text-white hover:bg-white/5';
+        watchTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-extrabold transition-all duration-300 btn-gold-luxury';
+        broadcastTabBtn.className = 'flex-1 flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 text-neutral-400 hover:text-gold-200 hover:bg-white/5';
         
         watchView.classList.remove('hidden');
         broadcastView.classList.add('hidden');
@@ -1043,27 +1153,19 @@
     // BROADCASTER LOGIC (Screen Capture & Signaling Host)
     // ========================================================
 
-    /**
-     * Generates a random 4-digit code (1000 - 9999)
-     */
     function generate4DigitCode() {
       return Math.floor(1000 + Math.random() * 9000).toString();
     }
 
-    /**
-     * Triggers screen capture and initializes WebRTC Peer Host
-     */
     async function startBroadcasting() {
-      // Check if browser supports screen capture
       if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-        showToast('Screen sharing is not supported by your current browser. Please use Chrome, Edge, Safari (macOS), or Firefox.', 'error');
+        showToast('Screen sharing is not supported by your current browser. Please use Chrome, Arc, Edge, Safari (macOS), or Firefox.', 'error');
         return;
       }
 
       const audioRequested = document.getElementById('broadcast-audio-toggle').checked;
 
       try {
-        // Request DisplayMedia from browser native prompt
         localStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
             cursor: "always",
@@ -1076,7 +1178,7 @@
           } : false
         });
 
-        // Listen for when user clicks native browser "Stop sharing" floating bar
+        // Listen for browser native toolbar stop sharing event
         const videoTrack = localStream.getVideoTracks()[0];
         if (videoTrack) {
           videoTrack.onended = () => {
@@ -1084,7 +1186,6 @@
             stopBroadcasting();
           };
 
-          // Extract resolution & frame rate settings
           const settings = videoTrack.getSettings();
           const resText = `${settings.width || 1920}×${settings.height || 1080} • ${Math.round(settings.frameRate || 60)}fps`;
           const statsBadge = document.getElementById('broadcast-stream-stats');
@@ -1110,9 +1211,6 @@
       }
     }
 
-    /**
-     * Initializes the PeerJS instance as broadcaster with custom 4-digit ID
-     */
     function initBroadcasterPeer() {
       currentSessionCode = generate4DigitCode();
       const peerId = PEER_PREFIX + currentSessionCode;
@@ -1126,7 +1224,6 @@
 
         broadcasterPeer = new Peer(peerId, PEER_CONFIG);
 
-        // When Peer is successfully registered on STUN / Signaling broker
         broadcasterPeer.on('open', (id) => {
           console.log('Broadcaster Peer online with ID:', id);
           onBroadcastingReady(currentSessionCode);
@@ -1141,6 +1238,16 @@
             if (call) {
               activeMediaCalls.set(receiverId, call);
               updateViewerCount();
+
+              // ICE Connection state monitoring for broadcaster
+              if (call.peerConnection) {
+                call.peerConnection.oniceconnectionstatechange = () => {
+                  console.log(`[Broadcaster ICE] with ${receiverId}:`, call.peerConnection.iceConnectionState);
+                  if (call.peerConnection.iceConnectionState === 'disconnected') {
+                    if (call.peerConnection.restartIce) call.peerConnection.restartIce();
+                  }
+                };
+              }
 
               call.on('close', () => {
                 activeMediaCalls.delete(receiverId);
@@ -1169,14 +1276,12 @@
 
           conn.on('open', () => {
             console.log('Data connection open with:', conn.peer);
-            // Re-verify call was dispatched
             if (!activeMediaCalls.has(conn.peer)) {
               sendScreenCallTo(conn.peer);
             }
-            showToast('Viewer connected!', 'success');
+            showToast('Viewer connected to your screen beam!', 'success');
           });
 
-          // Handle incoming messages
           conn.on('data', (data) => {
             if (data && data.type === 'ping') {
               conn.send({ type: 'pong', timestamp: data.timestamp });
@@ -1220,11 +1325,9 @@
           }
         });
 
-        // Handle PeerJS errors (e.g. ID taken collision)
         broadcasterPeer.on('error', (err) => {
           console.error('Broadcaster Peer error:', err);
           if (err.type === 'unavailable-id') {
-            // Collision on 4-digit code: pick another code and retry
             console.warn('Code collision, picking another 4-digit code...');
             initBroadcasterPeer();
           } else {
@@ -1238,32 +1341,27 @@
       }
     }
 
-    /**
-     * Updates UI once screen capture and Peer are active
-     */
     function onBroadcastingReady(code) {
       document.getElementById('broadcast-init-card').classList.add('hidden');
       document.getElementById('broadcast-active-card').classList.remove('hidden');
 
-      // Populate 4-digit code display
       document.getElementById('broadcast-code-display').textContent = code;
 
-      // Populate Share Link
       const baseUrl = window.location.href.split('#')[0].split('?')[0];
       const shareUrl = `${baseUrl}#${code}`;
       document.getElementById('broadcast-share-link').value = shareUrl;
 
-      // Render High-Contrast QR Code
+      // Render High-Contrast QR Code on Gold-White Card
       const qrContainer = document.getElementById('qrcode-container');
-      qrContainer.innerHTML = ''; // clear previous
+      qrContainer.innerHTML = '';
       
       try {
         qrcodeInstance = new QRCode(qrContainer, {
           text: shareUrl,
           width: 180,
           height: 180,
-          colorDark: "#090a0f",
-          colorLight: "#ffffff",
+          colorDark: "#050505",
+          colorLight: "#FCF6BA",
           correctLevel: QRCode.CorrectLevel.M
         });
       } catch (e) {
@@ -1274,33 +1372,24 @@
       lucide.createIcons();
     }
 
-    /**
-     * Updates active viewer count badge
-     */
     function updateViewerCount() {
       const count = Math.max(activeDataConnections.size, activeMediaCalls.size);
       const countEl = document.getElementById('broadcaster-viewer-count');
       if (countEl) countEl.textContent = count;
     }
 
-    /**
-     * Gracefully stops broadcasting, notifies viewers, and resets UI
-     */
     function stopBroadcasting() {
-      // Notify all connected receivers that session has ended
       activeDataConnections.forEach((conn) => {
         try {
           if (conn.open) conn.send({ type: 'stream-ended' });
         } catch (e) {}
       });
 
-      // Stop all tracks in the local media stream
       if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
       }
 
-      // Destroy broadcaster peer
       if (broadcasterPeer) {
         broadcasterPeer.destroy();
         broadcasterPeer = null;
@@ -1310,7 +1399,6 @@
       activeMediaCalls.clear();
       currentSessionCode = null;
 
-      // Reset UI back to init card
       document.getElementById('broadcast-init-card').classList.remove('hidden');
       document.getElementById('broadcast-active-card').classList.add('hidden');
       
@@ -1325,9 +1413,6 @@
     // RECEIVER LOGIC (Watch Screen & Media Binding)
     // ========================================================
 
-    /**
-     * Handles code submission from the input form
-     */
     function handleWatchSubmit(e) {
       if (e) e.preventDefault();
       const input = document.getElementById('watch-code-input');
@@ -1343,33 +1428,43 @@
     }
 
     /**
-     * Connects to broadcaster via PeerJS using the 4-digit code
+     * Connects to broadcaster with strict 8-second handshake timeout & automatic ICE restart
      */
     function startWatching(code) {
       currentSessionCode = code;
 
-      // Switch UI to Watch Player Card
       document.getElementById('watch-input-card').classList.add('hidden');
       document.getElementById('watch-player-card').classList.remove('hidden');
       document.getElementById('receiver-session-code').textContent = code;
       
       setReceiverStatus('connecting', `Connecting to broadcaster (${code})...`);
+      
+      // Show loading spinner & hide timeout banner
       document.getElementById('player-loading-spinner').classList.remove('hidden');
+      document.getElementById('player-timeout-banner').classList.add('hidden');
 
       let streamReceived = false;
       let fallbackCallTimer = null;
+
+      // STRICT 8-SECOND HANDSHAKE TIMEOUT RECOVERY
+      clearTimeout(handshakeTimeoutTimer);
+      handshakeTimeoutTimer = setTimeout(() => {
+        if (!streamReceived) {
+          console.warn('[Handshake Timeout] 8 seconds elapsed without stream connection.');
+          showHandshakeTimeoutBanner();
+        }
+      }, 8000);
 
       try {
         if (receiverPeer) {
           receiverPeer.destroy();
         }
 
-        // Initialize temporary receiver peer with random ID
         receiverPeer = new Peer(undefined, PEER_CONFIG);
 
         receiverPeer.on('open', (id) => {
           console.log('Receiver peer online with temporary ID:', id);
-          setReceiverStatus('connecting', 'Establishing direct P2P connection...');
+          setReceiverStatus('connecting', 'Negotiating P2P STUN/TURN tunnel...');
 
           const targetHostId = PEER_PREFIX + code;
           
@@ -1378,7 +1473,6 @@
 
           conn.on('open', () => {
             console.log('Connected to broadcaster data channel');
-            setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
             conn.send({ type: 'request-stream' });
             startPingInterval(conn);
           });
@@ -1405,9 +1499,8 @@
           // 2. Mobile Safari / iPad Fallback: If broadcaster call doesn't reach receiver in 1.2s, call broadcaster!
           fallbackCallTimer = setTimeout(() => {
             if (!streamReceived && receiverPeer && !receiverPeer.destroyed) {
-              console.log('Fallback: Receiver calling broadcaster directly...');
+              console.log('Fallback: Receiver initiating direct call to broadcaster...');
               try {
-                // 1x1 dummy canvas stream so PeerJS sets up transceivers without requiring camera/mic
                 let dummyStream = new MediaStream();
                 try {
                   const canvas = document.createElement('canvas');
@@ -1420,7 +1513,10 @@
 
                 const call = receiverPeer.call(targetHostId, dummyStream);
                 if (call) {
-                  setupReceiverCallHandlers(call, () => { streamReceived = true; });
+                  setupReceiverCallHandlers(call, () => {
+                    streamReceived = true;
+                    clearTimeout(handshakeTimeoutTimer);
+                  });
                 }
               } catch (e) {
                 console.warn('Fallback call attempt failed:', e);
@@ -1433,12 +1529,14 @@
         receiverPeer.on('call', (call) => {
           console.log('Receiving media call from broadcaster...');
           clearTimeout(fallbackCallTimer);
-          streamReceived = true;
 
           // Answer call with no local stream (receive only)
           call.answer();
 
-          setupReceiverCallHandlers(call, () => { streamReceived = true; });
+          setupReceiverCallHandlers(call, () => {
+            streamReceived = true;
+            clearTimeout(handshakeTimeoutTimer);
+          });
         });
 
         receiverPeer.on('error', (err) => {
@@ -1479,7 +1577,7 @@
 
         let compositeStream = new MediaStream();
 
-        // 1. W3C ontrack handler (Safari 12+, Chrome, Arc, Firefox)
+        // 1. W3C ontrack handler (Safari 12+, Chrome, Arc, Firefox) using addEventListener so we don't overwrite PeerJS internal handler
         const handleTrack = (event) => {
           console.log('RTCPeerConnection ontrack event:', event.track ? event.track.kind : 'unknown', event);
           let streamToUse = null;
@@ -1487,7 +1585,6 @@
           if (event.streams && event.streams.length > 0 && event.streams[0]) {
             streamToUse = event.streams[0];
           } else if (event.track) {
-            // Safari WebKit fallback: event.streams is empty array
             if (!compositeStream.getTracks().includes(event.track)) {
               compositeStream.addTrack(event.track);
             }
@@ -1501,11 +1598,10 @@
           }
         };
 
-        if ('ontrack' in pc) {
-          pc.ontrack = handleTrack;
-        }
         if (pc.addEventListener) {
           pc.addEventListener('track', handleTrack);
+        } else if ('ontrack' in pc) {
+          pc.ontrack = handleTrack;
         }
 
         // 2. Legacy onaddstream fallback for older WebKit / Safari
@@ -1518,12 +1614,18 @@
           }
         };
 
-        // 3. ICE Connection State & Receiver Track Extraction
+        // 3. Robust ICE Connection State Monitoring with Automatic ICE Restart
         pc.oniceconnectionstatechange = () => {
-          console.log('ICE connection state:', pc.iceConnectionState);
-          if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+          const state = pc.iceConnectionState;
+          console.log('[Receiver ICE State]:', state);
+
+          if (state === 'connected' || state === 'completed') {
+            clearTimeout(handshakeTimeoutTimer);
+            hideHandshakeTimeoutBanner();
             setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
-            if (pc.getReceivers) {
+
+            // Track recovery if stream wasn't attached
+            if (!bound && pc.getReceivers) {
               const tracks = pc.getReceivers().map(r => r.track).filter(Boolean);
               if (tracks.length > 0) {
                 tracks.forEach(t => {
@@ -1536,6 +1638,15 @@
                 bindRemoteStreamToVideo(compositeStream);
               }
             }
+          } else if (state === 'disconnected') {
+            setReceiverStatus('connecting', 'Re-routing connection tunnel...');
+            console.warn('[ICE] Disconnected, attempting automatic ICE restart...');
+            if (pc.restartIce) {
+              pc.restartIce();
+            }
+          } else if (state === 'failed') {
+            console.error('[ICE] Direct P2P failed. Showing retry banner.');
+            showHandshakeTimeoutBanner();
           }
         };
       };
@@ -1543,7 +1654,6 @@
       if (call.peerConnection) {
         attachPc(call.peerConnection);
       } else {
-        // Poll for peerConnection initialization
         let attempts = 0;
         const interval = setInterval(() => {
           attempts++;
@@ -1574,6 +1684,9 @@
 
       if (!video) return;
 
+      clearTimeout(handshakeTimeoutTimer);
+      hideHandshakeTimeoutBanner();
+
       // Essential attributes for iOS Safari / iPad:
       video.muted = true;
       video.defaultMuted = true;
@@ -1587,6 +1700,7 @@
 
       const markConnectedAndPlaying = () => {
         spinner.classList.add('hidden');
+        hideHandshakeTimeoutBanner();
         setReceiverStatus('connected', 'Connected (P2P Secured via WebRTC)');
         resetInactivityTimer();
 
@@ -1648,8 +1762,30 @@
     }
 
     /**
-     * Starts interval to measure round-trip latency
+     * Displays clean handshake timeout banner with instant retry button
      */
+    function showHandshakeTimeoutBanner() {
+      document.getElementById('player-loading-spinner').classList.add('hidden');
+      document.getElementById('player-timeout-banner').classList.remove('hidden');
+      setReceiverStatus('disconnected', 'Handshake timed out (Click Retry)');
+      lucide.createIcons();
+    }
+
+    function hideHandshakeTimeoutBanner() {
+      document.getElementById('player-timeout-banner').classList.add('hidden');
+    }
+
+    /**
+     * Resets and regenerates ICE candidates instantly with fresh tunnel
+     */
+    function retryConnectionWithFreshTunnel() {
+      showToast('Reconnecting with fresh TURN/STUN tunnel...', 'info');
+      hideHandshakeTimeoutBanner();
+      if (currentSessionCode) {
+        startWatching(currentSessionCode);
+      }
+    }
+
     function startPingInterval(conn) {
       if (pingIntervalId) clearInterval(pingIntervalId);
       pingIntervalId = setInterval(() => {
@@ -1659,9 +1795,6 @@
       }, 2000);
     }
 
-    /**
-     * Updates ping / latency badge in receiver HUD
-     */
     function updateLatencyDisplay(latencyMs) {
       const pill = document.getElementById('receiver-latency-pill');
       if (pill) {
@@ -1670,9 +1803,6 @@
       }
     }
 
-    /**
-     * Updates receiver connection status indicators
-     */
     function setReceiverStatus(status, message) {
       const dot = document.getElementById('receiver-status-dot');
       const text = document.getElementById('receiver-status-text');
@@ -1682,7 +1812,7 @@
       if (dot) {
         dot.className = 'w-2.5 h-2.5 rounded-full ';
         if (status === 'connected') {
-          dot.className += 'bg-emerald-400';
+          dot.className += 'bg-gold-400';
         } else if (status === 'connecting') {
           dot.className += 'bg-amber-400 animate-pulse';
         } else {
@@ -1691,9 +1821,6 @@
       }
     }
 
-    /**
-     * Cleanly disconnects receiver and returns to code input
-     */
     function disconnectReceiver() {
       if (pingIntervalId) {
         clearInterval(pingIntervalId);
@@ -1701,6 +1828,7 @@
       }
 
       clearTimeout(autoHideTimer);
+      clearTimeout(handshakeTimeoutTimer);
 
       if (isTheaterMode) {
         toggleTheaterMode();
@@ -1720,15 +1848,13 @@
       document.getElementById('watch-input-card').classList.remove('hidden');
       document.getElementById('receiver-latency-pill').classList.add('hidden');
       document.getElementById('unmute-banner').classList.add('hidden');
+      hideHandshakeTimeoutBanner();
       showViewerToolbars();
 
       showToast('Disconnected from screen beam', 'info');
       lucide.createIcons();
     }
 
-    /**
-     * Handles manual unmute request from banner
-     */
     function unmuteRemoteVideo() {
       const video = document.getElementById('remote-video');
       if (video) {
@@ -1764,7 +1890,7 @@
       if (video.muted) {
         btn.innerHTML = '<i data-lucide="volume-x" class="w-4 h-4 text-rose-400"></i>';
       } else {
-        btn.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4"></i>';
+        btn.innerHTML = '<i data-lucide="volume-2" class="w-4 h-4 text-gold-400"></i>';
       }
       lucide.createIcons();
     }
@@ -1815,19 +1941,6 @@
       }
     }
 
-    // Keyboard shortcut: Press 'F' for fullscreen when viewing
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'f' || e.key === 'F') {
-        const playerCard = document.getElementById('watch-player-card');
-        if (playerCard && !playerCard.classList.contains('hidden') && e.target.tagName !== 'INPUT') {
-          toggleFullscreen();
-        }
-      }
-    });
-
-    /**
-     * Takes an instant high-resolution snapshot screenshot of the live video stream
-     */
     function takeSnapshot() {
       const video = document.getElementById('remote-video');
       if (!video || !video.videoWidth) {
@@ -1907,7 +2020,6 @@
       const chevron = btn.querySelector('[data-lucide="chevron-down"]');
       const isHidden = content.classList.contains('hidden');
 
-      // Close all other FAQs
       document.querySelectorAll('#faq-accordion-group .faq-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('#faq-accordion-group [data-lucide="chevron-down"]').forEach(el => el.classList.remove('rotate-180'));
 
@@ -1927,39 +2039,37 @@
 
       const toast = document.createElement('div');
       
-      let borderCol = 'border-brand-500/30';
+      let borderCol = 'border-gold-500/40';
       let iconName = 'info';
-      let iconCol = 'text-brand-400';
+      let iconCol = 'text-gold-300';
 
       if (type === 'success') {
-        borderCol = 'border-emerald-500/40';
+        borderCol = 'border-gold-400';
         iconName = 'check-circle-2';
-        iconCol = 'text-emerald-400';
+        iconCol = 'text-gold-300';
       } else if (type === 'error') {
-        borderCol = 'border-rose-500/40';
+        borderCol = 'border-rose-500/50';
         iconName = 'alert-triangle';
         iconCol = 'text-rose-400';
       } else if (type === 'warning') {
-        borderCol = 'border-amber-500/40';
+        borderCol = 'border-amber-500/50';
         iconName = 'alert-circle';
         iconCol = 'text-amber-400';
       }
 
-      toast.className = `glass-panel pointer-events-auto p-3.5 rounded-2xl border ${borderCol} shadow-2xl flex items-center gap-3 transform translate-y-2 opacity-0 transition-all duration-300 max-w-sm w-full`;
+      toast.className = `luxury-card pointer-events-auto p-4 rounded-2xl border ${borderCol} shadow-2xl flex items-center gap-3 transform translate-y-2 opacity-0 transition-all duration-300 max-w-sm w-full`;
       toast.innerHTML = `
         <i data-lucide="${iconName}" class="w-5 h-5 ${iconCol} flex-shrink-0"></i>
-        <div class="text-xs text-slate-200 font-medium leading-relaxed flex-grow">${message}</div>
+        <div class="text-xs text-neutral-100 font-semibold leading-relaxed flex-grow">${message}</div>
       `;
 
       container.appendChild(toast);
       lucide.createIcons();
 
-      // Trigger animation
       requestAnimationFrame(() => {
         toast.classList.remove('translate-y-2', 'opacity-0');
       });
 
-      // Auto dismiss after 3.5s
       setTimeout(() => {
         toast.classList.add('opacity-0', 'translate-y-2');
         setTimeout(() => toast.remove(), 350);

@@ -1,3 +1,3126 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuFlow Studio — 100% Free Client-Side PDF & Word Document Editor</title>
+  <meta name="description" content="A powerful, privacy-first PDF and Word document editor running entirely in your browser with zero backend servers.">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            dark: {
+              950: '#070a12',
+              900: '#0c1220',
+              850: '#11192d',
+              800: '#17223b',
+              750: '#1d2c4c',
+              700: '#26375c',
+              600: '#334155'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Quill.js Rich Text Editor -->
+  <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+/* DocuFlow Studio - Core Stylesheet */
+
+:root {
+  --bg-primary: #090d16;
+  --bg-secondary: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-hover: #26354a;
+  --border-color: #334155;
+  --border-light: #475569;
+  --accent-cyan: #38bdf8;
+  --accent-indigo: #6366f1;
+  --accent-emerald: #10b981;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Glassmorphism Accents */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+}
+
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+/* Drop Zone Animation */
+.drop-zone {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.drop-zone.drag-active {
+  border-color: #38bdf8 !important;
+  background-color: rgba(56, 189, 248, 0.08) !important;
+  transform: scale(1.008);
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.2);
+}
+
+/* Toast Animations */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+  }
+}
+
+.toast-item {
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-item.removing {
+  animation: toastSlideOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+/* Quill Editor Dark Theme Overrides */
+.ql-toolbar.ql-snow {
+  background-color: #162032 !important;
+  border: 1px solid #334155 !important;
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  padding: 0.75rem 1rem !important;
+}
+
+.ql-toolbar.ql-snow .ql-stroke {
+  stroke: #94a3b8 !important;
+}
+
+.ql-toolbar.ql-snow .ql-fill {
+  fill: #94a3b8 !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker {
+  color: #94a3b8 !important;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-stroke,
+.ql-toolbar.ql-snow .ql-picker-label:hover .ql-stroke,
+.ql-toolbar.ql-snow button.ql-active .ql-stroke {
+  stroke: #38bdf8 !important;
+}
+
+.ql-toolbar.ql-snow button:hover .ql-fill,
+.ql-toolbar.ql-snow button.ql-active .ql-fill {
+  fill: #38bdf8 !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker-options {
+  background-color: #1e293b !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.5rem;
+  padding: 0.5rem !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ql-toolbar.ql-snow .ql-picker-item {
+  color: #cbd5e1 !important;
+  padding: 0.35rem 0.5rem !important;
+  border-radius: 0.25rem;
+}
+
+.ql-toolbar.ql-snow .ql-picker-item:hover {
+  background-color: #334155 !important;
+  color: #38bdf8 !important;
+}
+
+.ql-container.ql-snow {
+  border: 1px solid #334155 !important;
+  border-top: none !important;
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+/* Editor Workspace View Modes */
+
+/* 1. Paper View Mode (Print-Ready Document Look) */
+.editor-paper-container {
+  background-color: #0c1220;
+  background-image: radial-gradient(rgba(51, 65, 85, 0.25) 1px, transparent 1px);
+  background-size: 24px 24px;
+  min-height: calc(100vh - 280px);
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+}
+
+.editor-paper {
+  width: 100%;
+  max-width: 820px;
+  min-height: 1056px; /* A4 aspect ratio */
+  background-color: #ffffff;
+  color: #1e293b;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 3.5rem 4rem;
+  transition: all 0.2s ease;
+}
+
+/* Paper Dark-Mode option */
+.editor-paper.paper-dark {
+  background-color: #1e293b;
+  color: #f1f5f9;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px #334155;
+}
+
+.editor-paper.paper-dark .ql-editor {
+  color: #f1f5f9;
+}
+.editor-paper.paper-dark .ql-editor pre {
+  background-color: #0f172a;
+  color: #38bdf8;
+  border: 1px solid #334155;
+}
+.editor-paper.paper-dark .ql-editor blockquote {
+  border-left: 4px solid #38bdf8;
+  color: #94a3b8;
+}
+
+.editor-paper .ql-editor {
+  padding: 0;
+  min-height: 900px;
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
+/* Typography styles inside editor */
+.ql-editor h1 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  margin-top: 1.4rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.25;
+}
+.ql-editor h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-top: 1.2rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+.ql-editor h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.4rem;
+}
+.ql-editor p {
+  margin-bottom: 0.85rem;
+}
+.ql-editor code {
+  background-color: rgba(56, 189, 248, 0.12);
+  color: #0284c7;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.ql-editor pre {
+  background-color: #f8fafc;
+  color: #0f172a;
+  padding: 1rem 1.25rem;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+.ql-editor blockquote {
+  border-left: 4px solid #6366f1;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #475569;
+  font-style: italic;
+}
+.ql-editor table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+}
+.ql-editor th, .ql-editor td {
+  border: 1px solid #cbd5e1;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+}
+.ql-editor th {
+  background-color: #f1f5f9;
+  font-weight: 600;
+}
+
+/* 2. Full-Width Dark Developer View */
+.editor-full-dark .ql-container {
+  background-color: #0f172a;
+  min-height: calc(100vh - 340px);
+}
+.editor-full-dark .ql-editor {
+  color: #f8fafc;
+  padding: 2rem;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.editor-full-dark .ql-editor pre {
+  background-color: #090d16;
+  color: #38bdf8;
+  border: 1px solid #334155;
+}
+.editor-full-dark .ql-editor th, .editor-full-dark .ql-editor td {
+  border-color: #334155;
+}
+.editor-full-dark .ql-editor th {
+  background-color: #1e293b;
+}
+
+/* Page Thumbnail Card for PDF Organizer */
+.page-thumbnail-card {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.page-thumbnail-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.6);
+  border-color: #38bdf8;
+}
+.page-thumbnail-card.selected {
+  border-color: #38bdf8;
+  background-color: rgba(56, 189, 248, 0.08);
+}
+.page-thumbnail-card.deleted {
+  opacity: 0.45;
+  filter: grayscale(80%);
+}
+.page-thumbnail-card.deleted::after {
+  content: 'MARKED DELETED';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  background: rgba(239, 68, 68, 0.9);
+  color: white;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* Pulse animation for local-processing shield */
+@keyframes shieldGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.45); }
+}
+.shield-badge {
+  animation: shieldGlow 3s infinite ease-in-out;
+}
+
+/* Dragging state for file reorder */
+.sortable-ghost {
+  opacity: 0.4;
+  border: 2px dashed #38bdf8 !important;
+  background-color: rgba(56, 189, 248, 0.05) !important;
+}
+
+/* Watermark Canvas Preview Container */
+.watermark-preview-canvas {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background-color: #ffffff;
+}
+
+/* Print Optimization */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .editor-paper, .editor-paper * {
+    visibility: visible;
+  }
+  .editor-paper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+}
+
+
+</style>
+</head>
+<body class="bg-[#070a12] text-slate-100 font-sans antialiased min-h-screen flex flex-col md:flex-row overflow-x-hidden selection:bg-sky-500/30 selection:text-sky-200">
+
+  <!-- Mobile Top Bar -->
+  <div class="md:hidden flex items-center justify-between px-4 py-3 bg-[#0c1220] border-b border-slate-800 shrink-0 z-30">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+        <i data-lucide="file-text" class="w-4 h-4"></i>
+      </div>
+      <div>
+        <span class="font-bold text-slate-100 text-sm tracking-tight">DocuFlow</span>
+        <span class="text-[10px] text-sky-400 font-mono ml-1 px-1 py-0.2 bg-sky-500/10 rounded border border-sky-500/20">Studio</span>
+      </div>
+    </div>
+    <button id="mobile-sidebar-toggle" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors" aria-label="Toggle navigation">
+      <i data-lucide="menu" class="w-5 h-5"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Sidebar Backdrop -->
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+  <!-- Main Left Sidebar -->
+  <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#0c1220]/95 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between transition-transform duration-300 md:relative md:translate-x-0 -translate-x-full shrink-0 shadow-2xl md:shadow-none">
+    
+    <!-- Top Branding -->
+    <div>
+      <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-sky-500/25">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="font-bold text-slate-100 text-base tracking-tight">DocuFlow</h1>
+              <span class="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">Free</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-mono">100% Client-Side Engine</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="p-3 space-y-1.5">
+        <div class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Core Workspaces</div>
+
+        <!-- 1. Word / Rich Text Editor -->
+        <button type="button" data-nav-target="editor" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-sky-500/40 bg-sky-500/10 text-sky-400 group text-left">
+          <i data-lucide="edit-3" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
+          <div class="flex-1 min-w-0">
+            <div class="leading-tight">Word & Rich-Text</div>
+            <div class="text-[11px] text-slate-400 opacity-80 truncate">WYSIWYG, DOCX, PDF, MD</div>
+          </div>
+        </button>
+
+        <!-- 2. PDF Merge -->
+        <button type="button" data-nav-target="merge" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-transparent text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 group text-left">
+          <i data-lucide="files" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
+          <div class="flex-1 min-w-0">
+            <div class="leading-tight">PDF Merge Studio</div>
+            <div class="text-[11px] text-slate-400 opacity-80 truncate">Combine & order files</div>
+          </div>
+        </button>
+
+        <!-- 3. PDF Page Organizer -->
+        <button type="button" data-nav-target="organize" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-transparent text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 group text-left">
+          <i data-lucide="layout-grid" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
+          <div class="flex-1 min-w-0">
+            <div class="leading-tight">Page Organizer</div>
+            <div class="text-[11px] text-slate-400 opacity-80 truncate">Reorder, rotate, delete, split</div>
+          </div>
+        </button>
+
+        <!-- 4. PDF Watermark & Stamp -->
+        <button type="button" data-nav-target="watermark" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all border border-transparent text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 group text-left">
+          <i data-lucide="stamp" class="w-4 h-4 shrink-0 transition-transform group-hover:scale-110"></i>
+          <div class="flex-1 min-w-0">
+            <div class="leading-tight">Watermark & Stamp</div>
+            <div class="text-[11px] text-slate-400 opacity-80 truncate">Text stamps & page numbers</div>
+          </div>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Sidebar Bottom / Privacy Shield Indicator -->
+    <div class="p-4 border-t border-slate-800/80 bg-[#070a12]/50">
+      <div class="shield-badge p-3 rounded-xl border border-emerald-500/25 bg-emerald-950/20 text-slate-300 mb-3">
+        <div class="flex items-center gap-2">
+          <span class="relative flex h-2.5 w-2.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+          </span>
+          <span class="text-xs font-semibold text-emerald-400">Zero Server Storage</span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1 leading-snug">
+          All document processing executes strictly in your browser RAM via Web APIs.
+        </p>
+      </div>
+
+      <div class="flex items-center justify-between text-[11px] text-slate-500 font-mono">
+        <button type="button" onclick="DocuApp.openPrivacyModal()" class="hover:text-slate-300 transition-colors flex items-center gap-1">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          Privacy Guarantee
+        </button>
+        <span class="text-slate-600">v1.0.0</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Workspace Container -->
+  <main class="flex-1 flex flex-col min-w-0 h-screen overflow-y-auto">
+
+    <!-- Top Workspace Header Bar -->
+    <header class="h-16 border-b border-slate-800 bg-[#0c1220]/80 backdrop-blur-md px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="flex items-center gap-2 text-xs font-mono text-slate-400">
+          <span>docuflow</span>
+          <span>/</span>
+          <span class="text-slate-200 font-semibold" id="header-workspace-label">editor</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Quick Sample Document Loader (Tool dependent) -->
+        <button type="button" id="header-sample-btn" onclick="DocuEditor.loadTemplate(DocuEditor.TEMPLATES ? DocuEditor.TEMPLATES.techSpec : '', 'Tech-Spec')" class="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/40 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-all">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Sample Tech Spec</span>
+        </button>
+
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700/80 hover:border-slate-600 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors">
+          <i data-lucide="github" class="w-3.5 h-3.5"></i>
+          <span>GitHub Pages Ready</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- WORKSPACE 1: Word & Rich-Text Editor -->
+    <section id="tab-content-editor" class="tab-panel flex-1 flex flex-col min-w-0">
+      
+      <!-- Editor Action Ribbon -->
+      <div class="border-b border-slate-800 bg-[#0f172a] px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+        
+        <!-- Document Title & Template Picker -->
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 focus-within:border-sky-500 transition-colors">
+            <i data-lucide="file" class="w-4 h-4 text-sky-400 shrink-0"></i>
+            <input type="text" id="editor-doc-title" value="Engineering-Tech-Spec" class="bg-transparent border-none text-sm font-semibold text-slate-100 focus:outline-none w-48 sm:w-64" placeholder="Document Title">
+          </div>
+
+          <!-- Template Presets Dropdown -->
+          <select id="editor-template-select" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-sky-500 focus:outline-none cursor-pointer">
+            <option value="">Insert Template...</option>
+            <option value="techSpec">Technical Specification</option>
+            <option value="apiDoc">REST API Documentation</option>
+            <option value="nda">Mutual Non-Disclosure Agreement (NDA)</option>
+            <option value="changelog">Release Notes & Changelog</option>
+          </select>
+
+          <!-- Hidden DOCX File Input -->
+          <input type="file" id="editor-file-input" accept=".docx,.txt,.html,.htm" class="hidden">
+          <button type="button" onclick="document.getElementById('editor-file-input').click()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors" title="Import Word .docx, .html, or .txt file">
+            <i data-lucide="upload" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>Open .docx</span>
+          </button>
+        </div>
+
+        <!-- Export Buttons Group -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <!-- Toggle Paper Mode (White vs Dark Sheet) -->
+          <button type="button" onclick="DocuEditor.togglePaperMode()" class="p-2 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/60 text-slate-300 hover:text-white transition-colors" title="Toggle Sheet Theme (Light Paper / Dark Sheet)">
+            <i data-lucide="sun-moon" class="w-4 h-4"></i>
+          </button>
+
+          <!-- Export DOCX -->
+          <button type="button" onclick="DocuEditor.exportAsDocx()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition-all">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Export .DOCX</span>
+          </button>
+
+          <!-- Export PDF -->
+          <button type="button" onclick="DocuEditor.exportAsPdf()" class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold shadow-md shadow-sky-600/20 transition-all">
+            <i data-lucide="file-down" class="w-3.5 h-3.5"></i>
+            <span>Export PDF</span>
+          </button>
+
+          <!-- Export Markdown -->
+          <button type="button" onclick="DocuEditor.exportAsMarkdown()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 hover:border-slate-600 bg-slate-800/80 text-xs font-medium text-slate-300 transition-colors" title="Download Markdown file">
+            <i data-lucide="file-code" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>.MD</span>
+          </button>
+
+          <!-- Clear Document -->
+          <button type="button" onclick="DocuEditor.clearDocument()" class="p-2 rounded-lg border border-slate-700/60 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors" title="Clear Editor">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Overlay Zone / Quill Editor Body -->
+      <div id="editor-workspace" class="drop-zone flex-1 flex flex-col relative overflow-y-auto">
+        
+        <!-- Paper Document View Container -->
+        <div id="editor-paper-container" class="editor-paper-container">
+          <div id="editor-paper-sheet" class="editor-paper">
+            <!-- Quill editor mount -->
+            <div id="quill-editor"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Editor Bottom Status Bar -->
+      <footer class="h-9 border-t border-slate-800 bg-[#0c1220] px-6 flex items-center justify-between text-xs text-slate-400 font-mono shrink-0">
+        <div class="flex items-center gap-4">
+          <span id="editor-word-count">0 words</span>
+          <span>•</span>
+          <span id="editor-char-count">0 chars</span>
+          <span>•</span>
+          <span id="editor-read-time">0 min read</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span id="editor-autosave-status" class="text-emerald-400">Saved locally</span>
+          <span>•</span>
+          <span class="text-slate-500 hidden sm:inline">Tip: Drag & drop any .docx file here</span>
+        </div>
+      </footer>
+    </section>
+
+    <!-- WORKSPACE 2: PDF Merge Studio -->
+    <section id="tab-content-merge" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-5xl mx-auto w-full">
+      
+      <!-- Section Header -->
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="files" class="w-5 h-5 text-sky-400"></i>
+            PDF Merge Studio
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Combine multiple PDF documents into a single consolidated file in your browser.</p>
+        </div>
+
+        <button type="button" onclick="DocuMerge.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Load 2 Demo PDFs</span>
+        </button>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div id="merge-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+        <input type="file" id="merge-file-input" accept=".pdf" multiple class="hidden">
+        <div class="flex flex-col items-center justify-center pointer-events-none">
+          <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
+            <i data-lucide="upload-cloud" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-base font-semibold text-slate-200">Drag & drop PDF files here</h3>
+          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">browse files</span> from your computer</p>
+          <span class="text-[11px] font-mono text-slate-500 mt-2 px-2.5 py-0.5 rounded-full bg-slate-800/80 border border-slate-700">Multiple .pdf files supported</span>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="merge-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
+        <i data-lucide="layers" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
+        <p class="text-sm">No PDFs queued for merge yet.</p>
+        <p class="text-xs text-slate-500 mt-1">Upload at least two PDF files to merge them together.</p>
+      </div>
+
+      <!-- File Queue & Control Panel -->
+      <div id="merge-stats-summary" class="hidden flex flex-col gap-4">
+        
+        <!-- Summary Stats Ribbon -->
+        <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-6 text-xs font-mono">
+            <div>
+              <span class="text-slate-400">Files: </span>
+              <strong id="merge-stat-files" class="text-sky-400 font-bold">0</strong>
+            </div>
+            <div>
+              <span class="text-slate-400">Total Pages: </span>
+              <strong id="merge-stat-pages" class="text-emerald-400 font-bold">0</strong>
+            </div>
+            <div>
+              <span class="text-slate-400">Combined Size: </span>
+              <strong id="merge-stat-size" class="text-slate-200 font-bold">0 B</strong>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="document.getElementById('merge-file-input').click()" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+              Add More Files
+            </button>
+            <button type="button" id="merge-clear-btn" class="px-3 py-1.5 rounded-lg border border-slate-700/60 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition-colors">
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <!-- Files List -->
+        <div class="space-y-2" id="merge-files-list"></div>
+
+        <!-- Bottom Action Bar -->
+        <div class="glass-panel p-5 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-slate-400 font-mono">Output Name:</label>
+            <input type="text" id="merge-output-name" value="merged-document.pdf" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-sky-500 font-mono w-56">
+          </div>
+
+          <button type="button" id="merge-action-btn" class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-sky-500/25 transition-all">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            <span>Merge & Export PDF</span>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- WORKSPACE 3: PDF Page Organizer -->
+    <section id="tab-content-organize" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-6xl mx-auto w-full">
+      
+      <!-- Section Header -->
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="layout-grid" class="w-5 h-5 text-sky-400"></i>
+            PDF Page Organizer
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Visually reorder pages, rotate orientation, delete pages, or split selected pages.</p>
+        </div>
+
+        <button type="button" onclick="DocuOrganize.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Load 4-Page Demo PDF</span>
+        </button>
+      </div>
+
+      <!-- Drop Zone for Organizer -->
+      <div id="organize-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+        <input type="file" id="organize-file-input" accept=".pdf" class="hidden">
+        <div class="flex flex-col items-center justify-center pointer-events-none">
+          <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
+            <i data-lucide="file-symlink" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-base font-semibold text-slate-200">Drop a PDF here to organize pages</h3>
+          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">choose a PDF file</span></p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="organize-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
+        <i data-lucide="file-text" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
+        <p class="text-sm">No PDF loaded for page organization.</p>
+        <p class="text-xs text-slate-500 mt-1">Upload a PDF or click "Load 4-Page Demo PDF" above.</p>
+      </div>
+
+      <!-- Organizer Workspace -->
+      <div id="organize-workspace" class="hidden flex flex-col gap-4">
+        
+        <!-- Controls Toolbar -->
+        <div class="glass-card p-4 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <h3 id="organize-doc-title" class="text-sm font-semibold text-slate-100 truncate max-w-xs">Document.pdf</h3>
+            <span id="organize-page-count" class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-400 font-mono text-xs border border-sky-500/30">0 pages</span>
+          </div>
+
+          <!-- Batch Action Buttons -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="DocuOrganize.selectAll(true)" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+              Select All
+            </button>
+            <button type="button" onclick="DocuOrganize.selectAll(false)" class="px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+              Deselect
+            </button>
+            <button type="button" onclick="DocuOrganize.rotateSelected(90)" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors">
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5 text-sky-400"></i>
+              <span>Rotate 90°</span>
+            </button>
+            <button type="button" onclick="DocuOrganize.deleteSelected()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-700/60 hover:border-rose-500/40 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 text-xs font-medium transition-colors">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              <span>Delete</span>
+            </button>
+            <button type="button" onclick="DocuOrganize.resetAll()" class="px-2.5 py-1.5 rounded-lg border border-slate-700/60 text-slate-400 hover:text-slate-200 text-xs font-medium transition-colors">
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Thumbnail Cards Grid -->
+        <div id="organize-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 py-2"></div>
+
+        <!-- Bottom Action Bar -->
+        <div class="glass-panel p-4 rounded-xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+          <div id="organize-active-summary" class="text-xs font-mono text-slate-400">
+            0 pages to keep
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="button" id="organize-extract-btn" class="px-4 py-2 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              Split Selected Pages
+            </button>
+            <button type="button" id="organize-save-btn" class="flex items-center gap-2 px-5 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-sky-500/20 transition-all">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Save Organized PDF</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- WORKSPACE 4: PDF Watermark & Stamp -->
+    <section id="tab-content-watermark" class="tab-panel hidden flex-1 p-6 md:p-8 flex flex-col min-w-0 max-w-6xl mx-auto w-full">
+      
+      <!-- Section Header -->
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="stamp" class="w-5 h-5 text-sky-400"></i>
+            PDF Watermark & Stamp
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Add customizable vector text watermarks, security stamps, and page numbers locally.</p>
+        </div>
+
+        <button type="button" onclick="DocuWatermark.loadSamplePdf()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-xs font-medium text-slate-300 transition-colors self-start sm:self-auto">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Load Sample NDA</span>
+        </button>
+      </div>
+
+      <!-- Dropzone for Watermark -->
+      <div id="watermark-dropzone" class="drop-zone border-2 border-dashed border-slate-700/80 hover:border-sky-500/70 bg-slate-900/40 rounded-2xl p-8 text-center cursor-pointer transition-all mb-6">
+        <input type="file" id="watermark-file-input" accept=".pdf" class="hidden">
+        <div class="flex flex-col items-center justify-center pointer-events-none">
+          <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center mb-3 shadow-inner">
+            <i data-lucide="stamp" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-base font-semibold text-slate-200">Drop a PDF here to add watermarks</h3>
+          <p class="text-xs text-slate-400 mt-1">or <span class="text-sky-400 font-medium underline underline-offset-2">browse file</span></p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div id="watermark-empty-state" class="glass-panel p-8 rounded-2xl border border-slate-800/80 text-center text-slate-400">
+        <i data-lucide="shield" class="w-10 h-10 text-slate-600 mx-auto mb-2"></i>
+        <p class="text-sm">No PDF uploaded for watermarking.</p>
+        <p class="text-xs text-slate-500 mt-1">Upload a PDF or click "Load Sample NDA" above.</p>
+      </div>
+
+      <!-- 2-Column Split Workspace -->
+      <div id="watermark-workspace" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Configuration Form (5 cols) -->
+        <div class="lg:col-span-5 glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+          
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+            <div>
+              <h3 id="watermark-doc-title" class="text-sm font-semibold text-slate-100 truncate max-w-[200px]">Document.pdf</h3>
+              <span id="watermark-page-count" class="text-[11px] font-mono text-sky-400">0 pages</span>
+            </div>
+          </div>
+
+          <!-- Watermark Text -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Watermark Text</label>
+            <input type="text" id="wm-text" value="CONFIDENTIAL" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 font-sans" placeholder="e.g. CONFIDENTIAL">
+            
+            <!-- Quick Tag Buttons -->
+            <div class="flex items-center gap-1.5 flex-wrap mt-2">
+              <button type="button" onclick="DocuWatermark.setPresetText('CONFIDENTIAL')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">CONFIDENTIAL</button>
+              <button type="button" onclick="DocuWatermark.setPresetText('DRAFT')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">DRAFT</button>
+              <button type="button" onclick="DocuWatermark.setPresetText('INTERNAL ONLY')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">INTERNAL</button>
+              <button type="button" onclick="DocuWatermark.setPresetText('APPROVED')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 font-mono">APPROVED</button>
+            </div>
+          </div>
+
+          <!-- Placement Layout -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Stamp Position</label>
+            <select id="wm-layout" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-sky-500 focus:outline-none">
+              <option value="diagonal">Diagonal Across Center (45°)</option>
+              <option value="horizontal">Horizontal Center (0°)</option>
+              <option value="header">Header Stamp (Top)</option>
+              <option value="footer">Footer Stamp (Bottom)</option>
+            </select>
+          </div>
+
+          <!-- Color Presets -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Stamp Color</label>
+            <div class="flex items-center gap-3">
+              <button type="button" id="wm-color-red" onclick="DocuWatermark.setColor('red')" class="wm-color-btn w-6 h-6 rounded-full bg-rose-500 ring-2 ring-white scale-110 transition-transform" title="Ruby Red"></button>
+              <button type="button" id="wm-color-slate" onclick="DocuWatermark.setColor('slate')" class="wm-color-btn w-6 h-6 rounded-full bg-slate-500 transition-transform" title="Slate Gray"></button>
+              <button type="button" id="wm-color-blue" onclick="DocuWatermark.setColor('blue')" class="wm-color-btn w-6 h-6 rounded-full bg-blue-600 transition-transform" title="Cobalt Blue"></button>
+              <button type="button" id="wm-color-amber" onclick="DocuWatermark.setColor('amber')" class="wm-color-btn w-6 h-6 rounded-full bg-amber-500 transition-transform" title="Amber Orange"></button>
+              <button type="button" id="wm-color-emerald" onclick="DocuWatermark.setColor('emerald')" class="wm-color-btn w-6 h-6 rounded-full bg-emerald-500 transition-transform" title="Emerald Green"></button>
+            </div>
+          </div>
+
+          <!-- Font Size Slider -->
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-semibold text-slate-300">Font Size</span>
+              <span id="wm-font-size-val" class="font-mono text-sky-400">48 pt</span>
+            </div>
+            <input type="range" id="wm-font-size" min="16" max="96" value="48" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
+          </div>
+
+          <!-- Opacity Slider -->
+          <div>
+            <div class="flex items-center justify-between text-xs mb-1">
+              <span class="font-semibold text-slate-300">Opacity</span>
+              <span id="wm-opacity-val" class="font-mono text-sky-400">40%</span>
+            </div>
+            <input type="range" id="wm-opacity" min="0.05" max="0.9" step="0.05" value="0.4" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-sky-500">
+          </div>
+
+          <!-- Page Range -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Apply to Pages</label>
+            <select id="wm-page-range" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-1 focus:ring-sky-500 focus:outline-none">
+              <option value="all">All Pages</option>
+              <option value="first">First Page Only</option>
+              <option value="odd">Odd Pages Only</option>
+              <option value="even">Even Pages Only</option>
+            </select>
+          </div>
+
+          <!-- Page Numbers Toggle -->
+          <div class="pt-2 border-t border-slate-800">
+            <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+              <input type="checkbox" id="wm-page-numbers" class="rounded border-slate-700 text-sky-500 focus:ring-0">
+              <span>Add "Page X of Y" numbers at bottom</span>
+            </label>
+          </div>
+
+          <!-- Apply Button -->
+          <button type="button" id="watermark-apply-btn" class="w-full mt-2 flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold text-xs shadow-lg shadow-sky-500/25 transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Apply Watermark & Export</span>
+          </button>
+
+        </div>
+
+        <!-- Right: Live Canvas Preview (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col items-center justify-center glass-panel p-6 rounded-2xl border border-slate-800 min-h-[500px]">
+          <div class="text-xs font-mono text-slate-400 mb-3 flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-3.5 h-3.5 text-sky-400"></i>
+            <span>Live Page 1 Watermark Preview</span>
+          </div>
+          <div class="max-w-full overflow-hidden flex items-center justify-center">
+            <canvas id="watermark-preview-canvas" class="watermark-preview-canvas"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Interactive Document Preview Modal -->
+  <div id="preview-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-5xl h-[88vh] rounded-2xl border border-slate-700 flex flex-col shadow-2xl overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-900/80">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
+            <i data-lucide="eye" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="preview-modal-title" class="text-sm font-semibold text-slate-100">Document Preview</h3>
+            <p class="text-[11px] font-mono text-emerald-400">Generated locally • Ready for download</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button type="button" id="modal-download-btn" onclick="DocuUtils.downloadFromPreviewModal()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg shadow-sky-500/20 transition-all">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Download File</span>
+          </button>
+          <button type="button" onclick="DocuUtils.closePreviewModal()" class="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Modal Body / PDF iframe viewer -->
+      <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
+        <iframe id="preview-iframe" class="w-full h-full rounded-xl border border-slate-800/80 bg-white" src="about:blank"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Privacy Guarantee Modal -->
+  <div id="privacy-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-lg rounded-2xl border border-slate-700 p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-4 h-4"></i>
+          </div>
+          <h3 class="font-bold text-slate-100 text-base">Client-Side Architecture Guarantee</h3>
+        </div>
+        <button type="button" onclick="DocuApp.closePrivacyModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-300 space-y-2.5 leading-relaxed">
+        <p>
+          <strong class="text-emerald-400">100% Zero-Backend Architecture:</strong> DocuFlow contains no backend server, no database, no telemetry, and no third-party tracking scripts.
+        </p>
+        <p>
+          <strong>How it works:</strong> All file reading and document manipulation is performed directly in the browser's JavaScript environment using WebAssembly and Web Worker threads (`pdf-lib`, `pdfjs-dist`, `mammoth.js`, and `html2pdf.js`).
+        </p>
+        <p>
+          <strong>Free GitHub Pages Hosting:</strong> Because there are no server-side APIs required, this entire application can be hosted on GitHub Pages, Cloudflare Pages, or AWS S3 at <strong>$0 cost forever</strong>.
+        </p>
+      </div>
+
+      <div class="pt-3 border-t border-slate-800 flex justify-end">
+        <button type="button" onclick="DocuApp.closePrivacyModal()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 transition-colors">
+          Got It
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Floating Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- External CDN Libraries -->
+  <!-- 1. PDF-Lib for local PDF manipulation -->
+  <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+
+  <!-- 2. PDF.js for client-side thumbnail rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- 3. Mammoth.js for converting .docx to HTML in browser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <!-- 4. Quill.js Rich Text Editor -->
+  <script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
+  <!-- 5. html2pdf for print-ready PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- 6. html-docx-js for client-side Word .docx creation -->
+  <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.js"></script>
+
+  <!-- All Internal Logic Inlined for Single-File Portability -->
+  <script>
+
+/* ========== utils.js ========== */
+/**
+ * DocuFlow Studio - Shared Utility & Helper Functions
+ */
+
+window.DocuUtils = (function () {
+  'use strict';
+
+  // 1. Toast Notification System
+  function showToast(title, message = '', type = 'info', duration = 4000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const toastId = 'toast-' + Math.random().toString(36).substring(2, 9);
+
+    const icons = {
+      success: `<svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+      error: `<svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
+      warning: `<svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>`,
+      info: `<svg class="w-5 h-5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+    };
+
+    const borders = {
+      success: 'border-emerald-500/40 bg-slate-900/95',
+      error: 'border-rose-500/40 bg-slate-900/95',
+      warning: 'border-amber-500/40 bg-slate-900/95',
+      info: 'border-sky-500/40 bg-slate-900/95'
+    };
+
+    const toastEl = document.createElement('div');
+    toastEl.id = toastId;
+    toastEl.className = `toast-item flex items-start gap-3 p-4 rounded-xl border shadow-2xl backdrop-blur-md pointer-events-auto w-84 max-w-sm transition-all ${borders[type] || borders.info}`;
+
+    toastEl.innerHTML = `
+      ${icons[type] || icons.info}
+      <div class="flex-1 min-w-0">
+        <h4 class="text-sm font-semibold text-slate-100 leading-tight">${escapeHtml(title)}</h4>
+        ${message ? `<p class="text-xs text-slate-300 mt-1 leading-relaxed break-words">${escapeHtml(message)}</p>` : ''}
+      </div>
+      <button type="button" class="text-slate-400 hover:text-slate-100 p-0.5 rounded transition-colors -mr-1 -mt-1" aria-label="Close notification" onclick="DocuUtils.dismissToast('${toastId}')">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    `;
+
+    container.appendChild(toastEl);
+
+    if (duration > 0) {
+      setTimeout(() => {
+        dismissToast(toastId);
+      }, duration);
+    }
+
+    return toastId;
+  }
+
+  function dismissToast(toastId) {
+    const el = document.getElementById(toastId);
+    if (!el) return;
+    el.classList.add('removing');
+    setTimeout(() => {
+      if (el.parentNode) el.parentNode.removeChild(el);
+    }, 260);
+  }
+
+  // 2. Format File Bytes
+  function formatBytes(bytes, decimals = 1) {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+
+  // 3. Trigger File Download via Blob URL
+  function triggerDownload(blob, filename) {
+    if (!blob) {
+      showToast('Download Error', 'No file blob available to download.', 'error');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename || 'document-' + Date.now();
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Keep memory clean
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 20000);
+
+    showToast('Download Started', `Saved: ${filename}`, 'success');
+  }
+
+  // 4. File Reading Promises
+  function readFileAsArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+  }
+
+  // 5. Drag-and-Drop Binder
+  function setupDropZone(dropZoneEl, allowedExtensions, onFilesReceived) {
+    if (!dropZoneEl) return;
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZoneEl.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZoneEl.classList.add('drag-active');
+      }, false);
+    });
+
+    ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+      dropZoneEl.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZoneEl.classList.remove('drag-active');
+      }, false);
+    });
+
+    dropZoneEl.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (!dt || !dt.files || dt.files.length === 0) return;
+
+      const validFiles = [];
+      const invalidFiles = [];
+
+      Array.from(dt.files).forEach(file => {
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (allowedExtensions.length === 0 || allowedExtensions.includes(ext)) {
+          validFiles.push(file);
+        } else {
+          invalidFiles.push(file.name);
+        }
+      });
+
+      if (invalidFiles.length > 0) {
+        showToast(
+          'Unsupported File Type',
+          `Allowed: ${allowedExtensions.join(', ')}. Skipped: ${invalidFiles.join(', ')}`,
+          'warning'
+        );
+      }
+
+      if (validFiles.length > 0) {
+        onFilesReceived(validFiles);
+      }
+    });
+  }
+
+  // 6. PDF Preview Modal
+  let activePreviewUrl = null;
+  let activeDownloadBlob = null;
+  let activeDownloadFilename = '';
+
+  function openPdfPreviewModal(blob, filename = 'document.pdf') {
+    const modal = document.getElementById('preview-modal');
+    const iframe = document.getElementById('preview-iframe');
+    const titleEl = document.getElementById('preview-modal-title');
+    const downloadBtn = document.getElementById('modal-download-btn');
+
+    if (!modal || !iframe) return;
+
+    if (activePreviewUrl) {
+      URL.revokeObjectURL(activePreviewUrl);
+    }
+
+    activeDownloadBlob = blob;
+    activeDownloadFilename = filename;
+    activePreviewUrl = URL.createObjectURL(blob);
+
+    iframe.src = activePreviewUrl;
+    if (titleEl) titleEl.textContent = `Preview: ${filename}`;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closePreviewModal() {
+    const modal = document.getElementById('preview-modal');
+    const iframe = document.getElementById('preview-iframe');
+    if (!modal) return;
+
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.classList.remove('overflow-hidden');
+
+    if (iframe) iframe.src = 'about:blank';
+    if (activePreviewUrl) {
+      URL.revokeObjectURL(activePreviewUrl);
+      activePreviewUrl = null;
+    }
+    activeDownloadBlob = null;
+  }
+
+  function downloadFromPreviewModal() {
+    if (activeDownloadBlob) {
+      triggerDownload(activeDownloadBlob, activeDownloadFilename || 'document.pdf');
+    }
+  }
+
+  // 7. HTML to Markdown Converter
+  function htmlToMarkdown(htmlString) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlString, 'text/html');
+
+    function parseNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.textContent;
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) return '';
+
+      const tag = node.tagName.toLowerCase();
+      let children = Array.from(node.childNodes).map(parseNode).join('');
+
+      switch (tag) {
+        case 'h1': return `\n# ${children.trim()}\n\n`;
+        case 'h2': return `\n## ${children.trim()}\n\n`;
+        case 'h3': return `\n### ${children.trim()}\n\n`;
+        case 'h4': return `\n#### ${children.trim()}\n\n`;
+        case 'p': return `\n${children.trim()}\n\n`;
+        case 'strong':
+        case 'b': return `**${children.trim()}**`;
+        case 'em':
+        case 'i': return `*${children.trim()}*`;
+        case 's':
+        case 'strike': return `~~${children.trim()}~~`;
+        case 'u': return `_${children.trim()}_`;
+        case 'code':
+          return node.parentNode.tagName.toLowerCase() === 'pre' ? children : `\`${children.trim()}\``;
+        case 'pre': return `\n\`\`\`\n${children.trim()}\n\`\`\`\n\n`;
+        case 'blockquote': return `\n> ${children.trim().split('\n').join('\n> ')}\n\n`;
+        case 'ul': return `\n${children}\n`;
+        case 'ol': {
+          let count = 1;
+          const items = Array.from(node.children).map(li => `${count++}. ${parseNode(li).trim()}`).join('\n');
+          return `\n${items}\n\n`;
+        }
+        case 'li':
+          return node.parentNode && node.parentNode.tagName.toLowerCase() === 'ol'
+            ? children
+            : `- ${children.trim()}\n`;
+        case 'a': return `[${children.trim()}](${node.getAttribute('href') || ''})`;
+        case 'hr': return `\n---\n\n`;
+        case 'br': return `\n`;
+        case 'table': return `\n[Table content: see document view]\n\n`;
+        default: return children;
+      }
+    }
+
+    return parseNode(doc.body).replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  // 8. Helper to escape HTML string
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  return {
+    showToast,
+    dismissToast,
+    formatBytes,
+    triggerDownload,
+    readFileAsArrayBuffer,
+    readFileAsText,
+    setupDropZone,
+    openPdfPreviewModal,
+    closePreviewModal,
+    downloadFromPreviewModal,
+    htmlToMarkdown,
+    escapeHtml
+  };
+})();
+
+
+
+/* ========== pdf-merge.js ========== */
+/**
+ * DocuFlow Studio - PDF Merge & Combine Module
+ * Uses pdf-lib entirely in the browser
+ */
+
+window.DocuMerge = (function () {
+  'use strict';
+
+  // Internal state
+  let mergeFiles = []; // Array of { id, file, name, size, pageCount, arrayBuffer }
+  let isMerging = false;
+
+  // DOM Elements
+  let dropZoneEl = null;
+  let fileInputEl = null;
+  let filesListEl = null;
+  let emptyStateEl = null;
+  let statsSummaryEl = null;
+  let mergeBtnEl = null;
+  let clearBtnEl = null;
+  let outputFilenameEl = null;
+
+  function init() {
+    dropZoneEl = document.getElementById('merge-dropzone');
+    fileInputEl = document.getElementById('merge-file-input');
+    filesListEl = document.getElementById('merge-files-list');
+    emptyStateEl = document.getElementById('merge-empty-state');
+    statsSummaryEl = document.getElementById('merge-stats-summary');
+    mergeBtnEl = document.getElementById('merge-action-btn');
+    clearBtnEl = document.getElementById('merge-clear-btn');
+    outputFilenameEl = document.getElementById('merge-output-name');
+
+    if (!dropZoneEl || !fileInputEl) return;
+
+    // Setup drag and drop
+    DocuUtils.setupDropZone(dropZoneEl, ['.pdf'], handleFilesAdded);
+
+    // Setup file input picker
+    fileInputEl.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFilesAdded(Array.from(e.target.files));
+        fileInputEl.value = ''; // Reset for re-selection
+      }
+    });
+
+    // Merge Action
+    if (mergeBtnEl) {
+      mergeBtnEl.addEventListener('click', executeMerge);
+    }
+
+    // Clear Action
+    if (clearBtnEl) {
+      clearBtnEl.addEventListener('click', () => {
+        if (mergeFiles.length === 0) return;
+        mergeFiles = [];
+        renderFileList();
+        DocuUtils.showToast('List Cleared', 'All files removed from merge queue.', 'info');
+      });
+    }
+
+    renderFileList();
+  }
+
+  // Handle incoming PDF files
+  async function handleFilesAdded(files) {
+    if (!window.PDFLib) {
+      DocuUtils.showToast('Error', 'PDF engine library is still loading. Please retry in a moment.', 'error');
+      return;
+    }
+
+    let loadedCount = 0;
+    DocuUtils.showToast('Reading Files', `Processing ${files.length} PDF file(s)...`, 'info', 2000);
+
+    for (const file of files) {
+      try {
+        const arrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
+        
+        // Inspect page count with pdf-lib
+        let pageCount = 1;
+        try {
+          const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+          pageCount = pdfDoc.getPageCount();
+        } catch (e) {
+          console.warn('Could not parse page count directly:', e);
+        }
+
+        mergeFiles.push({
+          id: 'file-' + Math.random().toString(36).substring(2, 9),
+          file: file,
+          name: file.name,
+          size: file.size,
+          pageCount: pageCount,
+          arrayBuffer: arrayBuffer
+        });
+        loadedCount++;
+      } catch (err) {
+        console.error('Error reading PDF file:', err);
+        DocuUtils.showToast('File Error', `Failed to read ${file.name}`, 'error');
+      }
+    }
+
+    if (loadedCount > 0) {
+      DocuUtils.showToast('Files Added', `Added ${loadedCount} PDF file(s) to merge list.`, 'success');
+      renderFileList();
+    }
+  }
+
+  // Render the current files list and stats
+  function renderFileList() {
+    if (!filesListEl) return;
+
+    if (mergeFiles.length === 0) {
+      if (emptyStateEl) emptyStateEl.classList.remove('hidden');
+      if (statsSummaryEl) statsSummaryEl.classList.add('hidden');
+      filesListEl.innerHTML = '';
+      if (mergeBtnEl) mergeBtnEl.disabled = true;
+      return;
+    }
+
+    if (emptyStateEl) emptyStateEl.classList.add('hidden');
+    if (statsSummaryEl) statsSummaryEl.classList.remove('hidden');
+    if (mergeBtnEl) mergeBtnEl.disabled = false;
+
+    // Calculate totals
+    const totalFiles = mergeFiles.length;
+    const totalPages = mergeFiles.reduce((acc, f) => acc + (f.pageCount || 0), 0);
+    const totalSize = mergeFiles.reduce((acc, f) => acc + (f.size || 0), 0);
+
+    // Update stats bar
+    const filesCountStat = document.getElementById('merge-stat-files');
+    const pagesCountStat = document.getElementById('merge-stat-pages');
+    const sizeStat = document.getElementById('merge-stat-size');
+
+    if (filesCountStat) filesCountStat.textContent = totalFiles;
+    if (pagesCountStat) pagesCountStat.textContent = totalPages;
+    if (sizeStat) sizeStat.textContent = DocuUtils.formatBytes(totalSize);
+
+    // Render list cards
+    filesListEl.innerHTML = '';
+    mergeFiles.forEach((item, index) => {
+      const card = document.createElement('div');
+      card.className = 'glass-card flex items-center justify-between p-3.5 rounded-xl border border-slate-700/60 hover:border-slate-600 transition-all group';
+      
+      const isFirst = index === 0;
+      const isLast = index === mergeFiles.length - 1;
+
+      card.innerHTML = `
+        <div class="flex items-center gap-3.5 min-w-0">
+          <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 font-mono text-xs font-bold shrink-0 border border-sky-500/20">
+            ${index + 1}
+          </div>
+          <div class="min-w-0">
+            <h4 class="text-sm font-medium text-slate-100 truncate">${DocuUtils.escapeHtml(item.name)}</h4>
+            <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
+              <span>${item.pageCount} page${item.pageCount === 1 ? '' : 's'}</span>
+              <span>•</span>
+              <span>${DocuUtils.formatBytes(item.size)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 shrink-0 ml-3">
+          <button type="button" class="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded-lg transition-colors ${isFirst ? 'opacity-30 cursor-not-allowed' : ''}" 
+            title="Move Up" ${isFirst ? 'disabled' : ''} onclick="DocuMerge.moveFile(${index}, -1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+          </button>
+          <button type="button" class="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded-lg transition-colors ${isLast ? 'opacity-30 cursor-not-allowed' : ''}" 
+            title="Move Down" ${isLast ? 'disabled' : ''} onclick="DocuMerge.moveFile(${index}, 1)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          </button>
+          <button type="button" class="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors ml-1" 
+            title="Remove from list" onclick="DocuMerge.removeFile(${index})">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </div>
+      `;
+
+      filesListEl.appendChild(card);
+    });
+  }
+
+  // Move a file position up (-1) or down (+1)
+  function moveFile(index, direction) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= mergeFiles.length) return;
+
+    const temp = mergeFiles[index];
+    mergeFiles[index] = mergeFiles[targetIndex];
+    mergeFiles[targetIndex] = temp;
+
+    renderFileList();
+  }
+
+  // Remove a file by index
+  function removeFile(index) {
+    if (index >= 0 && index < mergeFiles.length) {
+      const removed = mergeFiles.splice(index, 1)[0];
+      DocuUtils.showToast('Removed', `Removed "${removed.name}"`, 'info', 2000);
+      renderFileList();
+    }
+  }
+
+  // Execute PDF Merge in Browser
+  async function executeMerge() {
+    if (isMerging || mergeFiles.length === 0) return;
+
+    if (!window.PDFLib) {
+      DocuUtils.showToast('Error', 'PDF library not initialized.', 'error');
+      return;
+    }
+
+    try {
+      isMerging = true;
+      if (mergeBtnEl) {
+        mergeBtnEl.disabled = true;
+        mergeBtnEl.innerHTML = `
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Merging Pages Locally...
+        `;
+      }
+
+      DocuUtils.showToast('Merging PDFs', `Combining ${mergeFiles.length} documents...`, 'info', 2500);
+
+      // Create new PDF
+      const mergedPdf = await PDFLib.PDFDocument.create();
+
+      for (let i = 0; i < mergeFiles.length; i++) {
+        const item = mergeFiles[i];
+        const donorPdf = await PDFLib.PDFDocument.load(item.arrayBuffer, { ignoreEncryption: true });
+        const copiedPages = await mergedPdf.copyPages(donorPdf, donorPdf.getPageIndices());
+        copiedPages.forEach(page => mergedPdf.addPage(page));
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+
+      let filename = 'merged-document.pdf';
+      if (outputFilenameEl && outputFilenameEl.value.trim()) {
+        filename = outputFilenameEl.value.trim();
+        if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+      }
+
+      DocuUtils.showToast(
+        'PDF Merged Successfully!',
+        `${mergedPdf.getPageCount()} total pages created (${DocuUtils.formatBytes(blob.size)})`,
+        'success',
+        5000
+      );
+
+      // Open interactive preview modal
+      DocuUtils.openPdfPreviewModal(blob, filename);
+
+    } catch (err) {
+      console.error('PDF Merge Error:', err);
+      DocuUtils.showToast('Merge Failed', err.message || 'An error occurred during merge.', 'error');
+    } finally {
+      isMerging = false;
+      if (mergeBtnEl) {
+        mergeBtnEl.disabled = false;
+        mergeBtnEl.innerHTML = `
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+          Merge & Export PDF
+        `;
+      }
+    }
+  }
+
+  // Load a demo pair of sample PDFs for quick user testing
+  async function loadSamplePdf() {
+    try {
+      DocuUtils.showToast('Loading Demo', 'Generating sample PDFs for testing...', 'info', 2000);
+      
+      // Generate sample 1
+      const doc1 = await PDFLib.PDFDocument.create();
+      const page1 = doc1.addPage([595, 842]);
+      page1.drawText('DocuFlow Studio - Sample Document #1', { x: 50, y: 780, size: 20 });
+      page1.drawText('This is sample PDF 1 generated completely in your browser memory.', { x: 50, y: 740, size: 12 });
+      page1.drawText('Ready to merge, rearrange, or watermark with zero backend calls.', { x: 50, y: 715, size: 12 });
+      const bytes1 = await doc1.save();
+      const file1 = new File([bytes1], 'Sample-Report-Part1.pdf', { type: 'application/pdf' });
+
+      // Generate sample 2
+      const doc2 = await PDFLib.PDFDocument.create();
+      const page2 = doc2.addPage([595, 842]);
+      page2.drawText('DocuFlow Studio - Sample Document #2', { x: 50, y: 780, size: 20 });
+      page2.drawText('This is sample PDF 2 containing appendix and references.', { x: 50, y: 740, size: 12 });
+      page2.drawText('Notice how fast and privacy-friendly client-side processing is.', { x: 50, y: 715, size: 12 });
+      const bytes2 = await doc2.save();
+      const file2 = new File([bytes2], 'Sample-Appendix-Part2.pdf', { type: 'application/pdf' });
+
+      await handleFilesAdded([file1, file2]);
+    } catch (e) {
+      console.error('Sample generation failed:', e);
+      DocuUtils.showToast('Demo Failed', 'Could not generate demo PDFs.', 'error');
+    }
+  }
+
+  return {
+    init,
+    moveFile,
+    removeFile,
+    executeMerge,
+    loadSamplePdf
+  };
+})();
+
+
+
+/* ========== pdf-organize.js ========== */
+/**
+ * DocuFlow Studio - PDF Page Organizer (Reorder, Rotate, Delete, Split)
+ * Uses pdfjs-dist for client-side thumbnail rendering and pdf-lib for document manipulation
+ */
+
+window.DocuOrganize = (function () {
+  'use strict';
+
+  // State
+  let currentFile = null;
+  let currentArrayBuffer = null;
+  let pagesState = []; // Array of { originalIndex: 0-based, rotation: 0|90|180|270, deleted: boolean, selected: boolean, canvas: HTMLCanvasElement }
+  let pdfjsDoc = null;
+  let isProcessing = false;
+
+  // DOM Elements
+  let dropZoneEl = null;
+  let fileInputEl = null;
+  let workspaceEl = null;
+  let emptyStateEl = null;
+  let gridEl = null;
+  let docTitleEl = null;
+  let pageCountBadgeEl = null;
+  let saveBtnEl = null;
+  let extractBtnEl = null;
+
+  function init() {
+    dropZoneEl = document.getElementById('organize-dropzone');
+    fileInputEl = document.getElementById('organize-file-input');
+    workspaceEl = document.getElementById('organize-workspace');
+    emptyStateEl = document.getElementById('organize-empty-state');
+    gridEl = document.getElementById('organize-grid');
+    docTitleEl = document.getElementById('organize-doc-title');
+    pageCountBadgeEl = document.getElementById('organize-page-count');
+    saveBtnEl = document.getElementById('organize-save-btn');
+    extractBtnEl = document.getElementById('organize-extract-btn');
+
+    if (!dropZoneEl || !fileInputEl) return;
+
+    DocuUtils.setupDropZone(dropZoneEl, ['.pdf'], (files) => {
+      if (files.length > 0) loadPdfFile(files[0]);
+    });
+
+    fileInputEl.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        loadPdfFile(e.target.files[0]);
+        fileInputEl.value = '';
+      }
+    });
+
+    if (saveBtnEl) {
+      saveBtnEl.addEventListener('click', saveOrganizedPdf);
+    }
+
+    if (extractBtnEl) {
+      extractBtnEl.addEventListener('click', extractSelectedPages);
+    }
+  }
+
+  // Load PDF file into memory
+  async function loadPdfFile(file) {
+    if (!window.PDFLib || !window.pdfjsLib) {
+      DocuUtils.showToast('Error', 'PDF processing engine is not ready.', 'error');
+      return;
+    }
+
+    try {
+      DocuUtils.showToast('Loading PDF', `Reading "${file.name}"...`, 'info', 2000);
+
+      currentFile = file;
+      currentArrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
+
+      // Setup pdfjs worker
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      // Load pdfjs document for thumbnail rendering
+      const loadingTask = window.pdfjsLib.getDocument({
+        data: currentArrayBuffer.slice(0),
+        stopAtErrors: false
+      });
+      pdfjsDoc = await loadingTask.promise;
+      const numPages = pdfjsDoc.numPages;
+
+      pagesState = [];
+      for (let i = 0; i < numPages; i++) {
+        pagesState.push({
+          originalIndex: i,
+          rotation: 0,
+          deleted: false,
+          selected: false,
+          canvas: null
+        });
+      }
+
+      if (emptyStateEl) emptyStateEl.classList.add('hidden');
+      if (workspaceEl) workspaceEl.classList.remove('hidden');
+
+      if (docTitleEl) docTitleEl.textContent = file.name;
+      if (pageCountBadgeEl) pageCountBadgeEl.textContent = `${numPages} page${numPages === 1 ? '' : 's'}`;
+
+      DocuUtils.showToast('PDF Loaded', `Ready to organize ${numPages} pages.`, 'success');
+
+      await renderThumbnails();
+    } catch (err) {
+      console.error('Error loading PDF in organizer:', err);
+      DocuUtils.showToast('Error', 'Failed to load PDF file. ' + err.message, 'error');
+    }
+  }
+
+  // Render Page Thumbnail Grid
+  async function renderThumbnails() {
+    if (!gridEl || !pdfjsDoc) return;
+    gridEl.innerHTML = '';
+
+    for (let i = 0; i < pagesState.length; i++) {
+      const item = pagesState[i];
+      const pageIndex = item.originalIndex;
+      const card = document.createElement('div');
+      card.className = `page-thumbnail-card glass-card rounded-xl p-3 border border-slate-700/60 flex flex-col items-center justify-between transition-all select-none ${
+        item.deleted ? 'deleted' : ''
+      } ${item.selected ? 'selected ring-2 ring-sky-400/80' : ''}`;
+      card.id = `page-card-${i}`;
+
+      const header = document.createElement('div');
+      header.className = 'w-full flex items-center justify-between mb-2 text-xs text-slate-400 font-mono';
+      header.innerHTML = `
+        <div class="flex items-center gap-1.5">
+          <input type="checkbox" class="rounded border-slate-700 text-sky-500 focus:ring-0 cursor-pointer" 
+            ${item.selected ? 'checked' : ''} onchange="DocuOrganize.toggleSelect(${i}, this.checked)">
+          <span class="font-semibold text-slate-200">#${i + 1}</span>
+          <span class="text-slate-500 text-[10px]">(Orig: ${pageIndex + 1})</span>
+        </div>
+        ${item.rotation !== 0 ? `<span class="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-400 font-bold text-[10px]">${item.rotation}°</span>` : ''}
+      `;
+
+      // Canvas container
+      const previewWrapper = document.createElement('div');
+      previewWrapper.className = 'w-full flex items-center justify-center bg-slate-950/60 rounded-lg p-2 min-h-[160px] overflow-hidden relative cursor-pointer';
+      previewWrapper.onclick = () => toggleSelect(i, !item.selected);
+
+      // Render or reuse canvas
+      if (!item.canvas) {
+        const canvas = document.createElement('canvas');
+        canvas.className = 'rounded shadow-md transition-transform duration-200';
+        canvas.style.transform = `rotate(${item.rotation}deg)`;
+        previewWrapper.appendChild(canvas);
+        item.canvas = canvas;
+
+        // Render page via pdfjs
+        renderPageToCanvas(pageIndex + 1, canvas);
+      } else {
+        item.canvas.style.transform = `rotate(${item.rotation}deg)`;
+        previewWrapper.appendChild(item.canvas);
+      }
+
+      // Actions Toolbar
+      const actions = document.createElement('div');
+      actions.className = 'w-full flex items-center justify-center gap-1.5 mt-3 pt-2 border-t border-slate-800/80';
+      
+      const isFirst = i === 0;
+      const isLast = i === pagesState.length - 1;
+
+      actions.innerHTML = `
+        <button type="button" class="p-1 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded transition-colors ${isFirst ? 'opacity-25 cursor-not-allowed' : ''}" 
+          title="Move Left" ${isFirst ? 'disabled' : ''} onclick="DocuOrganize.movePage(${i}, -1)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        <button type="button" class="p-1 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded transition-colors" 
+          title="Rotate 90° Clockwise" onclick="DocuOrganize.rotatePage(${i}, 90)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+        <button type="button" class="p-1 text-slate-400 hover:text-sky-400 hover:bg-slate-800 rounded transition-colors ${isLast ? 'opacity-25 cursor-not-allowed' : ''}" 
+          title="Move Right" ${isLast ? 'disabled' : ''} onclick="DocuOrganize.movePage(${i}, 1)">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+        <button type="button" class="p-1 ${item.deleted ? 'text-emerald-400 hover:bg-emerald-500/10' : 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10'} rounded transition-colors ml-1" 
+          title="${item.deleted ? 'Restore Page' : 'Delete Page'}" onclick="DocuOrganize.toggleDelete(${i})">
+          ${item.deleted 
+            ? `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`
+            : `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`
+          }
+        </button>
+      `;
+
+      card.appendChild(header);
+      card.appendChild(previewWrapper);
+      card.appendChild(actions);
+      gridEl.appendChild(card);
+    }
+
+    updateActivePagesSummary();
+  }
+
+  // Render a specific page from pdfjs onto a thumbnail canvas
+  async function renderPageToCanvas(pageNumber, canvas) {
+    try {
+      const page = await pdfjsDoc.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 0.3 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+    } catch (e) {
+      console.warn(`Could not render thumbnail for page ${pageNumber}:`, e);
+    }
+  }
+
+  function updateActivePagesSummary() {
+    const activePages = pagesState.filter(p => !p.deleted).length;
+    const selectedPages = pagesState.filter(p => p.selected && !p.deleted).length;
+
+    const summaryEl = document.getElementById('organize-active-summary');
+    if (summaryEl) {
+      summaryEl.textContent = `${activePages} page${activePages === 1 ? '' : 's'} to keep (${pagesState.length - activePages} marked for deletion)`;
+    }
+
+    if (extractBtnEl) {
+      extractBtnEl.disabled = selectedPages === 0;
+      extractBtnEl.textContent = selectedPages > 0 ? `Split Selected (${selectedPages})` : 'Split Selected Pages';
+    }
+  }
+
+  // Page Actions
+  function rotatePage(index, angleDelta) {
+    if (index >= 0 && index < pagesState.length) {
+      pagesState[index].rotation = (pagesState[index].rotation + angleDelta) % 360;
+      renderThumbnails();
+    }
+  }
+
+  function movePage(index, direction) {
+    const target = index + direction;
+    if (target < 0 || target >= pagesState.length) return;
+
+    const temp = pagesState[index];
+    pagesState[index] = pagesState[target];
+    pagesState[target] = temp;
+
+    renderThumbnails();
+  }
+
+  function toggleDelete(index) {
+    if (index >= 0 && index < pagesState.length) {
+      pagesState[index].deleted = !pagesState[index].deleted;
+      renderThumbnails();
+    }
+  }
+
+  function toggleSelect(index, isSelected) {
+    if (index >= 0 && index < pagesState.length) {
+      pagesState[index].selected = isSelected;
+      const card = document.getElementById(`page-card-${index}`);
+      if (card) {
+        if (isSelected) card.classList.add('selected', 'ring-2', 'ring-sky-400/80');
+        else card.classList.remove('selected', 'ring-2', 'ring-sky-400/80');
+      }
+      updateActivePagesSummary();
+    }
+  }
+
+  // Batch actions
+  function selectAll(shouldSelect = true) {
+    pagesState.forEach(p => p.selected = shouldSelect);
+    renderThumbnails();
+  }
+
+  function rotateSelected(angle = 90) {
+    let affected = 0;
+    pagesState.forEach(p => {
+      if (p.selected && !p.deleted) {
+        p.rotation = (p.rotation + angle) % 360;
+        affected++;
+      }
+    });
+    if (affected > 0) {
+      DocuUtils.showToast('Rotated', `Rotated ${affected} page(s) by ${angle}°`, 'info');
+      renderThumbnails();
+    } else {
+      DocuUtils.showToast('Select Pages', 'Please select at least one page to rotate.', 'warning');
+    }
+  }
+
+  function deleteSelected() {
+    let affected = 0;
+    pagesState.forEach(p => {
+      if (p.selected) {
+        p.deleted = true;
+        affected++;
+      }
+    });
+    if (affected > 0) {
+      DocuUtils.showToast('Deleted', `Marked ${affected} page(s) as deleted.`, 'info');
+      renderThumbnails();
+    }
+  }
+
+  function resetAll() {
+    if (!currentFile) return;
+    pagesState.forEach(p => {
+      p.rotation = 0;
+      p.deleted = false;
+      p.selected = false;
+    });
+    // Sort back to original order
+    pagesState.sort((a, b) => a.originalIndex - b.originalIndex);
+    DocuUtils.showToast('Reset Complete', 'Pages restored to original order and orientation.', 'info');
+    renderThumbnails();
+  }
+
+  // Save organized PDF
+  async function saveOrganizedPdf() {
+    if (!currentArrayBuffer || isProcessing) return;
+
+    const remainingPages = pagesState.filter(p => !p.deleted);
+    if (remainingPages.length === 0) {
+      DocuUtils.showToast('Cannot Save', 'All pages have been marked for deletion.', 'error');
+      return;
+    }
+
+    try {
+      isProcessing = true;
+      if (saveBtnEl) {
+        saveBtnEl.disabled = true;
+        saveBtnEl.textContent = 'Saving PDF...';
+      }
+
+      DocuUtils.showToast('Processing', 'Assembling organized PDF...', 'info', 2000);
+
+      const donorDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
+      const newDoc = await PDFLib.PDFDocument.create();
+
+      for (const item of remainingPages) {
+        const [copiedPage] = await newDoc.copyPages(donorDoc, [item.originalIndex]);
+        
+        // Combine existing page rotation with user rotation
+        const currentAngle = copiedPage.getRotation().angle || 0;
+        const finalAngle = (currentAngle + item.rotation) % 360;
+        copiedPage.setRotation(PDFLib.degrees(finalAngle));
+
+        newDoc.addPage(copiedPage);
+      }
+
+      const pdfBytes = await newDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const filename = (currentFile ? currentFile.name.replace(/\.pdf$/i, '') : 'document') + '-organized.pdf';
+
+      DocuUtils.showToast('Saved!', `Exported ${newDoc.getPageCount()} pages (${DocuUtils.formatBytes(blob.size)})`, 'success');
+      DocuUtils.openPdfPreviewModal(blob, filename);
+
+    } catch (err) {
+      console.error('Error saving organized PDF:', err);
+      DocuUtils.showToast('Export Failed', err.message, 'error');
+    } finally {
+      isProcessing = false;
+      if (saveBtnEl) {
+        saveBtnEl.disabled = false;
+        saveBtnEl.textContent = 'Save Organized PDF';
+      }
+    }
+  }
+
+  // Extract selected pages to new document
+  async function extractSelectedPages() {
+    if (!currentArrayBuffer || isProcessing) return;
+
+    const selectedPages = pagesState.filter(p => p.selected && !p.deleted);
+    if (selectedPages.length === 0) {
+      DocuUtils.showToast('No Selection', 'Please check at least one page to extract.', 'warning');
+      return;
+    }
+
+    try {
+      isProcessing = true;
+      const donorDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
+      const newDoc = await PDFLib.PDFDocument.create();
+
+      for (const item of selectedPages) {
+        const [copiedPage] = await newDoc.copyPages(donorDoc, [item.originalIndex]);
+        const currentAngle = copiedPage.getRotation().angle || 0;
+        const finalAngle = (currentAngle + item.rotation) % 360;
+        copiedPage.setRotation(PDFLib.degrees(finalAngle));
+        newDoc.addPage(copiedPage);
+      }
+
+      const pdfBytes = await newDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const filename = (currentFile ? currentFile.name.replace(/\.pdf$/i, '') : 'document') + `-extracted-${selectedPages.length}-pages.pdf`;
+
+      DocuUtils.showToast('Split Complete', `Extracted ${selectedPages.length} pages into a new document.`, 'success');
+      DocuUtils.openPdfPreviewModal(blob, filename);
+    } catch (err) {
+      console.error('Error extracting pages:', err);
+      DocuUtils.showToast('Extraction Failed', err.message, 'error');
+    } finally {
+      isProcessing = false;
+    }
+  }
+
+  // Load demo PDF for instant user testing
+  async function loadSamplePdf() {
+    try {
+      DocuUtils.showToast('Loading Demo', 'Generating a multi-page PDF sample...', 'info', 1500);
+      const demoDoc = await PDFLib.PDFDocument.create();
+      
+      const titles = [
+        'Page 1: Architecture Overview & System Boundaries',
+        'Page 2: Database Schema & Entity Relationships',
+        'Page 3: Security & Client-Side Sandbox Verification',
+        'Page 4: Deployment Guide & GitHub Pages Setup'
+      ];
+
+      for (let i = 0; i < titles.length; i++) {
+        const page = demoDoc.addPage([595, 842]);
+        page.drawText('DocuFlow Studio Demo Document', { x: 50, y: 780, size: 16 });
+        page.drawText(titles[i], { x: 50, y: 740, size: 14 });
+        page.drawText(`This is page ${i + 1} of 4. Test reordering, rotating 90°, or deleting this page.`, { x: 50, y: 700, size: 11 });
+        page.drawText(`Page Number: [ ${i + 1} / 4 ]`, { x: 250, y: 400, size: 24 });
+      }
+
+      const bytes = await demoDoc.save();
+      const file = new File([bytes], 'DocuFlow-Architecture-Sample.pdf', { type: 'application/pdf' });
+      await loadPdfFile(file);
+    } catch (e) {
+      console.error('Failed to create sample PDF:', e);
+    }
+  }
+
+  return {
+    init,
+    loadPdfFile,
+    rotatePage,
+    movePage,
+    toggleDelete,
+    toggleSelect,
+    selectAll,
+    rotateSelected,
+    deleteSelected,
+    resetAll,
+    saveOrganizedPdf,
+    extractSelectedPages,
+    loadSamplePdf
+  };
+})();
+
+
+
+/* ========== pdf-watermark.js ========== */
+/**
+ * DocuFlow Studio - PDF Watermark & Stamp Module
+ * Real-time canvas preview and 100% client-side vector text stamp application
+ */
+
+window.DocuWatermark = (function () {
+  'use strict';
+
+  let currentFile = null;
+  let currentArrayBuffer = null;
+  let pdfjsDoc = null;
+  let isApplying = false;
+
+  // DOM Elements
+  let dropZoneEl = null;
+  let fileInputEl = null;
+  let workspaceEl = null;
+  let emptyStateEl = null;
+  let previewCanvasEl = null;
+  let textInputEl = null;
+  let layoutSelectEl = null;
+  let fontSizeInputEl = null;
+  let fontSizeValueEl = null;
+  let opacityInputEl = null;
+  let opacityValueEl = null;
+  let pageRangeSelectEl = null;
+  let pageNumbersCheckboxEl = null;
+  let applyBtnEl = null;
+
+  // Active color in 0-1 RGB float
+  let selectedColor = { r: 0.88, g: 0.18, b: 0.18, hex: '#ef4444' }; // Default Red
+
+  function init() {
+    dropZoneEl = document.getElementById('watermark-dropzone');
+    fileInputEl = document.getElementById('watermark-file-input');
+    workspaceEl = document.getElementById('watermark-workspace');
+    emptyStateEl = document.getElementById('watermark-empty-state');
+    previewCanvasEl = document.getElementById('watermark-preview-canvas');
+
+    textInputEl = document.getElementById('wm-text');
+    layoutSelectEl = document.getElementById('wm-layout');
+    fontSizeInputEl = document.getElementById('wm-font-size');
+    fontSizeValueEl = document.getElementById('wm-font-size-val');
+    opacityInputEl = document.getElementById('wm-opacity');
+    opacityValueEl = document.getElementById('wm-opacity-val');
+    pageRangeSelectEl = document.getElementById('wm-page-range');
+    pageNumbersCheckboxEl = document.getElementById('wm-page-numbers');
+    applyBtnEl = document.getElementById('watermark-apply-btn');
+
+    if (!dropZoneEl || !fileInputEl) return;
+
+    DocuUtils.setupDropZone(dropZoneEl, ['.pdf'], (files) => {
+      if (files.length > 0) loadPdfFile(files[0]);
+    });
+
+    fileInputEl.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        loadPdfFile(e.target.files[0]);
+        fileInputEl.value = '';
+      }
+    });
+
+    // Real-time control bindings
+    if (textInputEl) textInputEl.addEventListener('input', updateLivePreview);
+    if (layoutSelectEl) layoutSelectEl.addEventListener('change', updateLivePreview);
+    
+    if (fontSizeInputEl) {
+      fontSizeInputEl.addEventListener('input', (e) => {
+        if (fontSizeValueEl) fontSizeValueEl.textContent = `${e.target.value} pt`;
+        updateLivePreview();
+      });
+    }
+
+    if (opacityInputEl) {
+      opacityInputEl.addEventListener('input', (e) => {
+        if (opacityValueEl) opacityValueEl.textContent = `${Math.round(e.target.value * 100)}%`;
+        updateLivePreview();
+      });
+    }
+
+    if (pageNumbersCheckboxEl) {
+      pageNumbersCheckboxEl.addEventListener('change', updateLivePreview);
+    }
+
+    if (applyBtnEl) {
+      applyBtnEl.addEventListener('click', applyWatermark);
+    }
+  }
+
+  // Load PDF for watermarking
+  async function loadPdfFile(file) {
+    if (!window.PDFLib || !window.pdfjsLib) {
+      DocuUtils.showToast('Error', 'PDF library not ready.', 'error');
+      return;
+    }
+
+    try {
+      DocuUtils.showToast('Loading PDF', `Reading "${file.name}"...`, 'info', 1800);
+      currentFile = file;
+      currentArrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
+
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+      const loadingTask = window.pdfjsLib.getDocument({
+        data: currentArrayBuffer.slice(0),
+        stopAtErrors: false
+      });
+      pdfjsDoc = await loadingTask.promise;
+
+      if (emptyStateEl) emptyStateEl.classList.add('hidden');
+      if (workspaceEl) workspaceEl.classList.remove('hidden');
+
+      const titleEl = document.getElementById('watermark-doc-title');
+      const countEl = document.getElementById('watermark-page-count');
+      if (titleEl) titleEl.textContent = file.name;
+      if (countEl) countEl.textContent = `${pdfjsDoc.numPages} page${pdfjsDoc.numPages === 1 ? '' : 's'}`;
+
+      DocuUtils.showToast('Ready', `Document loaded. Adjust your watermark settings below.`, 'success');
+
+      await updateLivePreview();
+    } catch (err) {
+      console.error('Error loading PDF in watermark module:', err);
+      DocuUtils.showToast('Error', 'Failed to load PDF: ' + err.message, 'error');
+    }
+  }
+
+  // Color preset setter
+  function setColor(colorName) {
+    const palette = {
+      red: { r: 0.88, g: 0.18, b: 0.18, hex: '#ef4444' },
+      slate: { r: 0.28, g: 0.35, b: 0.45, hex: '#475569' },
+      blue: { r: 0.08, g: 0.45, b: 0.95, hex: '#2563eb' },
+      amber: { r: 0.85, g: 0.45, b: 0.08, hex: '#f59e0b' },
+      emerald: { r: 0.06, g: 0.65, b: 0.38, hex: '#10b981' }
+    };
+
+    if (palette[colorName]) {
+      selectedColor = palette[colorName];
+      
+      // Update UI active buttons
+      document.querySelectorAll('.wm-color-btn').forEach(btn => {
+        btn.classList.remove('ring-2', 'ring-white', 'scale-110');
+      });
+      const activeBtn = document.getElementById(`wm-color-${colorName}`);
+      if (activeBtn) activeBtn.classList.add('ring-2', 'ring-white', 'scale-110');
+
+      updateLivePreview();
+    }
+  }
+
+  // Quick preset text tag setter (e.g. "CONFIDENTIAL", "DRAFT")
+  function setPresetText(text) {
+    if (textInputEl) {
+      textInputEl.value = text;
+      updateLivePreview();
+    }
+  }
+
+  // Draw live preview onto the right-side canvas
+  async function updateLivePreview() {
+    if (!pdfjsDoc || !previewCanvasEl) return;
+
+    try {
+      const page = await pdfjsDoc.getPage(1);
+      const scale = 0.85;
+      const viewport = page.getViewport({ scale });
+
+      previewCanvasEl.width = viewport.width;
+      previewCanvasEl.height = viewport.height;
+      const ctx = previewCanvasEl.getContext('2d');
+
+      // 1. Render PDF page 1 background
+      await page.render({ canvasContext: ctx, viewport }).promise;
+
+      // 2. Overlay Watermark Text
+      const text = textInputEl ? textInputEl.value.trim() : 'CONFIDENTIAL';
+      if (!text) return;
+
+      const layout = layoutSelectEl ? layoutSelectEl.value : 'diagonal';
+      const fontSize = parseInt(fontSizeInputEl ? fontSizeInputEl.value : '48', 10) * scale;
+      const opacity = parseFloat(opacityInputEl ? opacityInputEl.value : '0.4');
+
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = selectedColor.hex;
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const cx = viewport.width / 2;
+      const cy = viewport.height / 2;
+
+      if (layout === 'diagonal') {
+        ctx.translate(cx, cy);
+        ctx.rotate(-45 * Math.PI / 180);
+        ctx.fillText(text, 0, 0);
+      } else if (layout === 'horizontal') {
+        ctx.fillText(text, cx, cy);
+      } else if (layout === 'header') {
+        ctx.fillText(text, cx, 40 * scale);
+      } else if (layout === 'footer') {
+        ctx.fillText(text, cx, viewport.height - (30 * scale));
+      }
+
+      ctx.restore();
+
+      // 3. Overlay sample page number if enabled
+      if (pageNumbersCheckboxEl && pageNumbersCheckboxEl.checked) {
+        ctx.save();
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = '#475569';
+        ctx.font = `12px sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.fillText(`Page 1 of ${pdfjsDoc.numPages}`, viewport.width - 20, viewport.height - 15);
+        ctx.restore();
+      }
+
+    } catch (e) {
+      console.warn('Live preview watermark error:', e);
+    }
+  }
+
+  // Apply watermark to PDF and download
+  async function applyWatermark() {
+    if (!currentArrayBuffer || isApplying) return;
+
+    const text = textInputEl ? textInputEl.value.trim() : '';
+    const addPageNumbers = pageNumbersCheckboxEl ? pageNumbersCheckboxEl.checked : false;
+
+    if (!text && !addPageNumbers) {
+      DocuUtils.showToast('Validation', 'Please provide watermark text or enable page numbering.', 'warning');
+      return;
+    }
+
+    try {
+      isApplying = true;
+      if (applyBtnEl) {
+        applyBtnEl.disabled = true;
+        applyBtnEl.textContent = 'Applying Watermark Locally...';
+      }
+
+      DocuUtils.showToast('Processing', 'Stamping PDF pages...', 'info', 2000);
+
+      const pdfDoc = await PDFLib.PDFDocument.load(currentArrayBuffer, { ignoreEncryption: true });
+      const font = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      const regularFont = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+
+      const totalPages = pdfDoc.getPageCount();
+      const layout = layoutSelectEl ? layoutSelectEl.value : 'diagonal';
+      const fontSize = parseInt(fontSizeInputEl ? fontSizeInputEl.value : '48', 10);
+      const opacity = parseFloat(opacityInputEl ? opacityInputEl.value : '0.4');
+      const pageRange = pageRangeSelectEl ? pageRangeSelectEl.value : 'all';
+
+      const colorRgb = PDFLib.rgb(selectedColor.r, selectedColor.g, selectedColor.b);
+
+      for (let i = 0; i < totalPages; i++) {
+        const pageNum = i + 1;
+
+        // Check if page fits selected target range
+        let shouldStamp = true;
+        if (pageRange === 'first' && pageNum !== 1) shouldStamp = false;
+        if (pageRange === 'odd' && pageNum % 2 === 0) shouldStamp = false;
+        if (pageRange === 'even' && pageNum % 2 !== 0) shouldStamp = false;
+
+        const page = pdfDoc.getPage(i);
+        const { width, height } = page.getSize();
+
+        if (shouldStamp && text) {
+          const textWidth = font.widthOfTextAtSize(text, fontSize);
+          const textHeight = font.heightAtSize(fontSize);
+
+          if (layout === 'diagonal') {
+            // Draw diagonally across the center
+            const angle = 45;
+            const radians = (angle * Math.PI) / 180;
+            // Center calculation factoring in rotation
+            const x = (width - (textWidth * Math.cos(radians) - textHeight * Math.sin(radians))) / 2;
+            const y = (height - (textWidth * Math.sin(radians) + textHeight * Math.cos(radians))) / 2;
+
+            page.drawText(text, {
+              x: x,
+              y: y,
+              size: fontSize,
+              font: font,
+              color: colorRgb,
+              opacity: opacity,
+              rotate: PDFLib.degrees(angle)
+            });
+          } else if (layout === 'horizontal') {
+            page.drawText(text, {
+              x: (width - textWidth) / 2,
+              y: (height - textHeight) / 2,
+              size: fontSize,
+              font: font,
+              color: colorRgb,
+              opacity: opacity
+            });
+          } else if (layout === 'header') {
+            page.drawText(text, {
+              x: (width - textWidth) / 2,
+              y: height - textHeight - 25,
+              size: fontSize,
+              font: font,
+              color: colorRgb,
+              opacity: opacity
+            });
+          } else if (layout === 'footer') {
+            page.drawText(text, {
+              x: (width - textWidth) / 2,
+              y: 25,
+              size: fontSize,
+              font: font,
+              color: colorRgb,
+              opacity: opacity
+            });
+          }
+        }
+
+        // Add page numbers if enabled
+        if (addPageNumbers) {
+          const pageStr = `Page ${pageNum} of ${totalPages}`;
+          const pageStrWidth = regularFont.widthOfTextAtSize(pageStr, 10);
+          page.drawText(pageStr, {
+            x: width - pageStrWidth - 30,
+            y: 20,
+            size: 10,
+            font: regularFont,
+            color: PDFLib.rgb(0.3, 0.35, 0.42),
+            opacity: 0.85
+          });
+        }
+      }
+
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const filename = (currentFile ? currentFile.name.replace(/\.pdf$/i, '') : 'document') + '-watermarked.pdf';
+
+      DocuUtils.showToast('Success!', `Watermark applied to ${totalPages} pages.`, 'success');
+      DocuUtils.openPdfPreviewModal(blob, filename);
+
+    } catch (err) {
+      console.error('Error applying watermark:', err);
+      DocuUtils.showToast('Stamping Failed', err.message, 'error');
+    } finally {
+      isApplying = false;
+      if (applyBtnEl) {
+        applyBtnEl.disabled = false;
+        applyBtnEl.textContent = 'Apply Watermark & Export';
+      }
+    }
+  }
+
+  // Load a demo PDF for instant watermarking testing
+  async function loadSamplePdf() {
+    try {
+      DocuUtils.showToast('Loading Demo', 'Generating a sample NDA document...', 'info', 1500);
+      const demoDoc = await PDFLib.PDFDocument.create();
+      
+      for (let i = 1; i <= 3; i++) {
+        const page = demoDoc.addPage([595, 842]);
+        page.drawText('CONFIDENTIAL DISCLOSURE AGREEMENT', { x: 50, y: 780, size: 18 });
+        page.drawText(`Section ${i}: Intellectual Property & Confidentiality Obligations`, { x: 50, y: 740, size: 13 });
+        page.drawText('This sample document is created in memory to test watermark and stamp features.', { x: 50, y: 710, size: 11 });
+        page.drawText('Notice how diagonal opacity, colors, and page numbers render cleanly.', { x: 50, y: 690, size: 11 });
+      }
+
+      const bytes = await demoDoc.save();
+      const file = new File([bytes], 'DocuFlow-NDA-Sample.pdf', { type: 'application/pdf' });
+      await loadPdfFile(file);
+    } catch (e) {
+      console.error('Sample generation failed:', e);
+    }
+  }
+
+  return {
+    init,
+    setColor,
+    setPresetText,
+    updateLivePreview,
+    applyWatermark,
+    loadSamplePdf
+  };
+})();
+
+
+
+/* ========== word-editor.js ========== */
+/**
+ * DocuFlow Studio - Word & Rich-Text Editor Module
+ * Features:
+ * - WYSIWYG editing via Quill.js
+ * - Local .docx import via Mammoth.js
+ * - Client-side .docx export via html-docx-js / Word OOXML
+ * - Client-side PDF export via html2pdf.js
+ * - Markdown & HTML export
+ * - Auto-save to localStorage
+ * - Developer document templates
+ */
+
+window.DocuEditor = (function () {
+  'use strict';
+
+  let quill = null;
+  let autoSaveTimeout = null;
+  let currentDocName = 'Untitled-Document';
+
+  // DOM Elements
+  let editorContainerEl = null;
+  let wordCountEl = null;
+  let charCountEl = null;
+  let readTimeEl = null;
+  let autoSaveStatusEl = null;
+  let docTitleInputEl = null;
+  let fileInputEl = null;
+  let templateSelectEl = null;
+  let paperContainerEl = null;
+  let paperSheetEl = null;
+
+  // Templates
+  const TEMPLATES = {
+    techSpec: `
+      <h1>Engineering Technical Specification: High-Throughput Event Ingestion</h1>
+      <p><strong>Author:</strong> Lead Systems Architect | <strong>Date:</strong> October 2026 | <strong>Status:</strong> Draft / In Review</p>
+      <hr>
+      <h2>1. Executive Summary & Problem Statement</h2>
+      <p>Our current ingestion pipeline experiences throughput bottlenecks during peak traffic events exceeding 45,000 requests per second. This document outlines the architectural changes required to transition towards a distributed, horizontally scalable ingestion pipeline.</p>
+      
+      <h2>2. Architecture & System Boundaries</h2>
+      <p>The proposed design decomposes the ingestion tier into asynchronous micro-services:</p>
+      <ul>
+        <li><strong>API Gateway Tier:</strong> Edge reverse-proxy with rate-limiting and TLS termination.</li>
+        <li><strong>Buffer Queue:</strong> Persistent distributed commit log with sub-millisecond p99 latency.</li>
+        <li><strong>Worker Pool:</strong> Scalable consumer nodes executing validation, schema enforcement, and deduplication.</li>
+      </ul>
+
+      <h2>3. API Contract</h2>
+      <pre>POST /api/v1/events/batch
+Content-Type: application/json
+Authorization: Bearer &lt;token&gt;
+
+{
+  "batch_id": "evt-982141-bx",
+  "events": [
+    { "type": "user.signup", "timestamp": 1793400000, "user_id": "usr_9918" }
+  ]
+}</pre>
+
+      <h2>4. Non-Functional Requirements</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Target SLA</th>
+            <th>Current Baseline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>End-to-End Latency</td>
+            <td>&lt; 120ms (p95)</td>
+            <td>480ms</td>
+          </tr>
+          <tr>
+            <td>Availability</td>
+            <td>99.99% uptime</td>
+            <td>99.9%</td>
+          </tr>
+          <tr>
+            <td>Data Loss Tolerance</td>
+            <td>Zero unacknowledged loss</td>
+            <td>Zero loss</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>5. Security & Verification</h2>
+      <blockquote>All payload data must undergo client-side sanitization and validation prior to queue insertion. Secrets must reside exclusively in isolated key vaults.</blockquote>
+    `,
+
+    apiDoc: `
+      <h1>REST API Reference & Integration Guide</h1>
+      <p><strong>Version:</strong> v2.4.0 | <strong>Authentication:</strong> API Key & OAuth 2.0</p>
+      <hr>
+      <h2>Base URL</h2>
+      <pre>https://api.example.com/v2</pre>
+
+      <h2>Authentication</h2>
+      <p>Pass your client token inside the <code>Authorization</code> request header:</p>
+      <pre>Authorization: Bearer YOUR_API_SECRET_KEY</pre>
+
+      <h2>Endpoints</h2>
+      <h3>1. Create Document Resource</h3>
+      <pre>POST /documents</pre>
+      <p>Creates a new document record. All uploads process asynchronously.</p>
+      
+      <h4>Request Parameters:</h4>
+      <ul>
+        <li><code>name</code> (string, required): Human-readable document title</li>
+        <li><code>mime_type</code> (string, required): e.g. <code>application/pdf</code></li>
+        <li><code>retention_days</code> (integer, optional): Number of days before auto-purge (default: 30)</li>
+      </ul>
+
+      <h4>Response:</h4>
+      <pre>{
+  "id": "doc_8f172a39bc",
+  "name": "Quarterly-Report.pdf",
+  "status": "ready",
+  "created_at": "2026-10-31T11:45:00Z"
+}</pre>
+    `,
+
+    nda: `
+      <h1>MUTUAL NON-DISCLOSURE AGREEMENT (NDA)</h1>
+      <p>This Mutual Non-Disclosure Agreement ("Agreement") is entered into and effective as of the date signed below, by and between the participating parties.</p>
+      <hr>
+      <h2>1. Purpose</h2>
+      <p>The Parties wish to explore a prospective business collaboration or technology engagement ("Permitted Purpose"), in connection with which either Party may disclose proprietary and confidential information.</p>
+
+      <h2>2. Confidential Information</h2>
+      <p>"Confidential Information" means any and all technical, business, software, financial, or product information disclosed by one Party to the other, whether disclosed orally or in writing.</p>
+
+      <h2>3. Obligations</h2>
+      <ul>
+        <li>The Receiving Party agrees to protect and maintain Confidential Information with the same degree of care it accords its own sensitive materials.</li>
+        <li>The Receiving Party shall not disclose any Confidential Information to third parties without prior written consent.</li>
+        <li>Local client-side execution ensures zero transmission to unapproved third-party servers.</li>
+      </ul>
+
+      <h2>4. Signatures</h2>
+      <p><strong>Party A Signature:</strong> _______________________ &nbsp;&nbsp;&nbsp;&nbsp; <strong>Date:</strong> _______________</p>
+      <p><strong>Party B Signature:</strong> _______________________ &nbsp;&nbsp;&nbsp;&nbsp; <strong>Date:</strong> _______________</p>
+    `,
+
+    changelog: `
+      <h1>Release Notes & Changelog (v1.2.0)</h1>
+      <p><strong>Released:</strong> October 31, 2026 | <strong>Build:</strong> #4891</p>
+      <hr>
+      <h2>🚀 New Features</h2>
+      <ul>
+        <li><strong>Client-Side PDF Merge:</strong> Seamlessly concatenate unlimited PDF documents directly in the browser memory.</li>
+        <li><strong>Word (.docx) Import & Export:</strong> Native support for importing Word documents via Mammoth.js and exporting clean .docx files.</li>
+        <li><strong>Interactive Page Organizer:</strong> Visual drag-and-drop thumbnail grid with page rotation and split tools.</li>
+        <li><strong>Watermark Engine:</strong> Configurable opacity, rotation, and vector text stamping.</li>
+      </ul>
+
+      <h2>🛠 Improvements & Fixes</h2>
+      <ul>
+        <li>Zero server dependency: Deploy directly to GitHub Pages or static S3 buckets at $0 hosting cost.</li>
+        <li>Enhanced dark-mode developer aesthetics with responsive layouts.</li>
+        <li>Local storage auto-save to prevent data loss.</li>
+      </ul>
+    `
+  };
+
+  function init() {
+    editorContainerEl = document.getElementById('quill-editor');
+    wordCountEl = document.getElementById('editor-word-count');
+    charCountEl = document.getElementById('editor-char-count');
+    readTimeEl = document.getElementById('editor-read-time');
+    autoSaveStatusEl = document.getElementById('editor-autosave-status');
+    docTitleInputEl = document.getElementById('editor-doc-title');
+    fileInputEl = document.getElementById('editor-file-input');
+    templateSelectEl = document.getElementById('editor-template-select');
+    paperContainerEl = document.getElementById('editor-paper-container');
+    paperSheetEl = document.getElementById('editor-paper-sheet');
+
+    if (!editorContainerEl || !window.Quill) return;
+
+    // Initialize Quill with rich formatting toolbar
+    quill = new Quill('#quill-editor', {
+      theme: 'snow',
+      placeholder: 'Type your document here, paste content, or drag and drop a .docx file...',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'color': [] }, { 'background': [] }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          [{ 'align': [] }],
+          ['blockquote', 'code-block'],
+          ['link', 'clean']
+        ]
+      }
+    });
+
+    // Setup Drag and Drop for .docx, .html, .txt
+    const dropTarget = document.getElementById('editor-workspace');
+    if (dropTarget) {
+      DocuUtils.setupDropZone(dropTarget, ['.docx', '.txt', '.html', '.htm'], handleImportedFiles);
+    }
+
+    if (fileInputEl) {
+      fileInputEl.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          handleImportedFiles(Array.from(e.target.files));
+          fileInputEl.value = '';
+        }
+      });
+    }
+
+    // Document title change listener
+    if (docTitleInputEl) {
+      docTitleInputEl.addEventListener('input', (e) => {
+        currentDocName = e.target.value.trim() || 'Untitled-Document';
+        triggerAutoSave();
+      });
+    }
+
+    // Template Selector
+    if (templateSelectEl) {
+      templateSelectEl.addEventListener('change', (e) => {
+        const key = e.target.value;
+        if (TEMPLATES[key]) {
+          loadTemplate(TEMPLATES[key]);
+        }
+        templateSelectEl.value = ''; // Reset select
+      });
+    }
+
+    // Real-time Text Change Listener (Stats & Auto-save)
+    quill.on('text-change', () => {
+      updateEditorStats();
+      triggerAutoSave();
+    });
+
+    // Restore from localStorage or load default template
+    restoreSavedDraft();
+    updateEditorStats();
+  }
+
+  // Handle Imported Files (.docx via mammoth, .txt/.html via FileReader)
+  async function handleImportedFiles(files) {
+    if (!files || files.length === 0) return;
+    const file = files[0];
+    const ext = file.name.split('.').pop().toLowerCase();
+
+    DocuUtils.showToast('Importing File', `Reading "${file.name}"...`, 'info', 2000);
+
+    try {
+      if (ext === 'docx') {
+        if (!window.mammoth) {
+          DocuUtils.showToast('Error', 'Word parser engine not ready.', 'error');
+          return;
+        }
+
+        const arrayBuffer = await DocuUtils.readFileAsArrayBuffer(file);
+        const result = await window.mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+        const html = result.value;
+
+        quill.clipboard.dangerouslyPasteHTML(html);
+
+        if (docTitleInputEl) {
+          docTitleInputEl.value = file.name.replace(/\.docx$/i, '');
+          currentDocName = docTitleInputEl.value;
+        }
+
+        DocuUtils.showToast(
+          'Document Imported',
+          `Loaded "${file.name}" successfully (${result.messages.length} warnings)`,
+          'success'
+        );
+
+      } else if (ext === 'txt' || ext === 'html' || ext === 'htm') {
+        const text = await DocuUtils.readFileAsText(file);
+        if (ext === 'html' || ext === 'htm') {
+          quill.clipboard.dangerouslyPasteHTML(text);
+        } else {
+          quill.setText(text);
+        }
+
+        if (docTitleInputEl) {
+          docTitleInputEl.value = file.name.replace(/\.[^/.]+$/, '');
+          currentDocName = docTitleInputEl.value;
+        }
+
+        DocuUtils.showToast('File Loaded', `Loaded "${file.name}" into editor.`, 'success');
+      }
+
+      updateEditorStats();
+      triggerAutoSave();
+    } catch (err) {
+      console.error('File import error:', err);
+      DocuUtils.showToast('Import Error', 'Failed to parse file: ' + err.message, 'error');
+    }
+  }
+
+  // Calculate stats (Word count, characters, reading time)
+  function updateEditorStats() {
+    if (!quill) return;
+
+    const text = quill.getText().trim();
+    const charCount = text.length;
+    const words = text ? text.split(/\s+/).filter(w => w.length > 0) : [];
+    const wordCount = words.length;
+    const readingTime = Math.ceil(wordCount / 200); // 200 wpm
+
+    if (wordCountEl) wordCountEl.textContent = `${wordCount.toLocaleString()} words`;
+    if (charCountEl) charCountEl.textContent = `${charCount.toLocaleString()} chars`;
+    if (readTimeEl) readTimeEl.textContent = `${readingTime} min read`;
+  }
+
+  // Auto-save to localStorage
+  function triggerAutoSave() {
+    if (autoSaveStatusEl) {
+      autoSaveStatusEl.textContent = 'Saving...';
+      autoSaveStatusEl.className = 'text-xs text-amber-400 font-mono';
+    }
+
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+      try {
+        const content = quill.root.innerHTML;
+        const title = docTitleInputEl ? docTitleInputEl.value : currentDocName;
+        localStorage.setItem('docuflow_draft_content', content);
+        localStorage.setItem('docuflow_draft_title', title);
+
+        if (autoSaveStatusEl) {
+          autoSaveStatusEl.textContent = 'Saved locally';
+          autoSaveStatusEl.className = 'text-xs text-emerald-400 font-mono';
+        }
+      } catch (e) {
+        console.warn('LocalStorage save failed:', e);
+      }
+    }, 1200);
+  }
+
+  // Restore saved draft or load initial template
+  function restoreSavedDraft() {
+    try {
+      const savedContent = localStorage.getItem('docuflow_draft_content');
+      const savedTitle = localStorage.getItem('docuflow_draft_title');
+
+      if (savedTitle && docTitleInputEl) {
+        docTitleInputEl.value = savedTitle;
+        currentDocName = savedTitle;
+      }
+
+      if (savedContent && savedContent !== '<p><br></p>') {
+        quill.clipboard.dangerouslyPasteHTML(savedContent);
+        if (autoSaveStatusEl) {
+          autoSaveStatusEl.textContent = 'Draft restored';
+          autoSaveStatusEl.className = 'text-xs text-emerald-400 font-mono';
+        }
+      } else {
+        // Load default Tech Spec template
+        loadTemplate(TEMPLATES.techSpec, 'Engineering-Tech-Spec');
+      }
+    } catch (e) {
+      console.warn('Could not restore draft:', e);
+    }
+  }
+
+  // Load a template
+  function loadTemplate(htmlString, title = '') {
+    if (!quill) return;
+    quill.clipboard.dangerouslyPasteHTML(htmlString);
+    if (title && docTitleInputEl) {
+      docTitleInputEl.value = title;
+      currentDocName = title;
+    }
+    DocuUtils.showToast('Template Loaded', 'Document updated with template content.', 'info');
+    updateEditorStats();
+    triggerAutoSave();
+  }
+
+  // Clear Document
+  function clearDocument() {
+    if (!quill) return;
+    if (confirm('Are you sure you want to clear the editor? Your draft will be emptied.')) {
+      quill.setText('');
+      if (docTitleInputEl) docTitleInputEl.value = 'Untitled-Document';
+      currentDocName = 'Untitled-Document';
+      triggerAutoSave();
+      DocuUtils.showToast('Cleared', 'Editor is now blank.', 'info');
+    }
+  }
+
+  // Toggle Paper Theme (Light Paper vs Dark Slate Paper)
+  function togglePaperMode() {
+    if (!paperSheetEl) return;
+    const isDark = paperSheetEl.classList.toggle('paper-dark');
+    DocuUtils.showToast('View Mode', isDark ? 'Dark Sheet Mode' : 'Light Paper Mode', 'info', 1500);
+  }
+
+  // ================= EXPORT METHODS =================
+
+  // 1. Export as Microsoft Word (.docx)
+  function exportAsDocx() {
+    if (!quill) return;
+
+    const htmlContent = quill.root.innerHTML;
+    const filename = (docTitleInputEl ? docTitleInputEl.value.trim() : currentDocName) + '.docx';
+
+    DocuUtils.showToast('Generating DOCX', 'Compiling Word document locally...', 'info', 2000);
+
+    const fullDocumentHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>${DocuUtils.escapeHtml(currentDocName)}</title>
+        <style>
+          body { font-family: Calibri, 'Segoe UI', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #1e293b; }
+          h1 { font-size: 22pt; font-weight: bold; color: #0f172a; margin-top: 18pt; margin-bottom: 8pt; }
+          h2 { font-size: 16pt; font-weight: bold; color: #1e293b; margin-top: 14pt; margin-bottom: 6pt; }
+          h3 { font-size: 13pt; font-weight: bold; color: #334155; margin-top: 12pt; margin-bottom: 4pt; }
+          p { margin-bottom: 8pt; }
+          code { font-family: Consolas, monospace; background: #f1f5f9; padding: 2px 4px; font-size: 10pt; }
+          pre { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 4px; font-family: Consolas, monospace; font-size: 9.5pt; }
+          blockquote { border-left: 3px solid #6366f1; margin: 12pt 0; padding-left: 12pt; color: #475569; font-style: italic; }
+          table { border-collapse: collapse; width: 100%; margin: 14pt 0; }
+          th, td { border: 1px solid #cbd5e1; padding: 6pt 8pt; text-align: left; }
+          th { background: #f1f5f9; font-weight: bold; }
+          ul, ol { margin-left: 20pt; margin-bottom: 8pt; }
+        </style>
+      </head>
+      <body>
+        ${htmlContent}
+      </body>
+      </html>
+    `;
+
+    try {
+      if (window.htmlDocx && typeof window.htmlDocx.asBlob === 'function') {
+        // Use html-docx-js for binary docx
+        const docxBlob = window.htmlDocx.asBlob(fullDocumentHtml, {
+          orientation: 'portrait',
+          margins: { top: 1440, right: 1440, bottom: 1440, left: 1440 }
+        });
+        DocuUtils.triggerDownload(docxBlob, filename);
+      } else {
+        // Standalone Word MIME XML Fallback (natively recognized as Word doc)
+        const blob = new Blob(['\ufeff', fullDocumentHtml], {
+          type: 'application/vnd.ms-word;charset=utf-8'
+        });
+        DocuUtils.triggerDownload(blob, filename.replace(/\.docx$/i, '.doc'));
+      }
+    } catch (err) {
+      console.error('Error exporting DOCX:', err);
+      // Fallback
+      const blob = new Blob(['\ufeff', fullDocumentHtml], {
+        type: 'application/vnd.ms-word;charset=utf-8'
+      });
+      DocuUtils.triggerDownload(blob, filename.replace(/\.docx$/i, '.doc'));
+    }
+  }
+
+  // 2. Export as PDF via html2pdf
+  function exportAsPdf() {
+    if (!quill) return;
+
+    const filename = (docTitleInputEl ? docTitleInputEl.value.trim() : currentDocName) + '.pdf';
+    DocuUtils.showToast('Generating PDF', 'Rendering document pages...', 'info', 2500);
+
+    // Create a temporary print element with clean white paper styling
+    const printElement = document.createElement('div');
+    printElement.className = 'print-container';
+    printElement.style.padding = '40px';
+    printElement.style.color = '#0f172a';
+    printElement.style.backgroundColor = '#ffffff';
+    printElement.style.fontFamily = 'Calibri, Arial, sans-serif';
+    printElement.style.fontSize = '12pt';
+    printElement.style.lineHeight = '1.6';
+    printElement.innerHTML = quill.root.innerHTML;
+
+    // Apply table & code styles
+    printElement.querySelectorAll('pre').forEach(el => {
+      el.style.backgroundColor = '#f1f5f9';
+      el.style.padding = '10px';
+      el.style.borderRadius = '4px';
+      el.style.fontFamily = 'monospace';
+      el.style.border = '1px solid #cbd5e1';
+    });
+    printElement.querySelectorAll('blockquote').forEach(el => {
+      el.style.borderLeft = '4px solid #6366f1';
+      el.style.paddingLeft = '12px';
+      el.style.color = '#475569';
+    });
+    printElement.querySelectorAll('table').forEach(el => {
+      el.style.borderCollapse = 'collapse';
+      el.style.width = '100%';
+    });
+    printElement.querySelectorAll('th, td').forEach(el => {
+      el.style.border = '1px solid #cbd5e1';
+      el.style.padding = '6px 10px';
+    });
+
+    const opt = {
+      margin: [15, 15, 15, 15],
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    if (window.html2pdf) {
+      window.html2pdf().set(opt).from(printElement).toPdf().get('pdf').then((pdf) => {
+        // Output as blob for preview and download
+        const blob = pdf.output('blob');
+        DocuUtils.showToast('PDF Ready!', `Created ${filename}`, 'success');
+        DocuUtils.openPdfPreviewModal(blob, filename);
+      }).catch(err => {
+        console.error('PDF export error:', err);
+        DocuUtils.showToast('Export Error', err.message, 'error');
+      });
+    } else {
+      window.print();
+    }
+  }
+
+  // 3. Export as Markdown (.md)
+  function exportAsMarkdown() {
+    if (!quill) return;
+
+    const html = quill.root.innerHTML;
+    const md = DocuUtils.htmlToMarkdown(html);
+    const filename = (docTitleInputEl ? docTitleInputEl.value.trim() : currentDocName) + '.md';
+
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    DocuUtils.triggerDownload(blob, filename);
+  }
+
+  // 4. Export as HTML (.html)
+  function exportAsHtml() {
+    if (!quill) return;
+
+    const title = docTitleInputEl ? docTitleInputEl.value.trim() : currentDocName;
+    const filename = title + '.html';
+
+    const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${DocuUtils.escapeHtml(title)}</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 20px;
+      line-height: 1.7;
+      color: #1e293b;
+      background-color: #f8fafc;
+    }
+    h1, h2, h3 { color: #0f172a; }
+    pre { background: #0f172a; color: #38bdf8; padding: 16px; border-radius: 8px; overflow-x: auto; }
+    blockquote { border-left: 4px solid #6366f1; padding-left: 16px; color: #475569; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { border: 1px solid #cbd5e1; padding: 8px 12px; text-align: left; }
+    th { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  ${quill.root.innerHTML}
+</body>
+</html>`;
+
+    const blob = new Blob([fullHtml], { type: 'text/html;charset=utf-8' });
+    DocuUtils.triggerDownload(blob, filename);
+  }
+
+  // 5. Copy Markdown to Clipboard
+  function copyMarkdown() {
+    if (!quill) return;
+    const md = DocuUtils.htmlToMarkdown(quill.root.innerHTML);
+    navigator.clipboard.writeText(md).then(() => {
+      DocuUtils.showToast('Copied!', 'Markdown copied to clipboard.', 'success', 2000);
+    }).catch(err => {
+      DocuUtils.showToast('Copy Failed', err.message, 'error');
+    });
+  }
+
+  return {
+    init,
+    TEMPLATES,
+    loadTemplate,
+    clearDocument,
+    togglePaperMode,
+    exportAsDocx,
+    exportAsPdf,
+    exportAsMarkdown,
+    exportAsHtml,
+    copyMarkdown
+  };
+})();
+
+
+/* ========== app.js ========== */
 /**
  * DocuFlow Studio - Main Application Controller
  * Handles routing, sidebar navigation, keyboard shortcuts, and initialization
@@ -203,4 +3326,10 @@ if (typeof document !== 'undefined' && document.addEventListener) {
     DocuApp.init();
   });
 }
+
+
+
+  </script>
+</body>
+</html>
 

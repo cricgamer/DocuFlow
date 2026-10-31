@@ -972,7 +972,7 @@
     let isControlsVisible = true;
     let handshakeTimeoutTimer = null;
 
-    // Resilient Multi-tier STUN & Public TURN Relay Configuration
+    // Resilient Multi-tier STUN & Public TURN Relay Configuration with TCP/TLS fallback
     const PEER_CONFIG = {
       debug: 1,
       config: {
@@ -980,14 +980,9 @@
           // Google Public STUN
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-          { urls: 'stun:stun3.l.google.com:19302' },
-          { urls: 'stun:stun4.l.google.com:19302' },
-          // Cloudflare Public STUN
+          // Cloudflare STUN
           { urls: 'stun:stun.cloudflare.com:3478' },
-          // Twilio Global Anycast STUN
-          { urls: 'stun:global.stun.twilio.com:3478' },
-          // OpenRelay Public STUN & Free TURN Relays for Strict Mobile / iCloud Private Relay NAT
+          // Metered OpenRelay UDP/TCP/TLS Fallbacks (Guarantees traversal across strict firewalls)
           { urls: 'stun:openrelay.metered.ca:80' },
           {
             urls: 'turn:openrelay.metered.ca:80',
@@ -1387,6 +1382,97 @@
       }
     }
 
+    /**
+     * Munges SDP to force H.264 video codec negotiation at the top of the m=video line.
+     * Chromium/Arc defaults to VP8/VP9 which iOS Safari either cannot decode or rejects,
+     * causing WebRTC negotiation stalls. Prioritizing H.264 allows instant hardware decode
+     * across Arc, Chrome, Safari, iPadOS, iOS, Firefox, and Android.
+     */
+    function forceH264InSdp(sdp) {
+      if (!sdp || typeof sdp !== 'string') return sdp;
+      try {
+        const isCrlf = sdp.includes('\r\n');
+        const delimiter = isCrlf ? '\r\n' : '\n';
+        const lines = sdp.split(/\r\n|\r|\n/);
+
+        let videoIndex = -1;
+        const h264Payloads = [];
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (line.startsWith('m=video ')) {
+            videoIndex = i;
+          }
+          if (line.startsWith('a=rtpmap:') && line.toUpperCase().includes('H264/')) {
+            const match = line.match(/^a=rtpmap:(\d+)\s+H264\//i);
+            if (match && match[1]) {
+              h264Payloads.push(match[1]);
+            }
+          }
+        }
+
+        if (videoIndex !== -1 && h264Payloads.length > 0) {
+          const parts = lines[videoIndex].split(' ');
+          if (parts.length > 3) {
+            const prefix = parts.slice(0, 3);
+            const originalPayloads = parts.slice(3);
+            const reordered = [];
+
+            // Add H.264 payloads first
+            h264Payloads.forEach(pt => {
+              if (originalPayloads.includes(pt) && !reordered.includes(pt)) {
+                reordered.push(pt);
+              }
+            });
+
+            // Add remaining codecs in original relative order
+            originalPayloads.forEach(pt => {
+              if (!reordered.includes(pt)) {
+                reordered.push(pt);
+              }
+            });
+
+            lines[videoIndex] = [...prefix, ...reordered].join(' ');
+            console.log('[WebRTC SDP] Prioritized H.264 payload types:', h264Payloads);
+          }
+        }
+        return lines.join(delimiter);
+      } catch (err) {
+        console.warn('Error transforming SDP for H.264 preference:', err);
+        return sdp;
+      }
+    }
+
+    /**
+     * Sets transceiver codec preferences to H.264 via standard W3C WebRTC API if available
+     */
+    function preferH264Codec(pc) {
+      if (!pc) return;
+      try {
+        if (pc.getTransceivers && window.RTCRtpReceiver && RTCRtpReceiver.getCapabilities) {
+          const capabilities = RTCRtpReceiver.getCapabilities('video');
+          if (capabilities && capabilities.codecs) {
+            const h264Codecs = capabilities.codecs.filter(c => c.mimeType && c.mimeType.toLowerCase() === 'video/h264');
+            const otherCodecs = capabilities.codecs.filter(c => c.mimeType && c.mimeType.toLowerCase() !== 'video/h264');
+            if (h264Codecs.length > 0) {
+              pc.getTransceivers().forEach(transceiver => {
+                if (transceiver.setCodecPreferences) {
+                  try {
+                    transceiver.setCodecPreferences([...h264Codecs, ...otherCodecs]);
+                    console.log('[WebRTC Transceiver] Set H.264 codec preference on transceiver');
+                  } catch (e) {
+                    console.warn('Transceiver codec preference notice:', e);
+                  }
+                }
+              });
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('preferH264Codec notice:', e);
+      }
+    }
+
     function initBroadcasterPeer() {
       currentSessionCode = generate4DigitCode();
       const peerId = PEER_PREFIX + currentSessionCode;
@@ -1405,18 +1491,19 @@
           onBroadcastingReady(currentSessionCode);
         });
 
-        // Helper to dispatch media stream call to a connected receiver
+        // Helper to dispatch media stream call to a connected receiver with H.264 prioritization
         const sendScreenCallTo = (receiverId) => {
           if (!localStream) return;
           console.log('Broadcaster initiating media call to:', receiverId);
           try {
-            const call = broadcasterPeer.call(receiverId, localStream);
+            const call = broadcasterPeer.call(receiverId, localStream, { sdpTransform: forceH264InSdp });
             if (call) {
               activeMediaCalls.set(receiverId, call);
               updateViewerCount();
 
               // ICE Connection state monitoring for broadcaster
               if (call.peerConnection) {
+                preferH264Codec(call.peerConnection);
                 call.peerConnection.oniceconnectionstatechange = () => {
                   console.log(`[Broadcaster ICE] with ${receiverId}:`, call.peerConnection.iceConnectionState);
                   if (call.peerConnection.iceConnectionState === 'disconnected') {
@@ -1486,7 +1573,8 @@
         broadcasterPeer.on('call', (call) => {
           console.log('Broadcaster received incoming call from:', call.peer);
           if (localStream) {
-            call.answer(localStream);
+            if (call.peerConnection) preferH264Codec(call.peerConnection);
+            call.answer(localStream, { sdpTransform: forceH264InSdp });
             activeMediaCalls.set(call.peer, call);
             updateViewerCount();
 
@@ -1687,8 +1775,9 @@
                   if (canvas.captureStream) dummyStream = canvas.captureStream(0);
                 } catch (e) {}
 
-                const call = receiverPeer.call(targetHostId, dummyStream);
+                const call = receiverPeer.call(targetHostId, dummyStream, { sdpTransform: forceH264InSdp });
                 if (call) {
+                  if (call.peerConnection) preferH264Codec(call.peerConnection);
                   setupReceiverCallHandlers(call, () => {
                     streamReceived = true;
                     clearTimeout(handshakeTimeoutTimer);
@@ -1706,8 +1795,10 @@
           console.log('Receiving media call from broadcaster...');
           clearTimeout(fallbackCallTimer);
 
-          // Answer call with no local stream (receive only)
-          call.answer();
+          if (call.peerConnection) preferH264Codec(call.peerConnection);
+
+          // Answer call with no local stream (receive only), enforcing H.264 negotiation
+          call.answer(undefined, { sdpTransform: forceH264InSdp });
 
           setupReceiverCallHandlers(call, () => {
             streamReceived = true;
@@ -1750,6 +1841,9 @@
       // Secondary: Raw RTCPeerConnection handlers for Safari / iPad WebKit
       const attachPc = (pc) => {
         if (!pc || bound) return;
+
+        // Prioritize H.264 transceiver codecs for WebKit / Safari decode pipeline
+        preferH264Codec(pc);
 
         let compositeStream = new MediaStream();
 
@@ -1869,6 +1963,18 @@
       video.playsInline = true;
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('muted', '');
+      video.setAttribute('autoplay', '');
+
+      // Touch / click unblock fallback for mobile WebKit
+      const gestureUnblock = () => {
+        if (video.paused) {
+          video.muted = true;
+          video.play().then(() => markConnectedAndPlaying()).catch(e => console.warn(e));
+        }
+      };
+      document.addEventListener('touchstart', gestureUnblock, { once: true, passive: true });
+      document.addEventListener('click', gestureUnblock, { once: true, passive: true });
 
       if (video.srcObject !== stream) {
         video.srcObject = stream;
